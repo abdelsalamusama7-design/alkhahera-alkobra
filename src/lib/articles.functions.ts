@@ -69,11 +69,13 @@ export const getArticleBySlug = createServerFn({ method: "POST" })
       .update({ view_count: (row.view_count ?? 0) + 1 })
       .eq("id", row.id);
 
-    const { data: related } = await supabaseAdmin
-      .from("articles")
-      .select(ARTICLE_SELECT)
-      .eq("is_published", true)
-      .eq("category_id", row.category_id)
+    let related: any[] = [];
+    if (row.category_id) {
+      const { data: rel } = await supabaseAdmin
+        .from("articles")
+        .select(ARTICLE_SELECT)
+        .eq("is_published", true)
+        .eq("category_id", row.category_id)
       .neq("id", row.id)
       .order("published_at", { ascending: false })
       .limit(4);
