@@ -1,0 +1,52 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { adminIngestRss } from "@/lib/rss.functions";
+import { Button } from "@/components/ui/button";
+import { Rss, Loader2 } from "lucide-react";
+
+export const Route = createFileRoute("/admin/ingest")({ component: IngestPage });
+
+function IngestPage() {
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function run() {
+    setRunning(true); setErr(null); setResult(null);
+    try {
+      const r = await adminIngestRss();
+      setResult(r);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <h1 className="text-2xl font-extrabold text-primary mb-2 flex items-center gap-2"><Rss size={20} /> سحب الأخبار من المصادر</h1>
+      <p className="text-sm text-muted-foreground mb-6">
+        يتم السحب من مصادر RSS موثوقة (اليوم السابع، BBC عربي، الجزيرة) لأقسام السياسة والاقتصاد والرياضة والفن والحوادث والعالم.
+        الأخبار المكررة يتم تجاهلها تلقائياً.
+      </p>
+      <Button onClick={run} disabled={running} size="lg">
+        {running ? <><Loader2 size={16} className="animate-spin ml-2" /> جارٍ السحب...</> : "ابدأ السحب الآن"}
+      </Button>
+      {err && <div className="mt-4 text-sm text-breaking bg-breaking/10 border border-breaking p-3 rounded">{err}</div>}
+      {result && (
+        <div className="mt-6 bg-card border border-border rounded-lg p-4 space-y-2">
+          <div className="text-emerald-600 font-bold">✓ تم — أُضيف {result.inserted} خبر، تجاهل {result.skipped} مكرر</div>
+          {result.errors?.length > 0 && (
+            <div>
+              <div className="text-sm font-bold text-breaking">أخطاء:</div>
+              <ul className="text-xs text-muted-foreground list-disc list-inside">
+                {result.errors.map((e: string, i: number) => <li key={i}>{e}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
