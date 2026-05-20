@@ -7,6 +7,7 @@ export type NewsItem = {
   image: string;
   excerpt?: string;
   isBreaking?: boolean;
+  slug?: string;
 };
 
 // Image URLs from Unsplash (royalty-free)

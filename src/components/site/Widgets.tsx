@@ -1,13 +1,23 @@
 import { TrendingUp, TrendingDown, Cloud, Sun } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getMarkets } from "@/lib/markets.functions";
 
 export function MarketsWidget() {
-  const markets = [
-    { name: "EGX30", value: "52,774.98", change: "+1.48%", up: true },
-    { name: "الذهب (جرام 21)", value: "4,469.50", change: "-0.92%", up: false },
-    { name: "USD / EGP", value: "53.05", change: "0.00%", up: true },
-    { name: "EUR / EGP", value: "61.52", change: "-0.06%", up: false },
-    { name: "SAR / EGP", value: "14.13", change: "0.00%", up: true },
+  const { data, isLoading } = useQuery({
+    queryKey: ["markets"],
+    queryFn: () => getMarkets(),
+    refetchInterval: 5 * 60_000,
+    staleTime: 60_000,
+  });
+
+  const fallback = [
+    { name: "الذهب (جرام 21)", value: "4,469.50", change: "—", up: false },
+    { name: "USD / EGP", value: "53.05", change: "—", up: true },
+    { name: "EUR / EGP", value: "61.52", change: "—", up: true },
+    { name: "SAR / EGP", value: "14.13", change: "—", up: true },
   ];
+  const markets = data?.fx?.length ? data.fx : fallback;
+
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
       <div className="bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between">
@@ -20,11 +30,7 @@ export function MarketsWidget() {
             <span className="font-semibold text-primary">{m.name}</span>
             <div className="flex items-center gap-3">
               <span className="font-mono font-bold text-primary">{m.value}</span>
-              <span
-                className={`flex items-center gap-1 text-xs font-bold w-16 justify-end ${
-                  m.up ? "text-emerald-600" : "text-breaking"
-                }`}
-              >
+              <span className={`flex items-center gap-1 text-xs font-bold w-16 justify-end ${m.up ? "text-emerald-600" : "text-breaking"}`}>
                 {m.up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 {m.change}
               </span>
@@ -32,6 +38,7 @@ export function MarketsWidget() {
           </li>
         ))}
       </ul>
+      {isLoading && <div className="px-4 py-2 text-[10px] text-muted-foreground">جارٍ التحديث...</div>}
     </div>
   );
 }
