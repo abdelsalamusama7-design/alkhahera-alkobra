@@ -83,7 +83,7 @@ function Index() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2"><ItemLink item={hero}><NewsCard item={hero} size="hero" /></ItemLink></div>
             <div className="flex flex-col gap-4">
-              {sideHero.map((n) => (
+              {sideHero.map((n: NewsItem) => (
                 <ItemLink key={n.id} item={n}><NewsCard item={n} size="large" /></ItemLink>
               ))}
             </div>
@@ -93,7 +93,7 @@ function Index() {
         <section className="container mx-auto px-4 py-6">
           <SectionTitle title="آخر الأخبار" accent="عرض المزيد" to="/search" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(0, 12).map((n) => (
+            {latestList.slice(0, 12).map((n: NewsItem) => (
               <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
             ))}
           </div>
@@ -127,7 +127,7 @@ function Index() {
             <aside>
               <SectionTitle title="الأكثر قراءة" />
               <ol className="space-y-3">
-                {mostRead.map((n, i) => (
+                {mostRead.map((n: NewsItem, i: number) => (
                   <ItemLink key={n.id} item={n}>
                     <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
                       <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">{i + 1}</span>
