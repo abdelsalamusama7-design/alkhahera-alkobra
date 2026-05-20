@@ -76,11 +76,13 @@ export const getArticleBySlug = createServerFn({ method: "POST" })
         .select(ARTICLE_SELECT)
         .eq("is_published", true)
         .eq("category_id", row.category_id)
-      .neq("id", row.id)
-      .order("published_at", { ascending: false })
-      .limit(4);
+        .neq("id", row.id)
+        .order("published_at", { ascending: false })
+        .limit(4);
+      related = rel ?? [];
+    }
 
-    return { article: row, related: related ?? [] };
+    return { article: row, related };
   });
 
 // PUBLIC: categories
