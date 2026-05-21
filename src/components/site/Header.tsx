@@ -1,15 +1,8 @@
 export function Header() {
-  const admin = [
-    { role: "رئيس مجلس الإدارة", name: "حاتم حمدي" },
-    { role: "نائب رئيس مجلس الإدارة", name: "شيماء حمدي" },
-    { role: "رئيس التحرير", name: "محسن جيلاني" },
-    { role: "مدير التحرير", name: "محسن جيلاني" },
-  ];
-
   return (
     <header className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-5">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex items-center justify-center gap-6">
           {/* Logo */}
           <a href="/" className="flex items-center gap-3 shrink-0">
             <div className="flex h-14 w-14 items-center justify-center rounded-md bg-gradient-to-br from-gold to-amber-600 text-gold-foreground shadow-md">
@@ -29,16 +22,6 @@ export function Header() {
               </span>
             </div>
           </a>
-
-          {/* Admin masthead */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-right">
-            {admin.map((a) => (
-              <div key={a.role} className="text-[11px] md:text-xs">
-                <div className="text-gold font-semibold">{a.role}</div>
-                <div className="text-primary font-bold text-sm">{a.name}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </header>
