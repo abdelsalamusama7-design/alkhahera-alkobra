@@ -1,36 +1,26 @@
-import { TrendingUp, TrendingDown, Cloud, Sun } from "lucide-react";
+import { TrendingUp, TrendingDown, Cloud, Sun, BarChart3, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getMarkets } from "@/lib/markets.functions";
 
-export function MarketsWidget() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["markets"],
-    queryFn: () => getMarkets(),
-    refetchInterval: 5 * 60_000,
-    staleTime: 60_000,
-  });
+type Row = { name: string; value: string; change: string; up: boolean };
 
-  const fallback = [
-    { name: "الذهب (جرام 21)", value: "4,469.50", change: "—", up: false },
-    { name: "USD / EGP", value: "53.05", change: "—", up: true },
-    { name: "EUR / EGP", value: "61.52", change: "—", up: true },
-    { name: "SAR / EGP", value: "14.13", change: "—", up: true },
-  ];
-  const markets = data?.fx?.length ? data.fx : fallback;
-
+function Section({ title, icon, rows, isLoading }: { title: string; icon: React.ReactNode; rows: Row[]; isLoading: boolean }) {
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
       <div className="bg-primary text-primary-foreground px-4 py-2 flex items-center justify-between">
-        <h3 className="font-extrabold text-sm">الأسواق والعملات</h3>
-        <TrendingUp size={16} className="text-gold" />
+        <h3 className="font-extrabold text-sm flex items-center gap-2">{icon}{title}</h3>
+        {isLoading ? <RefreshCw size={14} className="animate-spin text-gold" /> : <span className="text-[10px] text-gold font-bold">مباشر</span>}
       </div>
       <ul className="divide-y divide-border">
-        {markets.map((m) => (
+        {rows.length === 0 && (
+          <li className="px-4 py-3 text-xs text-muted-foreground text-center">جارٍ تحميل البيانات...</li>
+        )}
+        {rows.map((m) => (
           <li key={m.name} className="px-4 py-2.5 flex items-center justify-between text-sm">
             <span className="font-semibold text-primary">{m.name}</span>
             <div className="flex items-center gap-3">
               <span className="font-mono font-bold text-primary">{m.value}</span>
-              <span className={`flex items-center gap-1 text-xs font-bold w-16 justify-end ${m.up ? "text-emerald-600" : "text-breaking"}`}>
+              <span className={`flex items-center gap-1 text-xs font-bold w-20 justify-end ${m.up ? "text-emerald-600" : "text-breaking"}`}>
                 {m.up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 {m.change}
               </span>
@@ -38,7 +28,29 @@ export function MarketsWidget() {
           </li>
         ))}
       </ul>
-      {isLoading && <div className="px-4 py-2 text-[10px] text-muted-foreground">جارٍ التحديث...</div>}
+    </div>
+  );
+}
+
+export function MarketsWidget() {
+  const { data, isLoading, dataUpdatedAt } = useQuery({
+    queryKey: ["markets"],
+    queryFn: () => getMarkets(),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+
+  const fx = data?.fx ?? [];
+  const stocks = data?.stocks ?? [];
+  const updated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }) : "";
+
+  return (
+    <div className="space-y-4">
+      <Section title="العملات والذهب" icon={<TrendingUp size={16} className="text-gold" />} rows={fx} isLoading={isLoading} />
+      <Section title="البورصة والأسهم" icon={<BarChart3 size={16} className="text-gold" />} rows={stocks} isLoading={isLoading} />
+      {updated && (
+        <div className="text-[10px] text-muted-foreground text-center">آخر تحديث: {updated} — يتم التحديث تلقائيًا كل دقيقة</div>
+      )}
     </div>
   );
 }
