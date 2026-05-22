@@ -120,3 +120,45 @@ export const getHealthLogFn = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+/**
+ * تسجيل ظهور/نقرة لإعلان — يستدعى من المتصفح (بدون auth).
+ * يستخدم RPC ذرّي لزيادة العدّاد.
+ */
+export const trackAdEventFn = createServerFn({ method: "POST" })
+  .inputValidator((input) =>
+    z.object({
+      id: z.string().uuid(),
+      kind: z.enum(["impression", "click"]),
+    }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    const column = data.kind === "click" ? "clicks" : "impressions";
+    // قراءة الحالي ثم التحديث (service role يتجاوز RLS)
+    const { data: row } = await supabaseAdmin
+      .from("ad_placements")
+      .select(column)
+      .eq("id", data.id)
+      .single();
+    const current = Number((row as any)?.[column] ?? 0);
+    const { error } = await supabaseAdmin
+      .from("ad_placements")
+      .update({ [column]: current + 1 })
+      .eq("id", data.id);
+    if (error) return { ok: false };
+    return { ok: true };
+  });
+
+/** تصفير عدّادات إعلان واحد أو كلها. */
+export const resetAdCountersFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ id: z.string().uuid().optional() }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    let q = supabaseAdmin.from("ad_placements").update({ impressions: 0, clicks: 0 });
+    q = data.id ? q.eq("id", data.id) : q.neq("id", "00000000-0000-0000-0000-000000000000");
+    const { error } = await q;
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
