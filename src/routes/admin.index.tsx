@@ -21,6 +21,12 @@ function AdminList() {
     queryKey: ["admin-articles", q],
     queryFn: () => adminListArticles({ data: { q: q || undefined, limit: 100 } }),
   });
+  const { data: dupData } = useQuery({
+    queryKey: ["admin-duplicate-covers"],
+    queryFn: () => findDuplicateCovers(),
+    staleTime: 60_000,
+  });
+  const duplicates = dupData?.duplicates ?? [];
 
   async function onDelete(id: string) {
     if (!confirm("هل تريد حذف هذا الخبر؟")) return;
