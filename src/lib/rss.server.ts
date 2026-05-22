@@ -369,9 +369,9 @@ export async function ingestAllFeeds() {
   let facebookFailed = 0;
   const facebookErrors: string[] = [];
 
-  if (insertedArticles.length > 1) {
+  if (insertedArticles.length > 0) {
     const siteUrl = process.env.SITE_URL || "https://alkhahera-alkobra.lovable.app";
-    for (const article of insertedArticles.slice(1, 6)) {
+    for (const article of insertedArticles.slice(0, 5)) {
       const fb = await postArticleToFacebook(article, siteUrl);
       if (fb.success) {
         facebookPosted++;
