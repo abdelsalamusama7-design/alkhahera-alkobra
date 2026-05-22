@@ -1,3 +1,5 @@
+import logo from "@/assets/logo.png";
+
 export function Header() {
   const board = [
     { role: "رئيس مجلس الإدارة", name: "المهندس حاتم حمدي" },
@@ -10,20 +12,20 @@ export function Header() {
       <div className="container mx-auto px-4 py-5">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-3 shrink-1">
-            <div className="flex h-14 w-14 items-center justify-center rounded-md bg-gradient-to-br from-gold to-amber-600 text-gold-foreground shadow-md">
-              <svg viewBox="0 0 64 64" className="h-9 w-9" fill="currentColor" aria-hidden="true">
-                {/* Pyramids + sun */}
-                <circle cx="14" cy="20" r="6" />
-                <path d="M2 54 L22 22 L42 54 Z" />
-                <path d="M28 54 L48 18 L62 54 Z" />
-              </svg>
+          <a href="/" className="flex items-center gap-3 shrink-0 group">
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-xl bg-[#0a1410] ring-1 ring-gold/30 shadow-[0_4px_20px_rgba(0,0,0,0.15)] overflow-hidden transition-transform group-hover:scale-105">
+              <img
+                src={logo}
+                alt="شعار القاهرة الكبرى"
+                className="h-full w-full object-contain p-1.5"
+                loading="eager"
+              />
             </div>
             <div className="flex flex-col leading-tight">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-primary">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">
                 القاهرة الكبرى
               </h1>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-[11px] text-muted-foreground tracking-wider">
                 بوابة الأخبار المصرية والعربية
               </span>
             </div>
