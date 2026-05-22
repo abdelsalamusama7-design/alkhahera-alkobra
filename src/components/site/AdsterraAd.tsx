@@ -34,7 +34,6 @@ export function AdsterraBanner({
         scrolling="no"
         frameBorder={0}
         style={{ border: 0, maxWidth: "100%", display: "block" }}
-        sandbox="allow-scripts allow-same-origin allow-popups"
       />
     </div>
   );
