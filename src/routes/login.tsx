@@ -37,7 +37,7 @@ function LoginPage() {
           },
         });
         if (error) throw error;
-        setErr("تم إنشاء الحساب. تفقّد بريدك الإلكتروني لتأكيد الحساب.");
+        setErr("تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -79,7 +79,14 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-1">
-              <Label>كلمة السر</Label>
+              <div className="flex items-center justify-between">
+                <Label>كلمة السر</Label>
+                {mode === "login" && (
+                  <Link to="/forgot-password" className="text-xs text-gold hover:underline">
+                    نسيت كلمة السر؟
+                  </Link>
+                )}
+              </div>
               <Input
                 type="password"
                 required
