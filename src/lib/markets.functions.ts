@@ -79,6 +79,28 @@ async function fetchCrypto(): Promise<Quote[]> {
   }
 }
 
+async function fetchFxFromExchangeRateApi(): Promise<Quote[]> {
+  const key = process.env.EXCHANGERATE_API_KEY;
+  if (!key) return [];
+  try {
+    const r = await fetch(`https://v6.exchangerate-api.com/v6/${key}/latest/USD`);
+    if (!r.ok) return [];
+    const j: any = await r.json();
+    if (j?.result !== "success") return [];
+    const rates = j.conversion_rates ?? {};
+    const usd = Number(rates.EGP || 0);
+    const eur = usd / Number(rates.EUR || 1);
+    const sar = usd / Number(rates.SAR || 1);
+    const out: Quote[] = [];
+    if (usd) out.push({ name: "USD / EGP", value: fmt(usd), change: "—", up: true });
+    if (eur) out.push({ name: "EUR / EGP", value: fmt(eur), change: "—", up: true });
+    if (sar) out.push({ name: "SAR / EGP", value: fmt(sar), change: "—", up: true });
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 export const getMarkets = createServerFn({ method: "GET" }).handler(async () => {
   const out: {
     fx: Quote[];
@@ -87,13 +109,19 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
     updatedAt: string;
   } = { fx: [], stocks: [], crypto: [], updatedAt: new Date().toISOString() };
 
+  // Primary FX from ExchangeRate-API (reliable, keyed)
+  const primaryFx = await fetchFxFromExchangeRateApi();
+  if (primaryFx.length) out.fx.push(...primaryFx);
+
   try {
     const symbols = ["USDEGP=X", "EURRGP=X", "SAREGP=X", "GC=F", "^CASE30", "^GSPC", "^IXIC"];
     const [q, crypto] = await Promise.all([yahooQuotes(symbols), fetchCrypto()]);
     out.crypto = crypto;
 
+    // Use ExchangeRate-API USD rate first if available; else Yahoo
     const usd = q.get("USDEGP=X");
-    const usdRate = Number(usd?.regularMarketPrice || 0);
+    const usdRateFromPrimary = Number((primaryFx.find((f) => f.name === "USD / EGP")?.value || "0").replace(/,/g, ""));
+    const usdRate = usdRateFromPrimary || Number(usd?.regularMarketPrice || 0);
 
     // Gold (USD/oz) -> EGP/gram 21k
     const gold = q.get("GC=F");
@@ -101,7 +129,7 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
       const ozUsd = Number(gold.regularMarketPrice);
       const gram21 = (ozUsd * usdRate * 21) / (31.1035 * 24);
       const pct = Number(gold.regularMarketChangePercent ?? 0);
-      out.fx.push({
+      out.fx.unshift({
         name: "الذهب (جرام 21)",
         value: fmt(gram21),
         change: `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`,
@@ -109,14 +137,17 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
       });
     }
 
-    const fxRows = [
-      ["USD / EGP", "USDEGP=X"],
-      ["EUR / EGP", "EURRGP=X"],
-      ["SAR / EGP", "SAREGP=X"],
-    ] as const;
-    for (const [name, sym] of fxRows) {
-      const r = toQuote(name, q.get(sym));
-      if (r) out.fx.push(r);
+    // Only add Yahoo FX if primary failed
+    if (primaryFx.length === 0) {
+      const fxRows = [
+        ["USD / EGP", "USDEGP=X"],
+        ["EUR / EGP", "EURRGP=X"],
+        ["SAR / EGP", "SAREGP=X"],
+      ] as const;
+      for (const [name, sym] of fxRows) {
+        const r = toQuote(name, q.get(sym));
+        if (r) out.fx.push(r);
+      }
     }
 
     const stockRows = [
@@ -135,7 +166,7 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
     }
   }
 
-  // Fallback FX via open.er-api.com if Yahoo blocked
+  // Last-ditch FX fallback
   if (out.fx.length === 0) {
     try {
       const r = await fetch("https://open.er-api.com/v6/latest/USD");
