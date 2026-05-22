@@ -39,6 +39,43 @@ export function NavBar() {
             </Link>
           ))}
         </div>
+
+        {/* Mobile auth links */}
+        {open && (
+          <div className="md:hidden w-full flex flex-col gap-2 py-2 border-t border-white/10 mt-1">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link
+                    to="/admin/ingest"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors"
+                  >
+                    <Settings size={14} />
+                    لوحة التحكم
+                  </Link>
+                )}
+                <button
+                  onClick={() => { setOpen(false); signOut(); }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors w-full text-right"
+                >
+                  <LogOut size={14} />
+                  خروج
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors"
+              >
+                <LogIn size={14} />
+                دخول
+              </Link>
+            )}
+          </div>
+        )}
+
         <form onSubmit={onSearch} className="hidden md:flex items-center bg-white/10 rounded-md px-2 shrink-0">
           <Search size={14} className="text-white/70" />
           <input
