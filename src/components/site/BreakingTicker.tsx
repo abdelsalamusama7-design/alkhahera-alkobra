@@ -1,7 +1,15 @@
 import { breakingItems as fallback } from "@/data/news";
 
 export function BreakingTicker({ items }: { items?: string[] }) {
-  const list = items?.length ? items : fallback;
+  const source = items?.length ? items : fallback;
+  // إزالة التكرار (case + whitespace insensitive) مع الحفاظ على الترتيب
+  const seen = new Set<string>();
+  const list = source.filter((t) => {
+    const key = (t || "").trim().replace(/\s+/g, " ").toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   return (
     <div className="bg-card border-y border-border">
       <div className="container mx-auto px-4 flex items-stretch">
