@@ -141,9 +141,10 @@ export const trackAdEventFn = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .single();
     const current = Number((row as any)?.[column] ?? 0);
+    const patch: any = { [column]: current + 1 };
     const { error } = await supabaseAdmin
       .from("ad_placements")
-      .update({ [column]: current + 1 })
+      .update(patch)
       .eq("id", data.id);
     if (error) return { ok: false };
     return { ok: true };
