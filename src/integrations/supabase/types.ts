@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_views: {
+        Row: {
+          article_id: string
+          country: string | null
+          device_type: string
+          id: string
+          path: string | null
+          referrer: string | null
+          referrer_host: string | null
+          source_type: string
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          article_id: string
+          country?: string | null
+          device_type?: string
+          id?: string
+          path?: string | null
+          referrer?: string | null
+          referrer_host?: string | null
+          source_type?: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          article_id?: string
+          country?: string | null
+          device_type?: string
+          id?: string
+          path?: string | null
+          referrer?: string | null
+          referrer_host?: string | null
+          source_type?: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string | null
