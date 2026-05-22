@@ -45,14 +45,14 @@ export function Header() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="ابحث عن خبر أو عنوان..."
-                className="bg-transparent border-0 outline-none text-sm py-2 px-3 placeholder:text-muted-foreground flex-1 min-w-0 md:w-64"
+                className="bg-transparent border-0 outline-none text-sm py-2.5 px-3 placeholder:text-muted-foreground flex-1 min-w-0 md:w-64 min-h-[44px]"
               />
               <button
                 type="submit"
                 aria-label="بحث"
-                className="px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
+                className="px-4 min-h-[44px] min-w-[44px] inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
               >
-                <Search size={16} />
+                <Search size={18} />
               </button>
             </form>
 
@@ -74,7 +74,7 @@ export function Header() {
                   {isAdmin && (
                     <Link
                       to="/admin/ingest"
-                      className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-2 min-h-[40px] text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
                     >
                       <Settings size={14} />
                       لوحة التحكم
@@ -82,7 +82,7 @@ export function Header() {
                   )}
                   <button
                     onClick={signOut}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 min-h-[40px] text-xs font-medium text-foreground hover:bg-accent transition-colors"
                   >
                     <LogOut size={14} />
                     خروج
@@ -91,7 +91,7 @@ export function Header() {
               ) : (
                 <Link
                   to="/login"
-                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 min-h-[40px] text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                   <LogIn size={14} />
                   دخول
