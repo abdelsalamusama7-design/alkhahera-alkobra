@@ -144,7 +144,7 @@ function Index() {
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-125" />
                 <img
-                  src="/src/assets/logo.png"
+                  src={logo}
                   alt="القاهرة الكبرى"
                   className="relative h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-md"
                   loading="lazy"
