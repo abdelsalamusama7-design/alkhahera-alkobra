@@ -22,13 +22,13 @@ export const SMARTLINKS = {
   BANNER_4: "https://omg10.com/4/11044495",
 } as const;
 
-const BANNER_POOL = ["BANNER", "BANNER_2", "BANNER_3", "BANNER_4"] as const;
-export function pickBannerKind(): SmartLinkKind {
-  return BANNER_POOL[Math.floor(Math.random() * BANNER_POOL.length)];
-}
-
 export type SmartLinkKind = keyof typeof SMARTLINKS;
 
 export function getSmartLink(kind: SmartLinkKind): string {
   return SMARTLINKS[kind];
+}
+
+const BANNER_POOL: SmartLinkKind[] = ["BANNER", "BANNER_2", "BANNER_3", "BANNER_4"];
+export function pickBannerKind(): SmartLinkKind {
+  return BANNER_POOL[Math.floor(Math.random() * BANNER_POOL.length)];
 }
