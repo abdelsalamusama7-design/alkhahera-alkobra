@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, BarChart3, Clock } from "lucide-react";
 import { getBourseSection } from "@/lib/bourse.functions";
-import { timeAgoAr } from "@/lib/format";
 
 export function BourseSection() {
   const { data, isLoading } = useQuery({

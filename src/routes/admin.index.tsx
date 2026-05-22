@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, ExternalLink } from "lucide-react";
-import { timeAgoAr } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminList,

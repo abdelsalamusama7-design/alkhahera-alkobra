@@ -10,7 +10,6 @@ import { Footer } from "@/components/site/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { timeAgoAr } from "@/lib/format";
 
 type SearchParams = { q?: string; cat?: string; from?: string; to?: string; breaking?: string };
 

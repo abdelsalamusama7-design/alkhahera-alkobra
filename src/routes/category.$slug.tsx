@@ -6,7 +6,6 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { Footer } from "@/components/site/Footer";
-import { timeAgoAr } from "@/lib/format";
 
 export const Route = createFileRoute("/category/$slug")({
   loader: async ({ params }) => {
