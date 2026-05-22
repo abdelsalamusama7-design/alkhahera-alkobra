@@ -1,13 +1,50 @@
 import { createServerFn } from "@tanstack/react-start";
 
-// Live data via Yahoo Finance public quote endpoint (no key required).
-// Symbols:
-//   USDEGP=X, EURRGP=X, SAREGP=X  -> FX vs Egyptian Pound
-//   GC=F                          -> Gold futures (USD/oz)
-//   ^CASE30                       -> EGX 30 index (Egyptian stock market)
-//   ^GSPC, ^IXIC                  -> S&P500 & Nasdaq (global stocks)
+// Live market data. Primary: Alpha Vantage (keyed, cached 1h due to 25 req/day).
+// Fallbacks: ExchangeRate-API for FX, Yahoo Finance for stocks/gold, CoinGecko for crypto.
 
 type Quote = { name: string; value: string; change: string; up: boolean };
+
+// In-memory cache for Alpha Vantage
+const avCache = new Map<string, { ts: number; data: any }>();
+const AV_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours (free tier: 25 req/day)
+
+async function alphaVantage(params: Record<string, string>): Promise<any | null> {
+  const key = process.env.ALPHAVANTAGE_API_KEY;
+  if (!key) return null;
+  const cacheKey = JSON.stringify(params);
+  const cached = avCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < AV_TTL_MS) return cached.data;
+  try {
+    const qs = new URLSearchParams({ ...params, apikey: key }).toString();
+    const res = await fetch(`https://www.alphavantage.co/query?${qs}`);
+    if (!res.ok) return cached?.data ?? null;
+    const j: any = await res.json();
+    if (j?.Note || j?.Information || j?.["Error Message"]) {
+      return cached?.data ?? null;
+    }
+    avCache.set(cacheKey, { ts: Date.now(), data: j });
+    return j;
+  } catch {
+    return cached?.data ?? null;
+  }
+}
+
+async function avFxRate(from: string, to: string): Promise<number | null> {
+  const j = await alphaVantage({ function: "CURRENCY_EXCHANGE_RATE", from_currency: from, to_currency: to });
+  const rate = Number(j?.["Realtime Currency Exchange Rate"]?.["5. Exchange Rate"]);
+  return Number.isFinite(rate) && rate > 0 ? rate : null;
+}
+
+async function avGlobalQuote(symbol: string): Promise<{ price: number; pct: number } | null> {
+  const j = await alphaVantage({ function: "GLOBAL_QUOTE", symbol });
+  const q = j?.["Global Quote"];
+  const price = Number(q?.["05. price"]);
+  const pctStr = String(q?.["10. change percent"] ?? "").replace("%", "");
+  const pct = Number(pctStr);
+  if (!Number.isFinite(price) || price <= 0) return null;
+  return { price, pct: Number.isFinite(pct) ? pct : 0 };
+}
 
 async function yahooQuotes(symbols: string[]) {
   const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols.join(","))}`;
@@ -109,9 +146,22 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
     updatedAt: string;
   } = { fx: [], stocks: [], crypto: [], updatedAt: new Date().toISOString() };
 
-  // Primary FX from ExchangeRate-API (reliable, keyed)
+  // Primary FX: Alpha Vantage for USD/EGP (most accurate), then ExchangeRate-API for others
+  const [avUsdEgp, avSpy] = await Promise.all([
+    avFxRate("USD", "EGP"),
+    avGlobalQuote("SPY"),
+  ]);
+
   const primaryFx = await fetchFxFromExchangeRateApi();
   if (primaryFx.length) out.fx.push(...primaryFx);
+
+  // Override USD/EGP with Alpha Vantage value if available
+  if (avUsdEgp) {
+    const idx = out.fx.findIndex((f) => f.name === "USD / EGP");
+    const row: Quote = { name: "USD / EGP", value: fmt(avUsdEgp), change: "—", up: true };
+    if (idx >= 0) out.fx[idx] = row; else out.fx.push(row);
+  }
+
 
   try {
     const symbols = ["USDEGP=X", "EURRGP=X", "SAREGP=X", "GC=F", "^CASE30", "^GSPC", "^IXIC"];
@@ -159,6 +209,19 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
       const r = toQuote(name, q.get(sym), d);
       if (r) out.stocks.push(r);
     }
+
+    // Override S&P 500 with Alpha Vantage (SPY ETF) if available — more reliable change%
+    if (avSpy) {
+      const row: Quote = {
+        name: "S&P 500",
+        value: fmt(avSpy.price * 10, 2), // SPY ~= S&P/10
+        change: `${avSpy.pct >= 0 ? "+" : ""}${avSpy.pct.toFixed(2)}%`,
+        up: avSpy.pct >= 0,
+      };
+      const idx = out.stocks.findIndex((s) => s.name === "S&P 500");
+      if (idx >= 0) out.stocks[idx] = row; else out.stocks.push(row);
+    }
+
   } catch (e) {
     console.error("markets fetch failed", e);
     if (out.crypto.length === 0) {
