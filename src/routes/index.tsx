@@ -6,6 +6,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { SponsoredLink } from "@/components/site/SponsoredLink";
+import { AdsterraBanner, AdsterraNativeBanner, AdsterraAutoScript } from "@/components/site/AdsterraAd";
 import { CoverImage } from "@/components/site/CoverImage";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
