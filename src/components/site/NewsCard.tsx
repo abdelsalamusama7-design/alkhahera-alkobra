@@ -1,22 +1,27 @@
 import type { NewsItem } from "@/data/news";
 import { Clock } from "lucide-react";
+import { CoverImage } from "./CoverImage";
 
 type Props = {
   item: NewsItem;
   size?: "large" | "medium" | "compact" | "hero";
+  priority?: boolean;
 };
 
-export function NewsCard({ item, size = "medium" }: Props) {
+export function NewsCard({ item, size = "medium", priority = false }: Props) {
   if (size === "hero") {
     return (
       <article className="news-card group relative overflow-hidden rounded-lg bg-card shadow-sm">
-        <div className="relative aspect-[16/10] overflow-hidden">
-          <img
-            src={item.image}
-            alt={item.title}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+        <CoverImage
+          src={item.image}
+          alt={item.title}
+          ratio="16/10"
+          smRatio="16/9"
+          focus="top"
+          priority={priority}
+          sizeHint={1600}
+          imgClassName="group-hover:scale-105"
+        >
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
           <div className="absolute bottom-0 right-0 left-0 p-6 text-white">
             <div className="flex items-center gap-2 mb-3">
@@ -38,7 +43,7 @@ export function NewsCard({ item, size = "medium" }: Props) {
               <span className="flex items-center gap-1"><Clock size={12} /><span suppressHydrationWarning>{item.timeAgo}</span></span>
             </div>
           </div>
-        </div>
+        </CoverImage>
       </article>
     );
   }
@@ -46,12 +51,13 @@ export function NewsCard({ item, size = "medium" }: Props) {
   if (size === "compact") {
     return (
       <article className="news-card group flex gap-3 bg-card p-3 rounded-md border border-border">
-        <div className="relative h-20 w-24 sm:h-24 sm:w-28 shrink-0 overflow-hidden rounded bg-muted">
-          <img
+        <div className="h-20 w-24 sm:h-24 sm:w-28 shrink-0 rounded overflow-hidden">
+          <CoverImage
             src={item.image}
             alt={item.title}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            ratio="1/1"
+            focus="top"
+            sizeHint={200}
           />
         </div>
         <div className="flex-1 min-w-0">
@@ -68,17 +74,18 @@ export function NewsCard({ item, size = "medium" }: Props) {
   if (size === "large") {
     return (
       <article className="news-card group flex flex-col overflow-hidden rounded-lg bg-card border border-border h-full">
-        <div className="relative aspect-[16/9] overflow-hidden bg-muted">
-          <img
-            src={item.image}
-            alt={item.title}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-          />
+        <CoverImage
+          src={item.image}
+          alt={item.title}
+          ratio="16/9"
+          focus="top"
+          sizeHint={1200}
+          imgClassName="group-hover:scale-105"
+        >
           <span className="absolute top-3 right-3 bg-primary text-primary-foreground px-2 py-1 text-xs font-bold rounded">
             {item.category}
           </span>
-        </div>
+        </CoverImage>
         <div className="p-3 sm:p-4 flex flex-col flex-1">
           <h3 className="text-base sm:text-lg font-extrabold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
             {item.title}
@@ -98,17 +105,19 @@ export function NewsCard({ item, size = "medium" }: Props) {
   // medium (default)
   return (
     <article className="news-card group flex flex-col overflow-hidden rounded-md bg-card border border-border h-full">
-      <div className="relative aspect-[16/10] sm:aspect-[4/3] overflow-hidden bg-muted">
-        <img
-          src={item.image}
-          alt={item.title}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-        />
+      <CoverImage
+        src={item.image}
+        alt={item.title}
+        ratio="16/10"
+        smRatio="16/9"
+        focus="top"
+        sizeHint={800}
+        imgClassName="group-hover:scale-105"
+      >
         <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground px-2 py-0.5 text-[10px] font-bold rounded">
           {item.category}
         </span>
-      </div>
+      </CoverImage>
       <div className="p-3 flex flex-col flex-1">
         <h3 className="text-sm sm:text-[15px] font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
           {item.title}
