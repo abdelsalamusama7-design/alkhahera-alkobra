@@ -64,6 +64,36 @@ export function Header() {
                 </div>
               ))}
             </div>
+
+            {/* Auth buttons */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <Link
+                    to="/admin/ingest"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <Settings size={14} />
+                    لوحة التحكم
+                  </Link>
+                )}
+                <button
+                  onClick={signOut}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors"
+                >
+                  <LogOut size={14} />
+                  خروج
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <LogIn size={14} />
+                دخول
+              </Link>
+            )}
           </div>
         </div>
       </div>
