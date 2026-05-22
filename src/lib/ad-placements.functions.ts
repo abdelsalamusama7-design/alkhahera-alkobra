@@ -32,6 +32,8 @@ export type AdPlacementRow = {
   fail_count: number;
   last_checked_at: string | null;
   last_error: string | null;
+  impressions?: number;
+  clicks?: number;
 };
 
 const placementSchema = z.object({
