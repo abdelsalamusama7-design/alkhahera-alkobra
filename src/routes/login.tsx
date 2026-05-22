@@ -33,7 +33,7 @@ function LoginPage() {
           password,
           options: {
             data: { display_name: name || email.split("@")[0] },
-            emailRedirectTo: window.location.origin + "/admin",
+            emailRedirectTo: window.location.origin + "/admin/ingest",
           },
         });
         if (error) throw error;
