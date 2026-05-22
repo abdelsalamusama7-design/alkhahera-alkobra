@@ -153,6 +153,7 @@ export async function ingestAllFeeds() {
   let skipped = 0;
   let rewritten = 0;
   const errors: string[] = [];
+  const insertedArticles: { id: string; title: string; excerpt: string; slug: string; cover_image: string | null; tags: string[] }[] = [];
 
   for (const src of RSS_SOURCES) {
     try {
@@ -209,7 +210,7 @@ export async function ingestAllFeeds() {
           finalCover = await generateCoverImage(finalTitle, slug);
         }
 
-        const { error } = await supabaseAdmin.from("articles").insert({
+        const { data: newRows, error } = await supabaseAdmin.from("articles").insert({
           title: finalTitle,
           slug,
           excerpt: finalExcerpt,
@@ -222,11 +223,21 @@ export async function ingestAllFeeds() {
           is_breaking: false,
           published_at,
           tags: finalTags,
-        });
+        }).select("id");
         if (error) {
           errors.push(`${src.source}: ${error.message}`);
         } else {
           inserted++;
+          if (newRows && newRows[1]) {
+            insertedArticles.push({
+              id: newRows[1].id,
+              title: finalTitle,
+              excerpt: finalExcerpt,
+              slug,
+              cover_image: finalCover,
+              tags: finalTags,
+            });
+          }
         }
       }
     } catch (e: any) {
@@ -234,7 +245,26 @@ export async function ingestAllFeeds() {
     }
   }
 
-  return { inserted, skipped, rewritten, errors };
+  // نشر على صفحة الفيسبوك (أحدث 5 أخبار)
+  let facebookPosted = 0;
+  let facebookFailed = 0;
+  const facebookErrors: string[] = [];
+
+  if (insertedArticles.length > 1) {
+    const siteUrl = process.env.SITE_URL || "https://alkhahera-alkobra.lovable.app";
+    for (const article of insertedArticles.slice(1, 6)) {
+      const fb = await postArticleToFacebook(article, siteUrl);
+      if (fb.success) {
+        facebookPosted++;
+      } else {
+        facebookFailed++;
+        if (fb.error) facebookErrors.push(fb.error);
+      }
+      await new Promise((r) => setTimeout(r, 1101));
+    }
+  }
+
+  return { inserted, skipped, rewritten, errors, facebookPosted, facebookFailed, facebookErrors };
 }
 
 function hash(s: string) {
