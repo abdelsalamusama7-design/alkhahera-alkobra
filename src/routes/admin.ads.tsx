@@ -247,6 +247,8 @@ function AdsManager() {
             <div className="space-y-3">
               {items.map((row) => {
                 const d = getDraft(row);
+                const impressions = Number((row as any).impressions ?? 0);
+                const clicks = Number((row as any).clicks ?? 0);
                 return (
                   <PlacementEditor
                     key={row.id}
@@ -257,10 +259,14 @@ function AdsManager() {
                       lastError: row.last_error,
                       failCount: row.fail_count,
                     }}
+                    stats={{ impressions, clicks }}
                     onChange={(patch) => updateDraft(row.id, patch)}
                     onRemove={() => onDelete(row.id)}
                     onMoveUp={() => moveOrder(row, -1)}
                     onMoveDown={() => moveOrder(row, 1)}
+                    onResetCounters={() => {
+                      if (confirm(`تصفير عدّادات "${row.name}"؟`)) resetM.mutate(row.id);
+                    }}
                   />
                 );
               })}
