@@ -178,6 +178,9 @@ function Index() {
                   </ItemLink>
                 ))}
               </ol>
+              <div className="mt-4">
+                <SponsoredLink label="عروض ومحتوى مختار" />
+              </div>
             </aside>
           </div>
         </section>
