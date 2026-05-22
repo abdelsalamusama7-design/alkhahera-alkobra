@@ -8,6 +8,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
+import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
 import { useState, useEffect } from "react";
