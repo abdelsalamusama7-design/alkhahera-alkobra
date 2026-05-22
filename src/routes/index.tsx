@@ -59,6 +59,7 @@ function Index() {
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
   const mostReadDb = data.mostRead.map(dbToMock);
+  const trendingDb = (data.trending ?? []).map(dbToMock);
   const breakingDb = data.breaking.map((b: any) => b.title);
 
   const heroList = heroDb.length ? heroDb : heroNews;
@@ -98,6 +99,28 @@ function Index() {
           </div>
         </section>
 
+        {trendingDb.length > 0 && (
+          <section className="container mx-auto px-4 py-6">
+            <div className="flex items-center justify-between mb-4 border-b-2 border-gold pb-2">
+              <h2 className="text-xl md:text-2xl font-extrabold text-primary flex items-center gap-2">
+                <span className="text-2xl" aria-hidden>🔥</span>
+                ترند الآن
+                <span className="text-[10px] font-bold bg-gold/20 text-gold-foreground border border-gold px-2 py-0.5 rounded-full mr-1">آخر 48 ساعة</span>
+              </h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {trendingDb.map((n: NewsItem, i: number) => (
+                <ItemLink key={n.id} item={n}>
+                  <div className="relative news-card h-full">
+                    <span className="absolute top-2 right-2 z-10 bg-gold text-gold-foreground text-[11px] font-extrabold rounded-full h-6 min-w-6 px-1.5 flex items-center justify-center shadow">#{i + 1}</span>
+                    <NewsCard item={n} />
+                  </div>
+                </ItemLink>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="container mx-auto px-4 py-6">
           <SectionTitle title="آخر الأخبار" accent="عرض المزيد" to="/search" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -106,6 +129,7 @@ function Index() {
             ))}
           </div>
         </section>
+
 
         <BourseSection />
 

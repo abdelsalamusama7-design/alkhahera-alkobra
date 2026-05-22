@@ -8,6 +8,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
+import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -121,6 +122,8 @@ function ArticlePage() {
               <span className="flex items-center gap-1"><Clock size={14} />{formatArabicDate(a.published_at)} • <TimeAgo iso={a.published_at} /></span>
               <span className="font-semibold">{a.source}</span>
             </div>
+
+            <ArticleVoice title={a.title} excerpt={a.excerpt} content={a.content} />
 
             {a.cover_image && (
               <figure className="mb-6 -mx-3 sm:mx-0">

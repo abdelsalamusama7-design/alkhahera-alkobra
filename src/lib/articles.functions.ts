@@ -95,18 +95,48 @@ export const listCategories = createServerFn({ method: "GET" }).handler(async ()
 
 // PUBLIC: home bundle
 export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () => {
-  const [{ data: hero }, { data: latest }, { data: breaking }, { data: mostRead }] =
+  const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+  const [{ data: hero }, { data: latest }, { data: breaking }, { data: mostRead }, { data: recentViews }] =
     await Promise.all([
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).limit(3),
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).range(3, 14),
       supabaseAdmin.from("articles").select("id,slug,title").eq("is_published", true).eq("is_breaking", true).order("published_at", { ascending: false }).limit(8),
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("view_count", { ascending: false }).limit(5),
+      supabaseAdmin.from("article_views").select("article_id").gte("viewed_at", since),
     ]);
+
+  // Trending: score = views_48h / (hours_since_published + 2)^1.3
+  const viewCounts = new Map<string, number>();
+  for (const v of (recentViews ?? []) as Array<{ article_id: string }>) {
+    viewCounts.set(v.article_id, (viewCounts.get(v.article_id) ?? 0) + 1);
+  }
+  let trending: any[] = [];
+  if (viewCounts.size > 0) {
+    const ids = Array.from(viewCounts.keys());
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: trArticles } = await supabaseAdmin
+      .from("articles")
+      .select(ARTICLE_SELECT)
+      .in("id", ids)
+      .eq("is_published", true)
+      .gte("published_at", weekAgo);
+    const now = Date.now();
+    trending = (trArticles ?? [])
+      .map((a: any) => {
+        const hours = Math.max(0, (now - new Date(a.published_at).getTime()) / 3_600_000);
+        const score = (viewCounts.get(a.id) ?? 0) / Math.pow(hours + 2, 1.3);
+        return { ...a, _trend_score: score, _trend_views: viewCounts.get(a.id) ?? 0 };
+      })
+      .sort((a, b) => b._trend_score - a._trend_score)
+      .slice(0, 6);
+  }
+
   return {
     hero: hero ?? [],
     latest: latest ?? [],
     breaking: breaking ?? [],
     mostRead: mostRead ?? [],
+    trending,
   };
 });
 
