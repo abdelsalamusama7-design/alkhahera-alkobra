@@ -17,10 +17,18 @@ export const SMARTLINKS = {
   POPUNDER_2: "https://omg10.com/4/11044564",
   BANNER:
     "https://revolthem.com/s6d4ai0a?key=220c7b8cdc8ee230678ab45b46bde510",
+  BANNER_2: "https://omg10.com/4/11044499",
+  BANNER_3: "https://omg10.com/4/11044494",
+  BANNER_4: "https://omg10.com/4/11044495",
 } as const;
 
 export type SmartLinkKind = keyof typeof SMARTLINKS;
 
 export function getSmartLink(kind: SmartLinkKind): string {
   return SMARTLINKS[kind];
+}
+
+const BANNER_POOL: SmartLinkKind[] = ["BANNER", "BANNER_2", "BANNER_3", "BANNER_4"];
+export function pickBannerKind(): SmartLinkKind {
+  return BANNER_POOL[Math.floor(Math.random() * BANNER_POOL.length)];
 }

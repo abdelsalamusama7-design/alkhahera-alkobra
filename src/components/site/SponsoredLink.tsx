@@ -1,12 +1,13 @@
+import { useMemo } from "react";
 import { ExternalLink } from "lucide-react";
-import { SMARTLINKS, type SmartLinkKind } from "@/lib/smartlinks";
+import { SMARTLINKS, pickBannerKind, type SmartLinkKind } from "@/lib/smartlinks";
 
 type Props = {
   variant?: "card" | "inline";
   label?: string;
   /**
    * نوع السمارت لينك المستخدم:
-   * - "BANNER" (افتراضي للكارد): بانرات المحتوى المموّل
+   * - "BANNER" (افتراضي للكارد): بانرات المحتوى المموّل (يتم التدوير بين BANNER..BANNER_4)
    * - "CONTEXT_LINK": روابط داخل نصوص المقالات
    * - "DOWNLOAD_BTN": أزرار التحميل / الـ CTA
    */
@@ -14,17 +15,21 @@ type Props = {
 };
 
 /**
- * إعلان مموّل (Adsterra Smartlink) — موزّع حسب المكان داخل الموقع.
+ * إعلان مموّل (Smartlink) — موزّع حسب المكان داخل الموقع.
+ * في وضع البانر بدون kind محدد، يتم اختيار واحد عشوائيًا من مجموعة البانرات.
  */
 export function SponsoredLink({
   variant = "card",
   label = "محتوى مقترح لك",
   kind,
 }: Props) {
-  const resolvedKind: SmartLinkKind =
-    kind ?? (variant === "inline" ? "CONTEXT_LINK" : "BANNER");
+  const resolvedKind: SmartLinkKind = useMemo(() => {
+    if (kind) return kind;
+    if (variant === "inline") return "CONTEXT_LINK";
+    return pickBannerKind();
+  }, [kind, variant]);
   const href = SMARTLINKS[resolvedKind];
-  const dataAttr = resolvedKind.toLowerCase().replace("_", "-");
+  const dataAttr = resolvedKind.toLowerCase().replace(/_/g, "-");
 
   if (variant === "inline") {
     return (
