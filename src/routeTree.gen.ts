@@ -30,6 +30,7 @@ import { Route as ApiPublicIngestRssRouteImport } from './routes/api/public/inge
 import { Route as AdminUsersIdRouteImport } from './routes/admin.users.$id'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as AdminArticleStatsSlugRouteImport } from './routes/admin.article-stats.$slug'
+import { Route as ApiPublicHooksCheckAdsRouteImport } from './routes/api/public/hooks/check-ads'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -136,6 +137,11 @@ const AdminArticleStatsSlugRoute = AdminArticleStatsSlugRouteImport.update({
   path: '/article-stats/$slug',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicHooksCheckAdsRoute = ApiPublicHooksCheckAdsRouteImport.update({
+  id: '/api/public/hooks/check-ads',
+  path: '/api/public/hooks/check-ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
+  '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
+  '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
+  '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
+    | '/api/public/hooks/check-ads'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
+    | '/api/public/hooks/check-ads'
   id:
     | '__root__'
     | '/'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
+    | '/api/public/hooks/check-ads'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   ArticleSlugRoute: typeof ArticleSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ApiPublicIngestRssRoute: typeof ApiPublicIngestRssRoute
+  ApiPublicHooksCheckAdsRoute: typeof ApiPublicHooksCheckAdsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminArticleStatsSlugRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/hooks/check-ads': {
+      id: '/api/public/hooks/check-ads'
+      path: '/api/public/hooks/check-ads'
+      fullPath: '/api/public/hooks/check-ads'
+      preLoaderRoute: typeof ApiPublicHooksCheckAdsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -493,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticleSlugRoute: ArticleSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
   ApiPublicIngestRssRoute: ApiPublicIngestRssRoute,
+  ApiPublicHooksCheckAdsRoute: ApiPublicHooksCheckAdsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

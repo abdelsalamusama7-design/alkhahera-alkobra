@@ -1,25 +1,27 @@
-import { useEffect, useState } from "react";
-import {
-  getPlacementsBySlot,
-  type AdPlacement,
-  type AdSlotKey,
-} from "@/lib/ad-placements";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getActivePlacementsFn, type AdPlacementRow, type AdSlotKey } from "@/lib/ad-placements.functions";
 import { SponsoredLink } from "./SponsoredLink";
 import { AdsterraBanner } from "./AdsterraAd";
 
 /**
- * يعرض كل الإعلانات المفعّلة لمكان (slot) معيّن.
- * يستمع لحدث `ad-placements-changed` لتحديث فوري بعد الحفظ.
+ * يعرض كل الإعلانات المفعّلة لمكان (slot) معيّن — يقرأ من قاعدة البيانات.
+ * يُعاد الجلب كل 5 دقائق ليلتقط أي استبدال تلقائي للإعلانات الميتة.
  */
 export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: string }) {
-  const [items, setItems] = useState<AdPlacement[]>([]);
+  const fetchFn = useServerFn(getActivePlacementsFn);
+  const { data } = useQuery({
+    queryKey: ["ad-placements-active"],
+    queryFn: () => fetchFn(),
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
-  useEffect(() => {
-    const load = () => setItems(getPlacementsBySlot(slot));
-    load();
-    window.addEventListener("ad-placements-changed", load);
-    return () => window.removeEventListener("ad-placements-changed", load);
-  }, [slot]);
+  const items = (data ?? [])
+    .filter((p) => p.slot === slot)
+    .sort((a, b) => a.order_index - b.order_index);
 
   if (!items.length) return null;
 
@@ -32,22 +34,23 @@ export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: 
   );
 }
 
-function PlacementRender({ placement: p }: { placement: AdPlacement }) {
+function PlacementRender({ placement: p }: { placement: AdPlacementRow }) {
+  const cfg = p.config || {};
   switch (p.type) {
     case "smartlink-banner":
-      return <SponsoredLink variant="card" label={p.label} />;
+      return <SponsoredLink variant="card" label={cfg.label} />;
     case "smartlink-context":
-      return <SponsoredLink variant="inline" kind="CONTEXT_LINK" label={p.label} />;
+      return <SponsoredLink variant="inline" kind="CONTEXT_LINK" label={cfg.label} />;
     case "smartlink-download":
-      return <SponsoredLink variant="card" kind="DOWNLOAD_BTN" label={p.label || "حمّل الآن"} />;
+      return <SponsoredLink variant="card" kind="DOWNLOAD_BTN" label={cfg.label || "حمّل الآن"} />;
     case "adsterra-banner":
-      if (!p.adKey || !p.width || !p.height) return null;
-      return <AdsterraBanner adKey={p.adKey} width={p.width} height={p.height} />;
+      if (!cfg.adKey || !cfg.width || !cfg.height) return null;
+      return <AdsterraBanner adKey={cfg.adKey} width={cfg.width} height={cfg.height} />;
     case "monetag-zone":
-      return <MonetagZoneAd src={p.src} zone={p.zone} id={p.id} />;
+      return <MonetagZoneAd src={cfg.src} zone={cfg.zone} id={p.id} />;
     case "custom-html":
-      if (!p.html) return null;
-      return <div className="ad-custom" dangerouslySetInnerHTML={{ __html: p.html }} />;
+      if (!cfg.html) return null;
+      return <div className="ad-custom" dangerouslySetInnerHTML={{ __html: cfg.html }} />;
     default:
       return null;
   }

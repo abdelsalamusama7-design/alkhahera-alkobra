@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_health_log: {
+        Row: {
+          checked_at: string
+          error: string | null
+          http_status: number | null
+          id: string
+          placement_id: string | null
+          status: Database["public"]["Enums"]["ad_health"]
+        }
+        Insert: {
+          checked_at?: string
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          placement_id?: string | null
+          status: Database["public"]["Enums"]["ad_health"]
+        }
+        Update: {
+          checked_at?: string
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          placement_id?: string | null
+          status?: Database["public"]["Enums"]["ad_health"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_health_log_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "ad_placements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_placements: {
+        Row: {
+          config: Json
+          created_at: string
+          enabled: boolean
+          fail_count: number
+          health_status: Database["public"]["Enums"]["ad_health"]
+          id: string
+          is_fallback: boolean
+          last_checked_at: string | null
+          last_error: string | null
+          name: string
+          order_index: number
+          slot: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          fail_count?: number
+          health_status?: Database["public"]["Enums"]["ad_health"]
+          id?: string
+          is_fallback?: boolean
+          last_checked_at?: string | null
+          last_error?: string | null
+          name: string
+          order_index?: number
+          slot: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          fail_count?: number
+          health_status?: Database["public"]["Enums"]["ad_health"]
+          id?: string
+          is_fallback?: boolean
+          last_checked_at?: string | null
+          last_error?: string | null
+          name?: string
+          order_index?: number
+          slot?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       article_views: {
         Row: {
           article_id: string
@@ -294,6 +380,7 @@ export type Database = {
       }
     }
     Enums: {
+      ad_health: "ok" | "failed" | "unknown"
       app_role:
         | "admin"
         | "editor"
@@ -430,6 +517,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_health: ["ok", "failed", "unknown"],
       app_role: [
         "admin",
         "editor",

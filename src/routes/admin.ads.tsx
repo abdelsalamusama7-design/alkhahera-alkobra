@@ -1,109 +1,172 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  AD_SLOTS,
-  DEFAULT_PLACEMENTS,
-  getPlacements,
-  resetPlacements,
-  savePlacements,
-  type AdPlacement,
+  listAllPlacementsFn,
+  upsertPlacementFn,
+  deletePlacementFn,
+  checkAdsNowFn,
+  type AdPlacementRow,
   type AdPlacementType,
-} from "@/lib/ad-placements";
-import { Plus, Trash2, RotateCcw, Save, ArrowUp, ArrowDown, Eye, EyeOff } from "lucide-react";
+} from "@/lib/ad-placements.functions";
+import {
+  Plus, Trash2, Save, ArrowUp, ArrowDown, Eye, EyeOff,
+  ShieldCheck, AlertTriangle, HelpCircle, RefreshCw,
+} from "lucide-react";
 
 export const Route = createFileRoute("/admin/ads")({
   head: () => ({ meta: [{ title: "إدارة الإعلانات — لوحة التحكم" }] }),
   component: AdsManager,
 });
 
+const AD_SLOTS = [
+  { key: "home-top", label: "الرئيسية — أعلى" },
+  { key: "home-middle", label: "الرئيسية — منتصف" },
+  { key: "home-bottom", label: "الرئيسية — أسفل" },
+  { key: "article-top", label: "المقال — أعلى" },
+  { key: "article-middle", label: "المقال — منتصف" },
+  { key: "article-bottom", label: "المقال — أسفل" },
+  { key: "sidebar", label: "الشريط الجانبي" },
+  { key: "header", label: "أعلى الموقع" },
+  { key: "footer", label: "أسفل الموقع" },
+] as const;
+
 const TYPE_LABELS: Record<AdPlacementType, string> = {
   "smartlink-banner": "بانر سمارت لينك (تدوير)",
   "smartlink-context": "رابط نصي مموّل",
   "smartlink-download": "زر CTA / تحميل",
-  "adsterra-banner": "بانر Adsterra (iframe)",
+  "adsterra-banner": "بانر Adsterra",
   "monetag-zone": "Monetag Zone (سكربت)",
   "custom-html": "HTML مخصص",
 };
 
-function newPlacement(): AdPlacement {
-  return {
-    id: `pl-${Date.now()}`,
-    name: "إعلان جديد",
-    slot: "home-middle",
-    type: "smartlink-banner",
-    enabled: true,
-    order: 0,
-    label: "",
-  };
-}
+type Draft = {
+  id?: string;
+  name: string;
+  slot: string;
+  type: AdPlacementType;
+  enabled: boolean;
+  order_index: number;
+  is_fallback: boolean;
+  config: Record<string, any>;
+};
 
 function AdsManager() {
-  const [list, setList] = useState<AdPlacement[]>([]);
+  const qc = useQueryClient();
+  const listFn = useServerFn(listAllPlacementsFn);
+  const upsertFn = useServerFn(upsertPlacementFn);
+  const deleteFn = useServerFn(deletePlacementFn);
+  const checkFn = useServerFn(checkAdsNowFn);
 
-  useEffect(() => {
-    setList(getPlacements());
-  }, []);
+  const { data: serverList = [], isLoading } = useQuery({
+    queryKey: ["ad-placements-all"],
+    queryFn: () => listFn(),
+  });
 
-  const update = (id: string, patch: Partial<AdPlacement>) =>
-    setList((l) => l.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  const [drafts, setDrafts] = useState<Record<string, Draft>>({});
+  const [newItems, setNewItems] = useState<Draft[]>([]);
 
-  const remove = (id: string) => {
-    if (!confirm("حذف هذا الإعلان؟")) return;
-    setList((l) => l.filter((p) => p.id !== id));
+  const getDraft = (row: AdPlacementRow): Draft => drafts[row.id] ?? row;
+  const updateDraft = (id: string, patch: Partial<Draft>) => {
+    setDrafts((d) => ({ ...d, [id]: { ...(d[id] ?? serverList.find((r) => r.id === id)!), ...patch } }));
   };
 
-  const add = () => setList((l) => [...l, newPlacement()]);
+  const upsertM = useMutation({
+    mutationFn: (payload: Draft) =>
+      upsertFn({
+        data: {
+          id: payload.id,
+          name: payload.name,
+          slot: payload.slot,
+          type: payload.type,
+          enabled: payload.enabled,
+          order_index: payload.order_index,
+          is_fallback: payload.is_fallback,
+          config: payload.config,
+        },
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["ad-placements-all"] }),
+  });
 
-  const move = (id: string, dir: -1 | 1) => {
-    setList((l) => {
-      const item = l.find((p) => p.id === id);
-      if (!item) return l;
-      const same = l.filter((p) => p.slot === item.slot).sort((a, b) => a.order - b.order);
-      const idx = same.findIndex((p) => p.id === id);
-      const swapIdx = idx + dir;
-      if (swapIdx < 0 || swapIdx >= same.length) return l;
-      const a = same[idx];
-      const b = same[swapIdx];
-      return l.map((p) => {
-        if (p.id === a.id) return { ...p, order: b.order };
-        if (p.id === b.id) return { ...p, order: a.order };
-        return p;
-      });
-    });
+  const deleteM = useMutation({
+    mutationFn: (id: string) => deleteFn({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["ad-placements-all"] }),
+  });
+
+  const checkM = useMutation({
+    mutationFn: () => checkFn(),
+    onSuccess: (res: any) => {
+      toast.success(
+        `فحص: ${res.checked} • فشل: ${res.failed} • عُطِّل: ${res.disabled} • فُعِّل احتياطي: ${res.activatedFallbacks}`
+      );
+      qc.invalidateQueries({ queryKey: ["ad-placements-all"] });
+      qc.invalidateQueries({ queryKey: ["ad-placements-active"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "فشل الفحص"),
+  });
+
+  const saveAll = async () => {
+    try {
+      for (const d of Object.values(drafts)) await upsertM.mutateAsync(d);
+      for (const n of newItems) await upsertM.mutateAsync(n);
+      setDrafts({});
+      setNewItems([]);
+      toast.success("تم الحفظ.");
+    } catch (e: any) {
+      toast.error(e?.message || "فشل الحفظ");
+    }
   };
 
-  const onSave = () => {
-    savePlacements(list);
-    toast.success("تم الحفظ. التغييرات نشطة فورًا.");
+  const addNew = () => {
+    setNewItems((l) => [
+      ...l,
+      {
+        name: "إعلان جديد",
+        slot: "home-middle",
+        type: "smartlink-banner",
+        enabled: true,
+        order_index: 0,
+        is_fallback: false,
+        config: { label: "" },
+      },
+    ]);
   };
 
-  const onReset = () => {
-    if (!confirm("استعادة الإعلانات الافتراضية وحذف كل التعديلات؟")) return;
-    resetPlacements();
-    setList(DEFAULT_PLACEMENTS);
-    toast.success("تمت الاستعادة.");
+  const updateNew = (idx: number, patch: Partial<Draft>) => {
+    setNewItems((l) => l.map((n, i) => (i === idx ? { ...n, ...patch } : n)));
   };
 
-  // تجميع حسب الـ slot للعرض
+  const removeNew = (idx: number) => setNewItems((l) => l.filter((_, i) => i !== idx));
+
+  const onDelete = async (id: string) => {
+    if (!confirm("حذف هذا الإعلان نهائيًا؟")) return;
+    await deleteM.mutateAsync(id);
+    toast.success("تم الحذف.");
+  };
+
+  const moveOrder = async (row: AdPlacementRow, dir: -1 | 1) => {
+    await upsertM.mutateAsync({ ...row, order_index: row.order_index + dir });
+  };
+
   const grouped = AD_SLOTS.map((s) => ({
     slot: s,
-    items: list
-      .filter((p) => p.slot === s.key)
-      .sort((a, b) => a.order - b.order),
+    items: serverList.filter((p) => p.slot === s.key).sort((a, b) => a.order_index - b.order_index),
+    newOnes: newItems
+      .map((n, i) => ({ n, i }))
+      .filter(({ n }) => n.slot === s.key),
   }));
+
+  const hasChanges = Object.keys(drafts).length > 0 || newItems.length > 0;
 
   return (
     <div className="space-y-6">
@@ -111,41 +174,62 @@ function AdsManager() {
         <div>
           <h1 className="text-2xl font-extrabold text-primary">إدارة الإعلانات وأماكنها</h1>
           <p className="text-xs text-muted-foreground mt-1">
-            أضف/عدّل/احذف إعلانات لكل مكان داخل الموقع. التغييرات تظهر فورًا بعد الحفظ.
+            الإعلانات محفوظة في قاعدة البيانات ويُفحص شغّالها يوميًا تلقائيًا. الميت يتعطّل ويتم تفعيل بديل احتياطي بنفس المكان.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={add}>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={() => checkM.mutate()} disabled={checkM.isPending}>
+            <RefreshCw size={14} className={`ml-1 ${checkM.isPending ? "animate-spin" : ""}`} />
+            فحص الإعلانات الآن
+          </Button>
+          <Button variant="outline" onClick={addNew}>
             <Plus size={14} className="ml-1" /> إعلان جديد
           </Button>
-          <Button variant="outline" onClick={onReset}>
-            <RotateCcw size={14} className="ml-1" /> استعادة الافتراضي
-          </Button>
-          <Button onClick={onSave}>
-            <Save size={14} className="ml-1" /> حفظ
+          <Button onClick={saveAll} disabled={!hasChanges || upsertM.isPending}>
+            <Save size={14} className="ml-1" /> حفظ التغييرات
           </Button>
         </div>
       </div>
 
-      {grouped.map(({ slot, items }) => (
+      {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
+
+      {grouped.map(({ slot, items, newOnes }) => (
         <section key={slot.key} className="bg-card border border-border rounded-lg p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold">{slot.label}</h2>
             <code className="text-[10px] text-muted-foreground">slot: {slot.key}</code>
           </div>
 
-          {items.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">لا توجد إعلانات في هذا المكان.</p>
+          {items.length === 0 && newOnes.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">لا توجد إعلانات.</p>
           ) : (
             <div className="space-y-3">
-              {items.map((p) => (
+              {items.map((row) => {
+                const d = getDraft(row);
+                return (
+                  <PlacementEditor
+                    key={row.id}
+                    draft={d}
+                    health={{
+                      status: row.health_status,
+                      lastChecked: row.last_checked_at,
+                      lastError: row.last_error,
+                      failCount: row.fail_count,
+                    }}
+                    onChange={(patch) => updateDraft(row.id, patch)}
+                    onRemove={() => onDelete(row.id)}
+                    onMoveUp={() => moveOrder(row, -1)}
+                    onMoveDown={() => moveOrder(row, 1)}
+                  />
+                );
+              })}
+              {newOnes.map(({ n, i }) => (
                 <PlacementEditor
-                  key={p.id}
-                  placement={p}
-                  onChange={(patch) => update(p.id, patch)}
-                  onRemove={() => remove(p.id)}
-                  onMoveUp={() => move(p.id, -1)}
-                  onMoveDown={() => move(p.id, 1)}
+                  key={`new-${i}`}
+                  draft={n}
+                  isNew
+                  onChange={(patch) => updateNew(i, patch)}
+                  onRemove={() => removeNew(i)}
                 />
               ))}
             </div>
@@ -153,30 +237,55 @@ function AdsManager() {
         </section>
       ))}
 
-      <div className="flex justify-end">
-        <Button onClick={onSave} size="lg">
-          <Save size={14} className="ml-1" /> حفظ كل التغييرات
-        </Button>
-      </div>
+      {hasChanges && (
+        <div className="sticky bottom-4 flex justify-end">
+          <Button onClick={saveAll} size="lg" disabled={upsertM.isPending}>
+            <Save size={14} className="ml-1" /> حفظ كل التغييرات
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HealthBadge({ status, lastChecked, lastError, failCount }: {
+  status: string;
+  lastChecked: string | null;
+  lastError: string | null;
+  failCount: number;
+}) {
+  const map = {
+    ok: { Icon: ShieldCheck, color: "text-green-600", text: "يعمل" },
+    failed: { Icon: AlertTriangle, color: "text-destructive", text: `فشل (${failCount}×)` },
+    unknown: { Icon: HelpCircle, color: "text-muted-foreground", text: "لم يُفحص" },
+  } as const;
+  const m = (map as any)[status] ?? map.unknown;
+  const Icon = m.Icon;
+  const when = lastChecked ? new Date(lastChecked).toLocaleString("ar-EG") : "—";
+  return (
+    <div className={`flex items-center gap-1 text-xs ${m.color}`} title={`${when}${lastError ? ` — ${lastError}` : ""}`}>
+      <Icon size={14} />
+      <span>{m.text}</span>
     </div>
   );
 }
 
 function PlacementEditor({
-  placement: p,
-  onChange,
-  onRemove,
-  onMoveUp,
-  onMoveDown,
+  draft: p, onChange, onRemove, onMoveUp, onMoveDown, isNew, health,
 }: {
-  placement: AdPlacement;
-  onChange: (patch: Partial<AdPlacement>) => void;
+  draft: Draft;
+  onChange: (patch: Partial<Draft>) => void;
   onRemove: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  isNew?: boolean;
+  health?: { status: string; lastChecked: string | null; lastError: string | null; failCount: number };
 }) {
+  const cfg = p.config || {};
+  const setCfg = (patch: Record<string, any>) => onChange({ config: { ...cfg, ...patch } });
+
   return (
-    <div className={`border border-border rounded p-3 ${p.enabled ? "" : "opacity-60"}`}>
+    <div className={`border border-border rounded p-3 ${p.enabled ? "" : "opacity-60"} ${isNew ? "border-primary border-dashed" : ""}`}>
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <Input
           value={p.name}
@@ -184,16 +293,24 @@ function PlacementEditor({
           className="flex-1 min-w-[200px] font-bold"
           placeholder="اسم الإعلان"
         />
+        {health && <HealthBadge {...health} />}
+        {p.is_fallback && (
+          <span className="text-[10px] bg-yellow-500/20 text-yellow-700 px-2 py-0.5 rounded">احتياطي</span>
+        )}
         <div className="flex items-center gap-1 text-xs">
           {p.enabled ? <Eye size={14} /> : <EyeOff size={14} />}
           <Switch checked={p.enabled} onCheckedChange={(v) => onChange({ enabled: v })} />
         </div>
-        <Button size="icon" variant="ghost" onClick={onMoveUp} title="أعلى">
-          <ArrowUp size={14} />
-        </Button>
-        <Button size="icon" variant="ghost" onClick={onMoveDown} title="أسفل">
-          <ArrowDown size={14} />
-        </Button>
+        {onMoveUp && (
+          <Button size="icon" variant="ghost" onClick={onMoveUp} title="أعلى">
+            <ArrowUp size={14} />
+          </Button>
+        )}
+        {onMoveDown && (
+          <Button size="icon" variant="ghost" onClick={onMoveDown} title="أسفل">
+            <ArrowDown size={14} />
+          </Button>
+        )}
         <Button size="icon" variant="ghost" onClick={onRemove}>
           <Trash2 size={14} className="text-destructive" />
         </Button>
@@ -201,16 +318,12 @@ function PlacementEditor({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <Label className="text-xs">المكان (Slot)</Label>
+          <Label className="text-xs">المكان</Label>
           <Select value={p.slot} onValueChange={(v) => onChange({ slot: v as any })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               {AD_SLOTS.map((s) => (
-                <SelectItem key={s.key} value={s.key}>
-                  {s.label}
-                </SelectItem>
+                <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -218,28 +331,26 @@ function PlacementEditor({
         <div>
           <Label className="text-xs">النوع</Label>
           <Select value={p.type} onValueChange={(v) => onChange({ type: v as AdPlacementType })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               {Object.entries(TYPE_LABELS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>
-                  {v}
-                </SelectItem>
+                <SelectItem key={k} value={k}>{v}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* حقول حسب النوع */}
-        {(p.type === "smartlink-banner" ||
-          p.type === "smartlink-context" ||
-          p.type === "smartlink-download") && (
+        <div className="flex items-center gap-2 md:col-span-2">
+          <Switch checked={!!p.is_fallback} onCheckedChange={(v) => onChange({ is_fallback: v })} />
+          <Label className="text-xs">إعلان احتياطي (يُفعَّل تلقائيًا عند فشل إعلان آخر في نفس المكان)</Label>
+        </div>
+
+        {(p.type === "smartlink-banner" || p.type === "smartlink-context" || p.type === "smartlink-download") && (
           <div className="md:col-span-2">
-            <Label className="text-xs">نص الإعلان (label)</Label>
+            <Label className="text-xs">نص الإعلان</Label>
             <Input
-              value={p.label ?? ""}
-              onChange={(e) => onChange({ label: e.target.value })}
+              value={cfg.label ?? ""}
+              onChange={(e) => setCfg({ label: e.target.value })}
               placeholder="مثال: عروض حصرية اليوم"
             />
           </div>
@@ -249,30 +360,15 @@ function PlacementEditor({
           <>
             <div className="md:col-span-2">
               <Label className="text-xs">Ad Key</Label>
-              <Input
-                value={p.adKey ?? ""}
-                onChange={(e) => onChange({ adKey: e.target.value })}
-                placeholder="85d785d2e3eb2b59240de17f347d15c9"
-                dir="ltr"
-              />
+              <Input dir="ltr" value={cfg.adKey ?? ""} onChange={(e) => setCfg({ adKey: e.target.value })} />
             </div>
             <div>
               <Label className="text-xs">العرض</Label>
-              <Input
-                type="number"
-                value={p.width ?? ""}
-                onChange={(e) => onChange({ width: +e.target.value })}
-                placeholder="300"
-              />
+              <Input type="number" value={cfg.width ?? ""} onChange={(e) => setCfg({ width: +e.target.value })} />
             </div>
             <div>
               <Label className="text-xs">الارتفاع</Label>
-              <Input
-                type="number"
-                value={p.height ?? ""}
-                onChange={(e) => onChange({ height: +e.target.value })}
-                placeholder="250"
-              />
+              <Input type="number" value={cfg.height ?? ""} onChange={(e) => setCfg({ height: +e.target.value })} />
             </div>
           </>
         )}
@@ -281,21 +377,11 @@ function PlacementEditor({
           <>
             <div>
               <Label className="text-xs">Script src</Label>
-              <Input
-                value={p.src ?? ""}
-                onChange={(e) => onChange({ src: e.target.value })}
-                placeholder="https://quge5.com/88/tag.min.js"
-                dir="ltr"
-              />
+              <Input dir="ltr" value={cfg.src ?? ""} onChange={(e) => setCfg({ src: e.target.value })} placeholder="https://quge5.com/88/tag.min.js" />
             </div>
             <div>
               <Label className="text-xs">Data-Zone</Label>
-              <Input
-                value={p.zone ?? ""}
-                onChange={(e) => onChange({ zone: e.target.value })}
-                placeholder="242128"
-                dir="ltr"
-              />
+              <Input dir="ltr" value={cfg.zone ?? ""} onChange={(e) => setCfg({ zone: e.target.value })} placeholder="242128" />
             </div>
           </>
         )}
@@ -303,13 +389,7 @@ function PlacementEditor({
         {p.type === "custom-html" && (
           <div className="md:col-span-2">
             <Label className="text-xs">HTML</Label>
-            <Textarea
-              value={p.html ?? ""}
-              onChange={(e) => onChange({ html: e.target.value })}
-              rows={5}
-              dir="ltr"
-              placeholder="<div>...</div>"
-            />
+            <Textarea dir="ltr" rows={5} value={cfg.html ?? ""} onChange={(e) => setCfg({ html: e.target.value })} />
           </div>
         )}
       </div>
