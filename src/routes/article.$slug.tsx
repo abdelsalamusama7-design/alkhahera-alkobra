@@ -6,6 +6,7 @@ import { logArticleView } from "@/lib/traffic.functions";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
+import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
 import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
@@ -91,6 +92,7 @@ function ArticlePage() {
       <TopBar />
       <Header />
       <NavBar />
+      <AdBanner />
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <nav className="text-xs text-muted-foreground mb-4">

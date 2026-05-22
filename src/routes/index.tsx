@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
+import { AdBanner } from "@/components/site/AdBanner";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { BourseSection } from "@/components/site/BourseSection";
@@ -83,6 +84,7 @@ function Index() {
       <NavBar />
       <BreakingTicker items={breakingItems} />
       <MarketsTicker />
+      <AdBanner />
 
       <main className="flex-1">
         <section className="container mx-auto px-4 py-6">

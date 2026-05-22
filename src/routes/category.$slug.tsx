@@ -5,6 +5,7 @@ import { listArticles, listCategories } from "@/lib/articles.functions";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
+import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
 
 export const Route = createFileRoute("/category/$slug")({
@@ -36,6 +37,7 @@ function CategoryPage() {
       <TopBar />
       <Header />
       <NavBar />
+      <AdBanner />
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-3xl font-extrabold text-primary border-b-2 border-gold pb-2 mb-6">{initial.catName}</h1>
         {data.items.length === 0 ? (
