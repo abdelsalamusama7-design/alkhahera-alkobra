@@ -106,7 +106,7 @@ function StatsPage() {
           {data.topArticles.map((a, i) => (
             <li key={a.id} className="px-4 py-2.5 flex items-center gap-3">
               <span className="text-gold font-extrabold w-6">{i + 1}</span>
-              <Link to="/article/$slug" params={{ slug: a.slug }} className="flex-1 font-bold text-primary hover:text-gold truncate">
+              <Link to="/admin/article-stats/$slug" params={{ slug: a.slug }} className="flex-1 font-bold text-primary hover:text-gold truncate" title="عرض إحصائيات المقال">
                 {a.title}
               </Link>
               <span className="text-xs text-muted-foreground hidden sm:inline">{a.author_name ?? "—"}</span>
