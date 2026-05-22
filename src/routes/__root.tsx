@@ -132,6 +132,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <SideRailAds />
         <WhatsAppFab />
       </ThemeProvider>
     </QueryClientProvider>
