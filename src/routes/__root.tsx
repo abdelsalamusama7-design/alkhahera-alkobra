@@ -102,8 +102,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { src: "https://pl29522752.effectivecpmnetwork.com/e3/0d/81/e30d81e12c8ca7fa9dced44373e6fa55.js", async: true },
       // Monetag Multitag
       { src: "https://quge5.com/88/tag.min.js", async: true, "data-zone": "242128", "data-cfasync": "false" } as any,
-      // Monetag Multitag (al5sm)
-      { src: "https://al5sm.com/tag.min.js", async: true, "data-zone": "11044569", "data-cfasync": "false" } as any,
+      // Monetag Multitag (al5sm) — inline loader (matches verification snippet)
+      {
+        children:
+          "(function(s){s.dataset.zone='11044569',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))",
+      } as any,
     ],
   }),
   shellComponent: RootShell,
