@@ -27,8 +27,8 @@ export function NavBar() {
         {/* Mobile label */}
         <span className="md:hidden text-sm font-bold py-3">الأقسام</span>
 
-        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-wrap order-3 w-full" : "hidden md:flex"}`}>
-          <Link to="/" className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10">
+        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-col md:flex-row md:flex-wrap order-3 w-full" : "hidden md:flex"}`}>
+          <Link to="/" onClick={() => setOpen(false)} className="w-full md:w-auto px-4 py-3 min-h-[44px] text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors md:border-l border-white/10 text-right">
             الرئيسية
           </Link>
           {cats.map((c: any) => (
@@ -37,7 +37,7 @@ export function NavBar() {
               to="/category/$slug"
               params={{ slug: c.slug }}
               onClick={() => setOpen(false)}
-              className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10"
+              className="w-full md:w-auto px-4 py-3 min-h-[44px] text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors md:border-l border-white/10 text-right"
             >
               {c.name}
             </Link>
