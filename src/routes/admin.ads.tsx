@@ -212,6 +212,26 @@ function AdsManager() {
         </div>
       </div>
 
+      {/* لوحة إحصاءات إجمالية */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard label="إجمالي الظهور" value={totals.impressions.toLocaleString("ar-EG")} icon={<BarChart3 size={16} />} />
+        <StatCard label="إجمالي النقرات" value={totals.clicks.toLocaleString("ar-EG")} icon={<BarChart3 size={16} />} />
+        <StatCard label="معدل النقر (CTR)" value={`${totalCtr.toFixed(2)}%`} icon={<BarChart3 size={16} />} />
+        <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (confirm("تصفير عدّادات كل الإعلانات؟")) resetM.mutate(undefined);
+            }}
+            disabled={resetM.isPending}
+          >
+            <RotateCcw size={14} className="ml-1" />
+            تصفير كل العدّادات
+          </Button>
+        </div>
+      </div>
+
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
 
       {grouped.map(({ slot, items, newOnes }) => (
