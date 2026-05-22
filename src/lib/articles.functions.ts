@@ -64,10 +64,8 @@ export const getArticleBySlug = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!row) return { article: null, related: [] };
 
-    await supabaseAdmin
-      .from("articles")
-      .update({ view_count: (row.view_count ?? 0) + 1 })
-      .eq("id", row.id);
+    // View counting moved to logArticleView (called from the article page)
+    // so we can also capture referrer, country and device information.
 
     let related: any[] = [];
     if (row.category_id) {

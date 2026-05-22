@@ -1,13 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/articles.functions";
+import { logArticleView } from "@/lib/traffic.functions";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { Footer } from "@/components/site/Footer";
 import { formatArabicDate, timeAgoAr } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
@@ -72,6 +73,17 @@ function ArticlePage() {
   });
   const a = data.article!;
   const url = typeof window !== "undefined" ? window.location.href : `https://alkhahera-alkobra.lovable.app/article/${a.slug}`;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    logArticleView({
+      data: {
+        slug: a.slug,
+        referrer: document.referrer || null,
+        path: window.location.pathname,
+      },
+    }).catch(() => {});
+  }, [a.slug]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" dir="rtl">
