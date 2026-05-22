@@ -238,13 +238,27 @@ export async function ingestAllFeeds() {
   }) {
     const { rawTitle, rawExcerpt, link, cover, published_at, categorySlug, source } = args;
     if (!rawTitle) return;
+    const sourceUrl = link?.trim() || null;
+    if (sourceUrl) {
+      const { data: bySourceUrl } = await supabaseAdmin
+        .from("articles")
+        .select("id")
+        .eq("source_url", sourceUrl)
+        .limit(1)
+        .maybeSingle();
+      if (bySourceUrl) {
+        skipped++;
+        return;
+      }
+    }
+
     const tmpSlug = `${slugify(rawTitle)}-${Math.abs(hash(String(link || rawTitle))).toString(36).slice(0, 6)}`;
-    const { data: existing } = await supabaseAdmin
+    const { data: existingSlug } = await supabaseAdmin
       .from("articles")
       .select("id")
-      .or(`slug.eq.${tmpSlug},source_url.eq.${(link ?? "").replace(/,/g, "")}`)
+      .eq("slug", tmpSlug)
       .maybeSingle();
-    if (existing) {
+    if (existingSlug) {
       skipped++;
       return;
     }
@@ -281,13 +295,17 @@ export async function ingestAllFeeds() {
       cover_image: finalCover,
       category_id: catBySlug.get(categorySlug) ?? null,
       source,
-      source_url: link || null,
+      source_url: sourceUrl,
       is_published: true,
       is_breaking: false,
       published_at,
       tags: finalTags,
     }).select("id");
     if (error) {
+      if (error.code === "23505") {
+        skipped++;
+        return;
+      }
       errors.push(`${source}: ${error.message}`);
     } else {
       inserted++;
