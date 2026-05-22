@@ -21,18 +21,6 @@ export type AuthorStat = {
   published: number;
   drafts: number;
   breaking: number;
-  last_published_at: string | null;
-  first_published_at: string | null;
-};
-
-export type AuthorStat = {
-  author_id: string | null;
-  author_name: string;
-  email: string | null;
-  total: number;
-  published: number;
-  drafts: number;
-  breaking: number;
   views: number;
   last_published_at: string | null;
   first_published_at: string | null;
@@ -62,7 +50,6 @@ export type TopArticle = {
 
 export type DailyPoint = { date: string; articles: number; views: number };
 
-
 export const getPublishStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -70,13 +57,12 @@ export const getPublishStats = createServerFn({ method: "GET" })
 
     const { data: articles, error } = await supabaseAdmin
       .from("articles")
-      .select("id,title,slug,author_id,author_name,is_published,is_breaking,published_at,created_at")
+      .select("id,title,slug,author_id,author_name,is_published,is_breaking,published_at,created_at,view_count")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
 
     const rows = articles ?? [];
 
-    // Fetch author emails via auth.admin for unique authors
     const authorIds = Array.from(
       new Set(rows.map((r) => r.author_id).filter((x): x is string => !!x)),
     );
@@ -101,10 +87,12 @@ export const getPublishStats = createServerFn({ method: "GET" })
           published: 0,
           drafts: 0,
           breaking: 0,
+          views: 0,
           last_published_at: null,
           first_published_at: null,
         };
       stat.total += 1;
+      stat.views += a.view_count ?? 0;
       if (a.is_published) stat.published += 1;
       else stat.drafts += 1;
       if (a.is_breaking) stat.breaking += 1;
@@ -131,7 +119,43 @@ export const getPublishStats = createServerFn({ method: "GET" })
       is_breaking: a.is_breaking,
       published_at: a.published_at,
       created_at: a.created_at,
+      view_count: a.view_count ?? 0,
     }));
+
+    const topArticles: TopArticle[] = [...rows]
+      .filter((r) => r.is_published)
+      .sort((a, b) => (b.view_count ?? 0) - (a.view_count ?? 0))
+      .slice(0, 10)
+      .map((a) => ({
+        id: a.id,
+        title: a.title,
+        slug: a.slug,
+        author_name: a.author_name,
+        view_count: a.view_count ?? 0,
+        published_at: a.published_at,
+      }));
+
+    // Build 14-day series of articles published + views accumulated
+    const days: DailyPoint[] = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      days.push({ date: key, articles: 0, views: 0 });
+    }
+    const dayIndex = new Map(days.map((d, i) => [d.date, i]));
+    for (const a of rows) {
+      const key = (a.published_at ?? a.created_at).slice(0, 10);
+      const idx = dayIndex.get(key);
+      if (idx !== undefined) {
+        days[idx].articles += 1;
+        days[idx].views += a.view_count ?? 0;
+      }
+    }
+
+    const totalViews = rows.reduce((s, r) => s + (r.view_count ?? 0), 0);
 
     return {
       totals: {
@@ -140,8 +164,11 @@ export const getPublishStats = createServerFn({ method: "GET" })
         drafts: rows.filter((r) => !r.is_published).length,
         breaking: rows.filter((r) => r.is_breaking).length,
         authors: authors.length,
+        views: totalViews,
       },
       authors,
       recent,
+      topArticles,
+      daily: days,
     };
   });
