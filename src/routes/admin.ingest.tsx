@@ -37,8 +37,8 @@ function IngestPage() {
       {result && (
         <div className="mt-6 bg-card border border-border rounded-lg p-4 space-y-3">
           <div className="text-emerald-600 font-bold">
-            ✓ تم — أُضيف {result.inserted} خبر، أُعيدت صياغة {result.rewritten ?? 1}، تم تجاهل {result.skipped} مكرر
-          </<div>
+            ✓ تم — أُضيف {result.inserted} خبر، أُعيدت صياغة {result.rewritten ?? 0}، تم تجاهل {result.skipped} مكرر
+          </div>
           {(result.facebookPosted !== undefined || result.facebookFailed !== undefined) && (
             <div className="flex items-center gap-2 text-sm border-t border-border pt-3">
               <Facebook size={16} className="text-blue-600" />
