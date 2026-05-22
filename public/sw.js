@@ -1,10 +1,10 @@
-// Monetag verification + service worker
 self.options = {
-  "domain": "5gvci.com",
-  "zoneId": 11044238
-};
-self.lary = "";
-importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw');
+    "domain": "5gvci.com",
+    "zoneId": 11044241
+}
+self.lary = ""
+importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
+
 
 // Service Worker for Web Push notifications
 self.addEventListener("install", (e) => self.skipWaiting());
