@@ -195,6 +195,18 @@ export const saveArticle = createServerFn({ method: "POST" })
       const canBreaking = hasPerm(roles, "mark_breaking");
 
       const slug = (data.slug && data.slug.trim()) || slugify(data.title) || `article-${Date.now()}`;
+      if (data.cover_image) {
+        const coverKey = data.cover_image.split("?")[0];
+        const { data: dup } = await supabaseAdmin
+          .from("articles")
+          .select("id, title")
+          .ilike("cover_image", `${coverKey}%`)
+          .neq("id", data.id)
+          .limit(1)
+          .maybeSingle();
+        if (dup) throw new Error(`صورة الغلاف مستخدمة بالفعل في مقال آخر: "${dup.title}". يرجى اختيار صورة مختلفة.`);
+      }
+
       const payload: any = {
         title: data.title,
         slug,
