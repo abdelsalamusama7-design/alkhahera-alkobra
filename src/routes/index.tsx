@@ -59,6 +59,7 @@ function Index() {
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
   const mostReadDb = data.mostRead.map(dbToMock);
+  const trendingDb = (data.trending ?? []).map(dbToMock);
   const breakingDb = data.breaking.map((b: any) => b.title);
 
   const heroList = heroDb.length ? heroDb : heroNews;
