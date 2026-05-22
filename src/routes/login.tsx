@@ -47,8 +47,8 @@ function LoginPage() {
         if (error) throw error;
         navigate({ to: "/admin/ingest" });
       }
-    } catch (e: any) {
-      setErr(e.message || "حدث خطأ");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "حدث خطأ");
     } finally {
       setLoading(false);
     }
