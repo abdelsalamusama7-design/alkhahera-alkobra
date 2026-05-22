@@ -2,44 +2,47 @@ import { useEffect } from "react";
 import { SMARTLINKS } from "@/lib/smartlinks";
 
 /**
- * Popunder Smartlink:
- * يفتح اللينك في تاب جديد عند أول تفاعل (Click) من الزائر،
- * مرة واحدة فقط لكل جلسة (sessionStorage).
+ * Popunder Smartlinks:
+ * - الأول (POPUNDER) يفتح عند أول ضغطة من الزائر.
+ * - الثاني (POPUNDER_2) يفتح عند الضغطة الثانية في نفس الجلسة.
+ * كل لينك مرة واحدة لكل جلسة (sessionStorage).
  *
- * يتم استثناء الضغطات اللي على روابط سمارت لينك أخرى (data-smartlink)
- * لتجنّب تعارض الإحصائيات.
+ * يتم استثناء الضغطات اللي على روابط سمارت لينك أخرى (data-smartlink).
  */
-const SESSION_KEY = "__pu_fired__";
+const SESSION_KEY_1 = "__pu_fired__";
+const SESSION_KEY_2 = "__pu2_fired__";
+
+function openPopunder(url: string) {
+  const w = window.open(url, "_blank", "noopener,noreferrer");
+  if (w) {
+    try {
+      w.blur();
+      window.focus();
+    } catch {}
+  }
+}
 
 export function PopunderSmartLink() {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    try {
-      if (sessionStorage.getItem(SESSION_KEY)) return;
-    } catch {}
-
-    let fired = false;
 
     const handler = (e: MouseEvent) => {
-      if (fired) return;
       const target = e.target as HTMLElement | null;
-      // تجاهل لو الضغط على عنصر سمارت لينك ظاهر
       if (target && target.closest("[data-smartlink]")) return;
-      fired = true;
+
       try {
-        sessionStorage.setItem(SESSION_KEY, "1");
+        if (!sessionStorage.getItem(SESSION_KEY_1)) {
+          sessionStorage.setItem(SESSION_KEY_1, "1");
+          openPopunder(SMARTLINKS.POPUNDER);
+          return;
+        }
+        if (!sessionStorage.getItem(SESSION_KEY_2)) {
+          sessionStorage.setItem(SESSION_KEY_2, "1");
+          openPopunder(SMARTLINKS.POPUNDER_2);
+          return;
+        }
+        window.removeEventListener("click", handler, true);
       } catch {}
-
-      // افتح في تاب جديد (popunder سلوكي مبسّط)
-      const w = window.open(SMARTLINKS.POPUNDER, "_blank", "noopener,noreferrer");
-      if (w) {
-        try {
-          w.blur();
-          window.focus();
-        } catch {}
-      }
-
-      window.removeEventListener("click", handler, true);
     };
 
     window.addEventListener("click", handler, true);
