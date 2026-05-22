@@ -99,12 +99,19 @@
 
   html {
     font-family: "Cairo", "Tajawal", system-ui, sans-serif;
+    overflow-x: hidden;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: "Cairo", "Tajawal", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
   }
 }
 

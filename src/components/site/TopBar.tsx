@@ -22,16 +22,16 @@ export function TopBar() {
 
   return (
     <div className="bg-primary text-primary-foreground text-xs">
-      <div className="container mx-auto flex items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-3">
-          <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors"><Facebook size={14} /></a>
-          <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:text-gold transition-colors"><Youtube size={14} /></a>
-          <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="hover:text-gold transition-colors"><TiktokIcon size={14} /></a>
-          <span className="mx-2 h-3 w-px bg-white/30" />
-          <span className="opacity-90">{today}</span>
+      <div className="container mx-auto flex items-center justify-between gap-2 px-3 sm:px-4 py-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors shrink-0"><Facebook size={14} /></a>
+          <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:text-gold transition-colors shrink-0"><Youtube size={14} /></a>
+          <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="hover:text-gold transition-colors shrink-0"><TiktokIcon size={14} /></a>
+          <span className="hidden sm:inline mx-2 h-3 w-px bg-white/30 shrink-0" />
+          <span className="hidden sm:inline opacity-90 truncate">{today}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="hidden sm:inline opacity-90">القاهرة • 21°</span>
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span className="hidden md:inline opacity-90">القاهرة • 21°</span>
           <button aria-label="بحث" className="opacity-90 hover:text-gold transition-colors">
             <Search size={14} />
           </button>

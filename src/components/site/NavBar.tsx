@@ -23,9 +23,12 @@ export function NavBar() {
 
   return (
     <nav className="bg-primary text-primary-foreground sticky top-0 z-40 shadow-md">
-      <div className="container mx-auto px-4 flex items-center justify-between gap-3">
-        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-wrap" : "hidden md:flex"}`}>
-          <Link to="/" className="px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10">
+      <div className="container mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+        {/* Mobile label */}
+        <span className="md:hidden text-sm font-bold py-3">الأقسام</span>
+
+        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-wrap order-3 w-full" : "hidden md:flex"}`}>
+          <Link to="/" className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10">
             الرئيسية
           </Link>
           {cats.map((c: any) => (
@@ -33,7 +36,8 @@ export function NavBar() {
               key={c.id}
               to="/category/$slug"
               params={{ slug: c.slug }}
-              className="px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10"
+              onClick={() => setOpen(false)}
+              className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10"
             >
               {c.name}
             </Link>
@@ -42,7 +46,7 @@ export function NavBar() {
 
         {/* Mobile auth links */}
         {open && (
-          <div className="md:hidden w-full flex flex-col gap-2 py-2 border-t border-white/10 mt-1">
+          <div className="md:hidden w-full flex flex-col gap-1 py-2 border-t border-white/10 order-4">
             {user ? (
               <>
                 {isStaff && (
@@ -85,8 +89,8 @@ export function NavBar() {
             className="bg-transparent border-0 outline-none text-sm py-1.5 px-2 placeholder:text-white/60 w-40"
           />
         </form>
-        <button className="md:hidden p-2" aria-label="القائمة" onClick={() => setOpen((v) => !v)}>
-          <Menu size={20} />
+        <button className="md:hidden p-2 shrink-0" aria-label="القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          <Menu size={22} />
         </button>
       </div>
     </nav>
