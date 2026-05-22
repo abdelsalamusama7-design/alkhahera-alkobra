@@ -1,38 +1,51 @@
 import { ExternalLink } from "lucide-react";
-
-const SMARTLINKS = [
-  "https://www.effectivecpmnetwork.com/v8vg96x9d?key=6715491877160494188216c66ef54b85",
-  "https://www.effectivecpmnetwork.com/nqb3nvwtw?key=9aef419a4e1ff39475291adaa00a73f1",
-];
-const SMARTLINK = SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
+import { SMARTLINKS, type SmartLinkKind } from "@/lib/smartlinks";
 
 type Props = {
   variant?: "card" | "inline";
   label?: string;
+  /**
+   * نوع السمارت لينك المستخدم:
+   * - "BANNER" (افتراضي للكارد): بانرات المحتوى المموّل
+   * - "CONTEXT_LINK": روابط داخل نصوص المقالات
+   * - "DOWNLOAD_BTN": أزرار التحميل / الـ CTA
+   */
+  kind?: SmartLinkKind;
 };
 
 /**
- * إعلان مموّل (Adsterra Smartlink) — استخدام محدود ومتباعد.
+ * إعلان مموّل (Adsterra Smartlink) — موزّع حسب المكان داخل الموقع.
  */
-export function SponsoredLink({ variant = "card", label = "محتوى مقترح لك" }: Props) {
+export function SponsoredLink({
+  variant = "card",
+  label = "محتوى مقترح لك",
+  kind,
+}: Props) {
+  const resolvedKind: SmartLinkKind =
+    kind ?? (variant === "inline" ? "CONTEXT_LINK" : "BANNER");
+  const href = SMARTLINKS[resolvedKind];
+  const dataAttr = resolvedKind.toLowerCase().replace("_", "-");
+
   if (variant === "inline") {
     return (
       <a
-        href={SMARTLINK}
+        href={href}
         target="_blank"
         rel="nofollow sponsored noopener"
+        data-smartlink={dataAttr}
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary underline underline-offset-4"
       >
-        <span>إعلان</span>
+        <span>{label || "إعلان"}</span>
         <ExternalLink size={12} />
       </a>
     );
   }
   return (
     <a
-      href={SMARTLINK}
+      href={href}
       target="_blank"
       rel="nofollow sponsored noopener"
+      data-smartlink={dataAttr}
       className="block rounded-lg border border-dashed border-border bg-muted/40 hover:bg-muted transition-colors p-4"
     >
       <div className="flex items-center justify-between gap-3">
