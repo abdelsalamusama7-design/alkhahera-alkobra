@@ -37,7 +37,7 @@ function LoginPage() {
           },
         });
         if (error) throw error;
-        setErr("تم إنشاء الحساب. تفقّد بريدك الإلكتروني لتأكيد الحساب.");
+        setErr("تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
