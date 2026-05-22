@@ -171,17 +171,12 @@ function ArticleStatsPage() {
         {/* Sources */}
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm">مصادر الزيارات</div>
-          <ul className="divide-y divide-border">
-            {data.sources.map((s) => (
-              <li key={s.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="flex-1 font-bold text-primary">{getSourceLabelAr(s.key)}</span>
-                <Bar value={s.count} max={totalSources} color="bg-indigo-500" />
-                <span className="font-mono font-bold w-10 text-left">{s.count}</span>
-                <span className="text-xs text-muted-foreground w-12 text-left">{Math.round((s.count / totalSources) * 100)}%</span>
-              </li>
-            ))}
-            {data.sources.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.sources.map((s) => ({ key: s.key, label: getSourceLabelAr(s.key), count: s.count }))}
+            total={totalSources}
+            colorClass="bg-indigo-500"
+            labelHeader="المصدر"
+          />
         </div>
 
         {/* Countries */}
@@ -189,16 +184,12 @@ function ArticleStatsPage() {
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm flex items-center gap-2">
             <Globe size={14} /> الزوار حسب البلد
           </div>
-          <ul className="divide-y divide-border">
-            {data.countries.map((c) => (
-              <li key={c.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="font-mono font-bold w-10 text-primary">{c.key}</span>
-                <Bar value={c.count} max={data.countries[0]?.count ?? 1} color="bg-emerald-500" />
-                <span className="font-mono font-bold w-10 text-left">{c.count}</span>
-              </li>
-            ))}
-            {data.countries.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.countries.map((c) => ({ key: c.key, label: c.key, count: c.count }))}
+            total={Math.max(1, data.countries.reduce((s, x) => s + x.count, 0))}
+            colorClass="bg-emerald-500"
+            labelHeader="البلد"
+          />
         </div>
 
         {/* Devices */}
@@ -206,16 +197,12 @@ function ArticleStatsPage() {
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm flex items-center gap-2">
             <Smartphone size={14} /> الأجهزة
           </div>
-          <ul className="divide-y divide-border">
-            {data.devices.map((d) => (
-              <li key={d.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="flex-1 font-bold text-primary">{getDeviceLabelAr(d.key)}</span>
-                <Bar value={d.count} max={data.devices[0]?.count ?? 1} color="bg-amber-500" />
-                <span className="font-mono font-bold w-10 text-left">{d.count}</span>
-              </li>
-            ))}
-            {data.devices.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.devices.map((d) => ({ key: d.key, label: getDeviceLabelAr(d.key), count: d.count }))}
+            total={Math.max(1, data.devices.reduce((s, x) => s + x.count, 0))}
+            colorClass="bg-amber-500"
+            labelHeader="الجهاز"
+          />
         </div>
       </div>
     </div>
