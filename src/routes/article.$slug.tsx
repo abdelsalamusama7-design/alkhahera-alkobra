@@ -123,6 +123,8 @@ function ArticlePage() {
               <span className="font-semibold">{a.source}</span>
             </div>
 
+            <ArticleVoice title={a.title} excerpt={a.excerpt} content={a.content} />
+
             {a.cover_image && (
               <figure className="mb-6 -mx-3 sm:mx-0">
                 <div className="relative w-full overflow-hidden sm:rounded-lg bg-muted aspect-[4/3] sm:aspect-[16/9]">
