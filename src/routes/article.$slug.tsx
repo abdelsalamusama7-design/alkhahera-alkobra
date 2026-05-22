@@ -8,6 +8,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { SponsoredLink } from "@/components/site/SponsoredLink";
+import { CoverImage } from "@/components/site/CoverImage";
 import { Footer } from "@/components/site/Footer";
 import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
@@ -128,14 +129,16 @@ function ArticlePage() {
 
             {a.cover_image && (
               <figure className="mb-6 -mx-3 sm:mx-0">
-                <div className="relative w-full overflow-hidden sm:rounded-lg bg-muted aspect-[4/3] sm:aspect-[16/9]">
-                  <img
-                    src={a.cover_image}
-                    alt={a.title}
-                    className="absolute inset-0 h-full w-full object-cover object-center"
-                    loading="eager"
-                  />
-                </div>
+                <CoverImage
+                  src={a.cover_image}
+                  alt={a.title}
+                  ratio="4/3"
+                  smRatio="16/9"
+                  focus="top"
+                  priority
+                  sizeHint={1600}
+                  className="sm:rounded-lg"
+                />
               </figure>
             )}
 

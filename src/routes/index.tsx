@@ -5,6 +5,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { SponsoredLink } from "@/components/site/SponsoredLink";
+import { CoverImage } from "@/components/site/CoverImage";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { BourseSection } from "@/components/site/BourseSection";
@@ -152,10 +153,17 @@ function Index() {
             <div className="lg:col-span-2">
               <SectionTitle title="تقارير وحوارات" />
               <article className="news-card group overflow-hidden rounded-lg bg-card border border-border">
-                <div className="relative aspect-[16/8] overflow-hidden">
-                  <img src={reports[0].image} alt={reports[0].title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <CoverImage
+                  src={reports[0].image}
+                  alt={reports[0].title}
+                  ratio="16/9"
+                  smRatio="16/8"
+                  focus="top"
+                  sizeHint={1600}
+                  imgClassName="group-hover:scale-105"
+                >
                   <span className="absolute top-3 right-3 bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded">تقرير خاص</span>
-                </div>
+                </CoverImage>
                 <div className="p-6">
                   <h3 className="text-xl md:text-2xl font-extrabold text-primary leading-snug group-hover:text-gold transition-colors">{reports[0].title}</h3>
                   {reports[0].excerpt && <p className="text-sm md:text-base text-muted-foreground mt-3 leading-relaxed">{reports[0].excerpt}</p>}
