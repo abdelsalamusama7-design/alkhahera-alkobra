@@ -35,7 +35,7 @@ export function NewsCard({ item, size = "medium" }: Props) {
             )}
             <div className="flex items-center gap-3 text-xs opacity-80">
               <span>{item.source}</span>
-              <span className="flex items-center gap-1"><Clock size={12} />{item.timeAgo}</span>
+              <span className="flex items-center gap-1"><Clock size={12} /><span suppressHydrationWarning>{item.timeAgo}</span></span>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function NewsCard({ item, size = "medium" }: Props) {
           <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
             {item.title}
           </h3>
-          <div className="text-[10px] text-muted-foreground mt-1">{item.timeAgo}</div>
+          <div className="text-[10px] text-muted-foreground mt-1"><span suppressHydrationWarning>{item.timeAgo}</span></div>
         </div>
       </article>
     );
@@ -86,7 +86,7 @@ export function NewsCard({ item, size = "medium" }: Props) {
           )}
           <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
             <span className="font-semibold text-primary/70">{item.source}</span>
-            <span className="flex items-center gap-1"><Clock size={12} />{item.timeAgo}</span>
+            <span className="flex items-center gap-1"><Clock size={12} /><span suppressHydrationWarning>{item.timeAgo}</span></span>
           </div>
         </div>
       </article>
@@ -113,7 +113,7 @@ export function NewsCard({ item, size = "medium" }: Props) {
         </h3>
         <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
           <span>{item.source}</span>
-          <span className="flex items-center gap-1"><Clock size={11} />{item.timeAgo}</span>
+          <span className="flex items-center gap-1"><Clock size={11} /><span suppressHydrationWarning>{item.timeAgo}</span></span>
         </div>
       </div>
     </article>

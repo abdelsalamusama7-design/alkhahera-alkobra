@@ -128,7 +128,7 @@ function Index() {
                 <div className="p-6">
                   <h3 className="text-xl md:text-2xl font-extrabold text-primary leading-snug group-hover:text-gold transition-colors">{reports[0].title}</h3>
                   {reports[0].excerpt && <p className="text-sm md:text-base text-muted-foreground mt-3 leading-relaxed">{reports[0].excerpt}</p>}
-                  <div className="mt-4 text-xs text-muted-foreground">{reports[0].source} • {reports[0].timeAgo}</div>
+                  <div className="mt-4 text-xs text-muted-foreground"><span suppressHydrationWarning>{reports[0].source} • {reports[0].timeAgo}</span></div>
                 </div>
               </article>
             </div>
@@ -161,7 +161,7 @@ function Index() {
                 <div>
                   <div className="text-xs font-bold text-gold">{o.source}</div>
                   <h3 className="text-base font-bold text-primary mt-1 leading-snug group-hover:text-gold transition-colors line-clamp-3">{o.title}</h3>
-                  <div className="text-[11px] text-muted-foreground mt-2">{o.timeAgo}</div>
+                  <div className="text-[11px] text-muted-foreground mt-2"><span suppressHydrationWarning>{o.timeAgo}</span></div>
                 </div>
               </article>
             ))}
