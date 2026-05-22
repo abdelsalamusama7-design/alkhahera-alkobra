@@ -51,12 +51,14 @@ export type Database = {
       }
       ad_placements: {
         Row: {
+          clicks: number
           config: Json
           created_at: string
           enabled: boolean
           fail_count: number
           health_status: Database["public"]["Enums"]["ad_health"]
           id: string
+          impressions: number
           is_fallback: boolean
           last_checked_at: string | null
           last_error: string | null
@@ -67,12 +69,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clicks?: number
           config?: Json
           created_at?: string
           enabled?: boolean
           fail_count?: number
           health_status?: Database["public"]["Enums"]["ad_health"]
           id?: string
+          impressions?: number
           is_fallback?: boolean
           last_checked_at?: string | null
           last_error?: string | null
@@ -83,12 +87,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clicks?: number
           config?: Json
           created_at?: string
           enabled?: boolean
           fail_count?: number
           health_status?: Database["public"]["Enums"]["ad_health"]
           id?: string
+          impressions?: number
           is_fallback?: boolean
           last_checked_at?: string | null
           last_error?: string | null

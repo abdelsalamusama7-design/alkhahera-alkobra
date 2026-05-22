@@ -1,0 +1,3 @@
+ALTER TABLE public.ad_placements
+  ADD COLUMN IF NOT EXISTS impressions bigint NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS clicks bigint NOT NULL DEFAULT 0;
