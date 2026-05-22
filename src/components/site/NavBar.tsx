@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, LogIn, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { listCategories } from "@/lib/articles.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export function NavBar() {
   const navigate = useNavigate();
