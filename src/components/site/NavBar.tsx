@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function NavBar() {
   const navigate = useNavigate();
+  const { user, signOut, isAdmin } = useAuth();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const { data: cats = [] } = useQuery({
