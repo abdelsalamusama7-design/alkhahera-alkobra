@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { PushNotifications } from "@/components/site/PushNotifications";
 
 export function Header() {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ export function Header() {
 
             {/* Auth + theme */}
             <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
+              <PushNotifications />
               <ThemeToggle />
               {user ? (
                 <>
