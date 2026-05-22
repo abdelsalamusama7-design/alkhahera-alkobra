@@ -15,6 +15,67 @@ function Bar({ value, max, color }: { value: number; max: number; color: string 
   return <div className="flex-1 bg-muted rounded h-2 overflow-hidden"><div className={color} style={{ width: `${w}%`, height: "100%" }} /></div>;
 }
 
+const DONUT_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16"];
+
+function Donut({ data, size = 96 }: { data: { label: string; value: number }[]; size?: number }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (total === 0) return <div className="text-xs text-muted-foreground">لا يوجد بيانات</div>;
+  const r = size / 2 - 6;
+  const c = size / 2;
+  const circ = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0">
+      <circle cx={c} cy={c} r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth={10} />
+      {data.map((d, i) => {
+        const frac = d.value / total;
+        const dash = frac * circ;
+        const el = (
+          <circle key={i} cx={c} cy={c} r={r} fill="none"
+            stroke={DONUT_COLORS[i % DONUT_COLORS.length]} strokeWidth={10}
+            strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-offset}
+            transform={`rotate(-90 ${c} ${c})`}>
+            <title>{`${d.label}: ${d.value} (${Math.round(frac * 100)}%)`}</title>
+          </circle>
+        );
+        offset += dash;
+        return el;
+      })}
+      <text x={c} y={c} textAnchor="middle" dominantBaseline="central" className="fill-primary font-extrabold text-sm">{total}</text>
+    </svg>
+  );
+}
+
+function DistroTable({ rows, total, colorClass, labelHeader }: { rows: { key: string; label: string; count: number }[]; total: number; colorClass: string; labelHeader: string }) {
+  if (rows.length === 0) return <div className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</div>;
+  return (
+    <div className="flex items-center gap-4 p-4">
+      <Donut data={rows.map((r) => ({ label: r.label, value: r.count }))} />
+      <table className="flex-1 text-sm">
+        <thead>
+          <tr className="text-xs text-muted-foreground border-b border-border">
+            <th className="text-right py-1 font-bold">{labelHeader}</th>
+            <th className="text-left py-1 font-bold w-12">العدد</th>
+            <th className="text-left py-1 font-bold w-12">%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={r.key} className="border-b border-border/50 last:border-0">
+              <td className="py-1.5 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ background: DONUT_COLORS[i % DONUT_COLORS.length] }} />
+                <span className="font-bold text-primary truncate">{r.label}</span>
+              </td>
+              <td className="py-1.5 text-left font-mono font-bold">{r.count}</td>
+              <td className="py-1.5 text-left text-xs text-muted-foreground">{Math.round((r.count / Math.max(1, total)) * 100)}%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function ArticleStatsPage() {
   const { slug } = Route.useParams();
   const fetchStats = useServerFn(getArticleStats);
@@ -110,17 +171,12 @@ function ArticleStatsPage() {
         {/* Sources */}
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm">مصادر الزيارات</div>
-          <ul className="divide-y divide-border">
-            {data.sources.map((s) => (
-              <li key={s.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="flex-1 font-bold text-primary">{getSourceLabelAr(s.key)}</span>
-                <Bar value={s.count} max={totalSources} color="bg-indigo-500" />
-                <span className="font-mono font-bold w-10 text-left">{s.count}</span>
-                <span className="text-xs text-muted-foreground w-12 text-left">{Math.round((s.count / totalSources) * 100)}%</span>
-              </li>
-            ))}
-            {data.sources.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.sources.map((s) => ({ key: s.key, label: getSourceLabelAr(s.key), count: s.count }))}
+            total={totalSources}
+            colorClass="bg-indigo-500"
+            labelHeader="المصدر"
+          />
         </div>
 
         {/* Countries */}
@@ -128,16 +184,12 @@ function ArticleStatsPage() {
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm flex items-center gap-2">
             <Globe size={14} /> الزوار حسب البلد
           </div>
-          <ul className="divide-y divide-border">
-            {data.countries.map((c) => (
-              <li key={c.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="font-mono font-bold w-10 text-primary">{c.key}</span>
-                <Bar value={c.count} max={data.countries[0]?.count ?? 1} color="bg-emerald-500" />
-                <span className="font-mono font-bold w-10 text-left">{c.count}</span>
-              </li>
-            ))}
-            {data.countries.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.countries.map((c) => ({ key: c.key, label: c.key, count: c.count }))}
+            total={Math.max(1, data.countries.reduce((s, x) => s + x.count, 0))}
+            colorClass="bg-emerald-500"
+            labelHeader="البلد"
+          />
         </div>
 
         {/* Devices */}
@@ -145,16 +197,12 @@ function ArticleStatsPage() {
           <div className="bg-primary text-primary-foreground px-4 py-2 font-extrabold text-sm flex items-center gap-2">
             <Smartphone size={14} /> الأجهزة
           </div>
-          <ul className="divide-y divide-border">
-            {data.devices.map((d) => (
-              <li key={d.key} className="px-4 py-2 flex items-center gap-3 text-sm">
-                <span className="flex-1 font-bold text-primary">{getDeviceLabelAr(d.key)}</span>
-                <Bar value={d.count} max={data.devices[0]?.count ?? 1} color="bg-amber-500" />
-                <span className="font-mono font-bold w-10 text-left">{d.count}</span>
-              </li>
-            ))}
-            {data.devices.length === 0 && <li className="px-4 py-6 text-center text-muted-foreground text-sm">لا يوجد بيانات</li>}
-          </ul>
+          <DistroTable
+            rows={data.devices.map((d) => ({ key: d.key, label: getDeviceLabelAr(d.key), count: d.count }))}
+            total={Math.max(1, data.devices.reduce((s, x) => s + x.count, 0))}
+            colorClass="bg-amber-500"
+            labelHeader="الجهاز"
+          />
         </div>
       </div>
     </div>
