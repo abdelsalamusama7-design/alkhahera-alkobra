@@ -28,7 +28,7 @@ function LoginPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -37,7 +37,11 @@ function LoginPage() {
           },
         });
         if (error) throw error;
-        setErr("تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.");
+        if (data.session) {
+          navigate({ to: "/admin/ingest" });
+          return;
+        }
+        setErr("تم إنشاء الحساب، حاول تسجيل الدخول الآن بنفس البيانات.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
