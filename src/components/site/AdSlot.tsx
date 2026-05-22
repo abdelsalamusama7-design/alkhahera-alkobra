@@ -1,7 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getActivePlacementsFn, type AdPlacementRow, type AdSlotKey } from "@/lib/ad-placements.functions";
+import {
+  getActivePlacementsFn,
+  trackAdEventFn,
+  type AdPlacementRow,
+  type AdSlotKey,
+} from "@/lib/ad-placements.functions";
 import { SponsoredLink } from "./SponsoredLink";
 import { AdsterraBanner } from "./AdsterraAd";
 
@@ -28,8 +33,31 @@ export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: 
   return (
     <div className={`flex flex-col gap-3 ${className}`} data-ad-slot={slot}>
       {items.map((p) => (
-        <PlacementRender key={p.id} placement={p} />
+        <TrackedPlacement key={p.id} placement={p} />
       ))}
+    </div>
+  );
+}
+
+/** يحيط الإعلان بـ tracking للظهور (مرة واحدة لكل mount) والنقر. */
+function TrackedPlacement({ placement }: { placement: AdPlacementRow }) {
+  const trackFn = useServerFn(trackAdEventFn);
+  const seenRef = useRef(false);
+
+  useEffect(() => {
+    if (seenRef.current) return;
+    seenRef.current = true;
+    // تجاهل الفشل بصمت — التتبع غير حرج
+    trackFn({ data: { id: placement.id, kind: "impression" } }).catch(() => {});
+  }, [placement.id, trackFn]);
+
+  const onClickCapture = () => {
+    trackFn({ data: { id: placement.id, kind: "click" } }).catch(() => {});
+  };
+
+  return (
+    <div onClickCapture={onClickCapture} data-ad-id={placement.id}>
+      <PlacementRender placement={placement} />
     </div>
   );
 }
