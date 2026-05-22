@@ -9,6 +9,8 @@ import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { BourseSection } from "@/components/site/BourseSection";
 import { NewsCard } from "@/components/site/NewsCard";
 import { MarketsWidget, WeatherWidget, SportsWidget } from "@/components/site/Widgets";
+import { GoldBar } from "@/components/site/GoldBar";
+import { GoldWidget } from "@/components/site/GoldWidget";
 import { Footer } from "@/components/site/Footer";
 import { getHomeBundle } from "@/lib/articles.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
@@ -85,6 +87,7 @@ function Index() {
       <NavBar />
       <BreakingTicker items={breakingItems} />
       <MarketsTicker />
+      <GoldBar />
       <AdBanner />
 
       <main className="flex-1">
@@ -135,7 +138,8 @@ function Index() {
 
         <section className="container mx-auto px-4 py-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <GoldWidget />
             <WeatherWidget />
             <MarketsWidget />
             <SportsWidget />
