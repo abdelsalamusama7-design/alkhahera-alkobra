@@ -303,3 +303,31 @@ export const getCurrentUserRoles = createServerFn({ method: "GET" })
     const roles = await getUserRoles(context.userId);
     return { roles, userId: context.userId };
   });
+
+// Find articles sharing the same cover_image (duplicates)
+export const findDuplicateCovers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const roles = await getUserRoles(context.userId);
+    if (!hasPerm(roles, "view_admin")) throw new Error("ليس لديك صلاحية");
+
+    const { data: rows, error } = await supabaseAdmin
+      .from("articles")
+      .select("id, title, slug, cover_image, published_at")
+      .not("cover_image", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(error.message);
+
+    const groups = new Map<string, { id: string; title: string; slug: string; published_at: string }[]>();
+    for (const r of rows ?? []) {
+      const key = (r.cover_image || "").split("?")[0];
+      if (!key) continue;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push({ id: r.id, title: r.title, slug: r.slug, published_at: r.published_at });
+    }
+    const duplicates = Array.from(groups.entries())
+      .filter(([, list]) => list.length > 1)
+      .map(([cover, articles]) => ({ cover, articles }));
+    return { duplicates, totalGroups: duplicates.length };
+  });
