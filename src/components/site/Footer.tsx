@@ -1,8 +1,28 @@
 import { ExternalLink } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground mt-12">
+  <footer className="bg-primary text-primary-foreground mt-12">
+      {/* Logo strip */}
+      <div className="border-b border-white/10">
+        <div className="container mx-auto px-4 py-6 flex items-center justify-center gap-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/10 blur-xl rounded-full scale-110" />
+            <img
+              src={logo}
+              alt="القاهرة الكبرى"
+              className="relative h-14 sm:h-16 w-auto object-contain drop-shadow-md"
+              loading="lazy"
+            />
+          </div>
+          <div className="w-px h-10 bg-white/20" />
+          <div className="flex flex-col items-start">
+            <span className="text-lg sm:text-xl font-extrabold text-gold leading-tight">القاهرة الكبرى</span>
+            <span className="text-[11px] text-white/70 tracking-wide">بوابة الأخبار المصرية والعربية</span>
+          </div>
+        </div>
+      </div>
       <div className="container mx-auto px-4 py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
         <div>
           <h4 className="text-gold font-extrabold mb-3">القاهرة الكبرى</h4>

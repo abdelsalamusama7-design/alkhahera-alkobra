@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
@@ -129,7 +130,38 @@ function Index() {
         <section className="container mx-auto px-4 py-6">
           <SectionTitle title="آخر الأخبار" accent="عرض المزيد" to="/search" />
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(0, 12).map((n: NewsItem) => (
+            {latestList.slice(0, 8).map((n: NewsItem) => (
+              <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
+            ))}
+          </div>
+        </section>
+
+        {/* Brand strip */}
+        <section className="container mx-auto px-4 py-6">
+          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary via-primary to-primary/90 p-6 sm:p-8">
+            <div className="absolute inset-1 bg-card rounded-[10px]" />
+            <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-125" />
+                <img
+                  src={logo}
+                  alt="القاهرة الكبرى"
+                  className="relative h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-md"
+                  loading="lazy"
+                />
+              </div>
+              <div className="w-px h-12 bg-border hidden sm:block" />
+              <div className="flex flex-col items-center sm:items-start">
+                <span className="text-2xl md:text-3xl font-extrabold text-primary leading-tight">القاهرة الكبرى</span>
+                <span className="text-sm text-muted-foreground mt-1 tracking-wide">بوابة الأخبار المصرية والعربية</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 py-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {latestList.slice(8, 16).map((n: NewsItem) => (
               <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
             ))}
           </div>
