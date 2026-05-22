@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Newspaper, FolderTree, Plus, Rss } from "lucide-react";
+import { LogOut, Newspaper, FolderTree, Plus, Rss, Users } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "لوحة التحكم — القاهرة الكبرى" }] }),
@@ -36,6 +36,7 @@ function AdminLayout() {
     { to: "/admin", label: "الأخبار", icon: Newspaper, exact: true },
     { to: "/admin/new", label: "خبر جديد", icon: Plus },
     { to: "/admin/categories", label: "الأقسام", icon: FolderTree },
+    { to: "/admin/users", label: "المستخدمون", icon: Users },
     { to: "/admin/ingest", label: "سحب RSS", icon: Rss },
   ];
 
