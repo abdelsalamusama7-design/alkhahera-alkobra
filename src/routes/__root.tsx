@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
 import { SideRailAds } from "@/components/site/SideRailAds";
 import { PopunderSmartLink } from "@/components/site/PopunderSmartLink";
+import { MonetagScripts } from "@/components/site/MonetagScripts";
 
 import appCss from "../styles.css?url";
 
@@ -100,13 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       // Adsterra Popunder (1 لكل صفحة)
       { src: "https://pl29522752.effectivecpmnetwork.com/e3/0d/81/e30d81e12c8ca7fa9dced44373e6fa55.js", async: true },
-      // Monetag Multitag
-      { src: "https://quge5.com/88/tag.min.js", async: true, "data-zone": "242128", "data-cfasync": "false" } as any,
-      // Monetag Multitag (al5sm) — inline loader (matches verification snippet)
-      {
-        children:
-          "(function(s){s.dataset.zone='11044569',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))",
-      } as any,
+      // Monetag Multitag → يتم حقنها ديناميكيًا من <MonetagScripts /> حسب إعدادات لوحة التحكم
     ],
   }),
   shellComponent: RootShell,
@@ -143,6 +138,7 @@ function RootComponent() {
         <SideRailAds />
         <WhatsAppFab />
         <PopunderSmartLink />
+        <MonetagScripts />
       </ThemeProvider>
     </QueryClientProvider>
   );
