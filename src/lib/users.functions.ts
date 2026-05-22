@@ -79,3 +79,84 @@ export const adminRevokeRole = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const adminGetUser = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) => z.object({ user_id: z.string().uuid() }).parse(i))
+  .handler(async ({ data, context }) => {
+    await ensureAdmin(context.userId);
+
+    const { data: authUser, error: authErr } =
+      await supabaseAdmin.auth.admin.getUserById(data.user_id);
+    if (authErr) throw new Error(authErr.message);
+    if (!authUser?.user) throw new Error("المستخدم غير موجود");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("display_name, phone, bio, avatar_url")
+      .eq("id", data.user_id)
+      .maybeSingle();
+
+    const { data: rolesData } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user_id);
+
+    return {
+      user_id: authUser.user.id,
+      email: authUser.user.email ?? "",
+      created_at: authUser.user.created_at,
+      display_name: profile?.display_name ?? null,
+      phone: (profile?.phone as string | null) ?? null,
+      bio: profile?.bio ?? null,
+      avatar_url: profile?.avatar_url ?? null,
+      roles: (rolesData ?? []).map((r) => r.role) as AppRoleAll[],
+    };
+  });
+
+export const adminUpdateUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i) =>
+    z
+      .object({
+        user_id: z.string().uuid(),
+        display_name: z.string().trim().max(255).optional().nullable(),
+        phone: z
+          .string()
+          .trim()
+          .max(32)
+          .regex(/^[+\d\s()-]*$/, "رقم غير صالح")
+          .optional()
+          .nullable(),
+        bio: z.string().trim().max(1000).optional().nullable(),
+        email: z.string().email().optional(),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data, context }) => {
+    await ensureAdmin(context.userId);
+
+    if (data.email) {
+      const { error: emailErr } = await supabaseAdmin.auth.admin.updateUserById(
+        data.user_id,
+        { email: data.email },
+      );
+      if (emailErr) throw new Error(emailErr.message);
+    }
+
+    const { error: upsertErr } = await supabaseAdmin
+      .from("profiles")
+      .upsert(
+        {
+          id: data.user_id,
+          display_name: data.display_name ?? null,
+          phone: data.phone ?? null,
+          bio: data.bio ?? null,
+        },
+        { onConflict: "id" },
+      );
+    if (upsertErr) throw new Error(upsertErr.message);
+
+    return { ok: true };
+  });
+
