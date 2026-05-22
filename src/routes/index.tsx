@@ -251,7 +251,14 @@ function Index() {
               <div className="mt-4">
                 <SponsoredLink label="عروض ومحتوى مختار" />
               </div>
+              <div className="mt-4 flex justify-center">
+                <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
+              </div>
+              <div className="mt-4 flex justify-center">
+                <AdsterraBanner adKey="9fa4dda683744d44af1745cccfc0f432" width={160} height={300} />
+              </div>
             </aside>
+
           </div>
         </section>
 
