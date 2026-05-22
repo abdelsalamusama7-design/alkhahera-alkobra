@@ -2,6 +2,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { slugify } from "@/lib/format";
+import { postArticleToFacebook } from "@/lib/facebook.server";
 
 export type RssSource = {
   url: string;
