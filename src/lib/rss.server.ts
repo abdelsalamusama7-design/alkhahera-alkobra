@@ -20,6 +20,7 @@ export const RSS_SOURCES: RssSource[] = [
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=94", categorySlug: "technology", source: "اليوم السابع" },
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=97", categorySlug: "local", source: "اليوم السابع" },
   // المصري اليوم
+  { url: "https://www.almasryalyoum.com/rss/rssfeed", categorySlug: "local", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=14", categorySlug: "politics", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=18", categorySlug: "economy", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=16", categorySlug: "sports", source: "المصري اليوم" },
