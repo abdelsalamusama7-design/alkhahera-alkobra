@@ -136,6 +136,7 @@ function StatsPage() {
                 <th className="px-3 py-2 text-center">منشور</th>
                 <th className="px-3 py-2 text-center">مسودة</th>
                 <th className="px-3 py-2 text-center">عاجل</th>
+                <th className="px-3 py-2 text-center">مشاهدات</th>
                 <th className="px-3 py-2 text-right">آخر نشر</th>
                 <th className="px-3 py-2 text-right">أول نشر</th>
               </tr>
@@ -157,13 +158,15 @@ function StatsPage() {
                   <td className="px-3 py-2 text-center font-mono text-emerald-600">{a.published}</td>
                   <td className="px-3 py-2 text-center font-mono text-amber-600">{a.drafts}</td>
                   <td className="px-3 py-2 text-center font-mono text-breaking">{a.breaking}</td>
+                  <td className="px-3 py-2 text-center font-mono text-indigo-600">{a.views}</td>
                   <td className="px-3 py-2 text-xs whitespace-nowrap">{fmt(a.last_published_at)}</td>
                   <td className="px-3 py-2 text-xs whitespace-nowrap">{fmt(a.first_published_at)}</td>
                 </tr>
               ))}
               {data.authors.length === 0 && (
-                <tr><td colSpan={8} className="text-center py-6 text-muted-foreground">لا يوجد بيانات</td></tr>
+                <tr><td colSpan={9} className="text-center py-6 text-muted-foreground">لا يوجد بيانات</td></tr>
               )}
+
             </tbody>
           </table>
         </div>
