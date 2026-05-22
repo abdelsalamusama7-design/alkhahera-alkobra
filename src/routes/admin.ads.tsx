@@ -317,8 +317,21 @@ function HealthBadge({ status, lastChecked, lastError, failCount }: {
   );
 }
 
+
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <div className="text-xl font-extrabold text-primary">{value}</div>
+    </div>
+  );
+}
+
 function PlacementEditor({
-  draft: p, onChange, onRemove, onMoveUp, onMoveDown, isNew, health,
+  draft: p, onChange, onRemove, onMoveUp, onMoveDown, isNew, health, stats, onResetCounters,
 }: {
   draft: Draft;
   onChange: (patch: Partial<Draft>) => void;
@@ -327,9 +340,12 @@ function PlacementEditor({
   onMoveDown?: () => void;
   isNew?: boolean;
   health?: { status: string; lastChecked: string | null; lastError: string | null; failCount: number };
+  stats?: { impressions: number; clicks: number };
+  onResetCounters?: () => void;
 }) {
   const cfg = p.config || {};
   const setCfg = (patch: Record<string, any>) => onChange({ config: { ...cfg, ...patch } });
+  const ctr = stats && stats.impressions > 0 ? (stats.clicks / stats.impressions) * 100 : 0;
 
   return (
     <div className={`border border-border rounded p-3 ${p.enabled ? "" : "opacity-60"} ${isNew ? "border-primary border-dashed" : ""}`}>
