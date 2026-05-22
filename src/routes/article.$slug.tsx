@@ -8,6 +8,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { SponsoredLink } from "@/components/site/SponsoredLink";
+import { AdSlot } from "@/components/site/AdSlot";
 import { CoverImage } from "@/components/site/CoverImage";
 import { Footer } from "@/components/site/Footer";
 import { ArticleVoice } from "@/components/site/ArticleVoice";
@@ -142,9 +143,11 @@ function ArticlePage() {
               </figure>
             )}
 
+            <AdSlot slot="article-top" className="my-4" />
             <div className="prose prose-lg max-w-none text-foreground leading-loose text-base md:text-lg whitespace-pre-line">
               {a.content || a.excerpt}
             </div>
+            <AdSlot slot="article-middle" className="my-4" />
 
             <div className="my-6 text-sm text-muted-foreground">
               لمزيد من التغطية،{" "}
@@ -155,6 +158,8 @@ function ArticlePage() {
               />
               .
             </div>
+            <AdSlot slot="article-bottom" className="my-4" />
+
 
             {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
