@@ -137,6 +137,7 @@ function RootComponent() {
         <Outlet />
         <SideRailAds />
         <WhatsAppFab />
+        <PopunderSmartLink />
       </ThemeProvider>
     </QueryClientProvider>
   );
