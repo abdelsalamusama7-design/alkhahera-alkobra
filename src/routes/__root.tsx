@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
+import { SideRailAds } from "@/components/site/SideRailAds";
 
 import appCss from "../styles.css?url";
 
@@ -131,6 +132,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <SideRailAds />
         <WhatsAppFab />
       </ThemeProvider>
     </QueryClientProvider>
