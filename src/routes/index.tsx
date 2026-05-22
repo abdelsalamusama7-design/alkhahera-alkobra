@@ -93,8 +93,20 @@ function Index() {
       <MarketsTicker />
       <GoldBar />
       <AdBanner />
+      <AdsterraAutoScript />
+
+      {/* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */}
+      <div className="container mx-auto px-4 py-3 flex justify-center">
+        <div className="hidden md:block">
+          <AdsterraBanner adKey="f25eddd86f61a1b492cf411428805d2f" width={728} height={90} />
+        </div>
+        <div className="md:hidden">
+          <AdsterraBanner adKey="c6fe2d73a2310bef756d61720fe43359" width={320} height={50} />
+        </div>
+      </div>
 
       <main className="flex-1">
+
         <section className="container mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2"><ItemLink item={hero}><NewsCard item={hero} size="hero" /></ItemLink></div>
