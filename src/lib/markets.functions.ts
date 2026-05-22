@@ -45,16 +45,52 @@ function toQuote(name: string, q: any, digits = 2, transform?: (n: number) => nu
   };
 }
 
+async function fetchCrypto(): Promise<Quote[]> {
+  try {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,solana,ripple,tether&vs_currencies=usd&include_24hr_change=true",
+      { headers: { accept: "application/json" } },
+    );
+    if (!res.ok) return [];
+    const j: any = await res.json();
+    const map: { id: string; name: string; digits: number }[] = [
+      { id: "bitcoin", name: "بيتكوين", digits: 0 },
+      { id: "ethereum", name: "إيثيريوم", digits: 0 },
+      { id: "binancecoin", name: "BNB", digits: 0 },
+      { id: "solana", name: "سولانا", digits: 2 },
+      { id: "ripple", name: "ريبل (XRP)", digits: 4 },
+      { id: "tether", name: "تيثر USDT", digits: 2 },
+    ];
+    const out: Quote[] = [];
+    for (const c of map) {
+      const row = j?.[c.id];
+      if (!row || typeof row.usd !== "number") continue;
+      const pct = Number(row.usd_24h_change ?? 0);
+      out.push({
+        name: c.name,
+        value: `$${fmt(row.usd, c.digits)}`,
+        change: `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`,
+        up: pct >= 0,
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 export const getMarkets = createServerFn({ method: "GET" }).handler(async () => {
   const out: {
     fx: Quote[];
     stocks: Quote[];
+    crypto: Quote[];
     updatedAt: string;
-  } = { fx: [], stocks: [], updatedAt: new Date().toISOString() };
+  } = { fx: [], stocks: [], crypto: [], updatedAt: new Date().toISOString() };
 
   try {
     const symbols = ["USDEGP=X", "EURRGP=X", "SAREGP=X", "GC=F", "^CASE30", "^GSPC", "^IXIC"];
-    const q = await yahooQuotes(symbols);
+    const [q, crypto] = await Promise.all([yahooQuotes(symbols), fetchCrypto()]);
+    out.crypto = crypto;
 
     const usd = q.get("USDEGP=X");
     const usdRate = Number(usd?.regularMarketPrice || 0);
@@ -94,6 +130,9 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
     }
   } catch (e) {
     console.error("markets fetch failed", e);
+    if (out.crypto.length === 0) {
+      out.crypto = await fetchCrypto();
+    }
   }
 
   // Fallback FX via open.er-api.com if Yahoo blocked
