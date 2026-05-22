@@ -130,6 +130,21 @@ function ArticlePage() {
               {a.content || a.excerpt}
             </div>
 
+            {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {((a as any).tags as string[]).map((t) => (
+                  <Link
+                    key={t}
+                    to="/search"
+                    search={{ q: t } as any}
+                    className="text-xs bg-muted hover:bg-gold hover:text-gold-foreground transition-colors px-3 py-1 rounded-full border border-border font-bold text-primary"
+                  >
+                    #{t}
+                  </Link>
+                ))}
+              </div>
+            )}
+
             {a.source_url && (
               <div className="mt-6 text-sm">
                 <a href={a.source_url} target="_blank" rel="noopener" className="text-gold hover:underline font-bold">
