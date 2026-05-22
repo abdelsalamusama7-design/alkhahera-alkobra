@@ -101,6 +101,48 @@ async function rewriteWithHook(
   }
 }
 
+// مولّد صورة تلقائي للأخبار التي لا تحتوي على صورة
+async function generateCoverImage(title: string, slug: string): Promise<string | null> {
+  const apiKey = process.env.LOVABLE_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [
+          {
+            role: "user",
+            content: `صورة صحفية واقعية احترافية بأسلوب تحريري لجريدة عربية، تعبّر عن الخبر التالي بدون أي نص مكتوب داخل الصورة: ${title}. ألوان متوازنة، إضاءة طبيعية، تكوين سينمائي 16:9.`,
+          },
+        ],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) return null;
+    const j: any = await res.json();
+    const dataUrl: string | undefined = j?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (!dataUrl || !dataUrl.startsWith("data:image/")) return null;
+
+    const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+    if (!match) return null;
+    const mime = match[1];
+    const ext = mime.split("/")[1].replace("jpeg", "jpg");
+    const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
+    const path = `ai-generated/${slug}.${ext}`;
+
+    const { error: upErr } = await supabaseAdmin.storage
+      .from("article-images")
+      .upload(path, bytes, { contentType: mime, upsert: true });
+    if (upErr) return null;
+    const { data: pub } = supabaseAdmin.storage.from("article-images").getPublicUrl(path);
+    return pub?.publicUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function ingestAllFeeds() {
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
   const { data: cats } = await supabaseAdmin.from("categories").select("id,slug");
@@ -160,12 +202,18 @@ export async function ingestAllFeeds() {
 
         const slug = `${slugify(finalTitle)}-${Math.abs(hash(String(link || finalTitle))).toString(36).slice(0, 6)}`;
 
+        // توليد صورة تلقائياً عند غياب صورة من المصدر
+        let finalCover = cover;
+        if (!finalCover) {
+          finalCover = await generateCoverImage(finalTitle, slug);
+        }
+
         const { error } = await supabaseAdmin.from("articles").insert({
           title: finalTitle,
           slug,
           excerpt: finalExcerpt,
           content: finalExcerpt,
-          cover_image: cover,
+          cover_image: finalCover,
           category_id: catBySlug.get(src.categorySlug) ?? null,
           source: src.source,
           source_url: link || null,
