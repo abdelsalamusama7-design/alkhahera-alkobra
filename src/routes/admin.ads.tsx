@@ -127,6 +127,15 @@ function AdsManager() {
     onError: (e: any) => toast.error(e?.message || "فشل الفحص"),
   });
 
+  const resetM = useMutation({
+    mutationFn: (id?: string) => resetFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("تم تصفير العدّادات.");
+      qc.invalidateQueries({ queryKey: ["ad-placements-all"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "فشل التصفير"),
+  });
+
   const saveAll = async () => {
     try {
       for (const d of Object.values(drafts)) await upsertM.mutateAsync(d);
