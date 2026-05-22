@@ -44,6 +44,7 @@ export const DEFAULT_AD_CONFIG: AdConfig = {
   },
   monetag: [
     { id: "quge5", enabled: true, src: "https://quge5.com/88/tag.min.js", zone: "242128" },
+    { id: "quge5-242145", enabled: true, src: "https://quge5.com/88/tag.min.js", zone: "242145" },
     { id: "al5sm", enabled: true, src: "https://al5sm.com/tag.min.js", zone: "11044569" },
   ],
   sw: { domain: "3nbf4.com", zoneId: "11044543" },
@@ -57,11 +58,16 @@ export function getAdConfig(): AdConfig {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_AD_CONFIG;
     const parsed = JSON.parse(raw) as Partial<AdConfig>;
+    const savedMonetag = Array.isArray(parsed.monetag) && parsed.monetag.length ? parsed.monetag : [];
+    const monetag = savedMonetag.length
+      ? [
+          ...savedMonetag,
+          ...DEFAULT_AD_CONFIG.monetag.filter((m) => !savedMonetag.some((saved) => saved.id === m.id)),
+        ]
+      : DEFAULT_AD_CONFIG.monetag;
     return {
       smartlinks: { ...DEFAULT_AD_CONFIG.smartlinks, ...(parsed.smartlinks ?? {}) },
-      monetag: Array.isArray(parsed.monetag) && parsed.monetag.length
-        ? parsed.monetag
-        : DEFAULT_AD_CONFIG.monetag,
+      monetag,
       sw: { ...DEFAULT_AD_CONFIG.sw, ...(parsed.sw ?? {}) },
     };
   } catch {
