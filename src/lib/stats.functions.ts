@@ -25,6 +25,19 @@ export type AuthorStat = {
   first_published_at: string | null;
 };
 
+export type AuthorStat = {
+  author_id: string | null;
+  author_name: string;
+  email: string | null;
+  total: number;
+  published: number;
+  drafts: number;
+  breaking: number;
+  views: number;
+  last_published_at: string | null;
+  first_published_at: string | null;
+};
+
 export type RecentArticle = {
   id: string;
   title: string;
@@ -35,7 +48,20 @@ export type RecentArticle = {
   is_breaking: boolean;
   published_at: string;
   created_at: string;
+  view_count: number;
 };
+
+export type TopArticle = {
+  id: string;
+  title: string;
+  slug: string;
+  author_name: string | null;
+  view_count: number;
+  published_at: string;
+};
+
+export type DailyPoint = { date: string; articles: number; views: number };
+
 
 export const getPublishStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
