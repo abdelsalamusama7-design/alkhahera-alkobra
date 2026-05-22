@@ -146,9 +146,22 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
     updatedAt: string;
   } = { fx: [], stocks: [], crypto: [], updatedAt: new Date().toISOString() };
 
-  // Primary FX from ExchangeRate-API (reliable, keyed)
+  // Primary FX: Alpha Vantage for USD/EGP (most accurate), then ExchangeRate-API for others
+  const [avUsdEgp, avSpy] = await Promise.all([
+    avFxRate("USD", "EGP"),
+    avGlobalQuote("SPY"),
+  ]);
+
   const primaryFx = await fetchFxFromExchangeRateApi();
   if (primaryFx.length) out.fx.push(...primaryFx);
+
+  // Override USD/EGP with Alpha Vantage value if available
+  if (avUsdEgp) {
+    const idx = out.fx.findIndex((f) => f.name === "USD / EGP");
+    const row: Quote = { name: "USD / EGP", value: fmt(avUsdEgp), change: "—", up: true };
+    if (idx >= 0) out.fx[idx] = row; else out.fx.push(row);
+  }
+
 
   try {
     const symbols = ["USDEGP=X", "EURRGP=X", "SAREGP=X", "GC=F", "^CASE30", "^GSPC", "^IXIC"];
