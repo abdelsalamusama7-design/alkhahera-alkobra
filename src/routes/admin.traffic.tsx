@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getSiteTrafficStats } from "@/lib/traffic.functions";
-import { getSourceLabelAr, getDeviceLabelAr } from "@/lib/analytics.server";
+import { getSourceLabelAr, getDeviceLabelAr } from "@/lib/analytics-labels";
 import { Globe, Smartphone, Link2, TrendingUp, Eye, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/traffic")({
