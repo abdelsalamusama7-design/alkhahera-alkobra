@@ -58,11 +58,16 @@ export function getAdConfig(): AdConfig {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_AD_CONFIG;
     const parsed = JSON.parse(raw) as Partial<AdConfig>;
+    const savedMonetag = Array.isArray(parsed.monetag) && parsed.monetag.length ? parsed.monetag : [];
+    const monetag = savedMonetag.length
+      ? [
+          ...savedMonetag,
+          ...DEFAULT_AD_CONFIG.monetag.filter((m) => !savedMonetag.some((saved) => saved.id === m.id)),
+        ]
+      : DEFAULT_AD_CONFIG.monetag;
     return {
       smartlinks: { ...DEFAULT_AD_CONFIG.smartlinks, ...(parsed.smartlinks ?? {}) },
-      monetag: Array.isArray(parsed.monetag) && parsed.monetag.length
-        ? parsed.monetag
-        : DEFAULT_AD_CONFIG.monetag,
+      monetag,
       sw: { ...DEFAULT_AD_CONFIG.sw, ...(parsed.sw ?? {}) },
     };
   } catch {
