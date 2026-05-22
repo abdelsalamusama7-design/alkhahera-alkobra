@@ -4,6 +4,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
+import { SponsoredLink } from "@/components/site/SponsoredLink";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { BourseSection } from "@/components/site/BourseSection";
