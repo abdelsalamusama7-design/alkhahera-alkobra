@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getPublishStats } from "@/lib/stats.functions";
-import { BarChart3, FileText, CheckCircle2, FileEdit, Zap, Users } from "lucide-react";
+import { BarChart3, FileText, CheckCircle2, FileEdit, Zap, Users, Eye, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/admin/stats")({
   head: () => ({ meta: [{ title: "إحصائيات النشر — لوحة التحكم" }] }),
