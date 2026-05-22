@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminListArticles, deleteArticle } from "@/lib/articles.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminList() {
   const qc = useQueryClient();
+  const { can } = useAuth();
   const [q, setQ] = useState("");
   const { data = [], isLoading } = useQuery({
     queryKey: ["admin-articles", q],
@@ -26,11 +28,14 @@ function AdminList() {
     qc.invalidateQueries({ queryKey: ["admin-articles"] });
   }
 
+  const canDelete = can("delete_article");
+  const canCreate = can("create_article");
+
   return (
     <div>
       <div className="flex items-center justify-between gap-3 mb-4">
         <h1 className="text-2xl font-extrabold text-primary">إدارة الأخبار</h1>
-        <Link to="/admin/new"><Button>+ خبر جديد</Button></Link>
+        {canCreate && <Link to="/admin/new"><Button>+ خبر جديد</Button></Link>}
       </div>
       <Input placeholder="بحث بالعنوان..." value={q} onChange={(e) => setQ(e.target.value)} className="mb-4 max-w-md" />
       <div className="bg-card border border-border rounded-lg overflow-x-auto">
@@ -47,7 +52,7 @@ function AdminList() {
           </thead>
           <tbody>
             {isLoading && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">جارٍ التحميل...</td></tr>}
-            {!isLoading && data.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">لا توجد أخبار. اضغط "خبر جديد" أو "سحب RSS".</td></tr>}
+            {!isLoading && data.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">لا توجد أخبار.</td></tr>}
             {data.map((a: any) => (
               <tr key={a.id} className="border-t border-border">
                 <td className="p-3">
@@ -60,9 +65,13 @@ function AdminList() {
                 <td className="p-3 hidden lg:table-cell text-muted-foreground">{timeAgoAr(a.published_at)}</td>
                 <td className="p-3">
                   <div className="flex gap-2">
-                    <Link to="/article/$slug" params={{ slug: a.slug }} target="_blank"><Button size="sm" variant="outline"><ExternalLink size={14} /></Button></Link>
+                    {a.is_published && (
+                      <Link to="/article/$slug" params={{ slug: a.slug }} target="_blank"><Button size="sm" variant="outline"><ExternalLink size={14} /></Button></Link>
+                    )}
                     <Link to="/admin/edit/$id" params={{ id: a.id }}><Button size="sm" variant="outline"><Edit size={14} /></Button></Link>
-                    <Button size="sm" variant="destructive" onClick={() => onDelete(a.id)}><Trash2 size={14} /></Button>
+                    {canDelete && (
+                      <Button size="sm" variant="destructive" onClick={() => onDelete(a.id)}><Trash2 size={14} /></Button>
+                    )}
                   </div>
                 </td>
               </tr>
