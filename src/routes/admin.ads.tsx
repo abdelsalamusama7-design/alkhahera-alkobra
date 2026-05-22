@@ -379,6 +379,20 @@ function PlacementEditor({
         </Button>
       </div>
 
+      {stats && (
+        <div className="flex items-center gap-4 text-xs mb-3 flex-wrap bg-muted/40 rounded px-3 py-2">
+          <span><BarChart3 size={12} className="inline ml-1" /> ظهور: <strong className="text-primary">{stats.impressions.toLocaleString("ar-EG")}</strong></span>
+          <span>نقرات: <strong className="text-primary">{stats.clicks.toLocaleString("ar-EG")}</strong></span>
+          <span>CTR: <strong className="text-primary">{ctr.toFixed(2)}%</strong></span>
+          {onResetCounters && (
+            <Button size="sm" variant="ghost" className="ms-auto h-6 px-2 text-[10px]" onClick={onResetCounters}>
+              <RotateCcw size={12} className="ml-1" /> تصفير
+            </Button>
+          )}
+        </div>
+      )}
+
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <Label className="text-xs">المكان</Label>
