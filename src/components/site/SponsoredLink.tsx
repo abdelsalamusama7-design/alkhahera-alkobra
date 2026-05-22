@@ -1,6 +1,10 @@
 import { ExternalLink } from "lucide-react";
 
-const SMARTLINK = "https://www.effectivecpmnetwork.com/v8vg96x9d?key=6715491877160494188216c66ef54b85";
+const SMARTLINKS = [
+  "https://www.effectivecpmnetwork.com/v8vg96x9d?key=6715491877160494188216c66ef54b85",
+  "https://www.effectivecpmnetwork.com/nqb3nvwtw?key=9aef419a4e1ff39475291adaa00a73f1",
+];
+const SMARTLINK = SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
 
 type Props = {
   variant?: "card" | "inline";

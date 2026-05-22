@@ -136,6 +136,12 @@ function Index() {
           </div>
         </section>
 
+        <section className="container mx-auto px-4">
+          <SponsoredLink label="عروض حصرية اليوم — اطّلع الآن" />
+        </section>
+
+
+
         {/* Brand strip */}
         <section className="container mx-auto px-4 py-6">
           <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary via-primary to-primary/90 p-6 sm:p-8">

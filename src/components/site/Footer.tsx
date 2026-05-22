@@ -45,7 +45,7 @@ export function Footer() {
             <li><a href="#" className="hover:text-gold">من نحن</a></li>
             <li><a href="#" className="hover:text-gold">سياسة الخصوصية</a></li>
             <li><a href="#" className="hover:text-gold">اتصل بنا</a></li>
-            <li><a href="#" className="hover:text-gold">إعلن معنا</a></li>
+            <li><a href="https://www.effectivecpmnetwork.com/nqb3nvwtw?key=9aef419a4e1ff39475291adaa00a73f1" target="_blank" rel="nofollow sponsored noopener" className="hover:text-gold">إعلن معنا</a></li>
           </ul>
         </div>
         <div>
