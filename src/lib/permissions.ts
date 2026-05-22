@@ -34,7 +34,9 @@ export type Permission =
   | "delete_article"
   | "manage_categories"
   | "manage_users"
-  | "ingest_rss";
+  | "ingest_rss"
+  | "view_publish_stats";
+
 
 const PERMS: Record<AppRoleAll, Permission[]> = {
   admin: [
