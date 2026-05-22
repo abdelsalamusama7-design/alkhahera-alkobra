@@ -3,6 +3,7 @@ import { Search, Facebook, Youtube } from "lucide-react";
 const FACEBOOK_URL = "https://www.facebook.com/people/%D8%A7%D9%84%D9%82%D8%A7%D9%87%D8%B1%D8%A9-%D8%A7%D9%84%D9%83%D8%A8%D8%B1%D9%89/61588527261746/";
 const YOUTUBE_URL = "https://www.youtube.com/channel/UCDiyTZpB_Q3ZPjVPRqjvqYg";
 const TIKTOK_URL = "https://www.tiktok.com/@kaheraalkobra";
+const TODAY_LABEL = "الجمعة، ٢٢ مايو ٢٠٢٦";
 
 function TiktokIcon({ size = 14 }: { size?: number }) {
   return (
@@ -13,13 +14,6 @@ function TiktokIcon({ size = 14 }: { size?: number }) {
 }
 
 export function TopBar() {
-  const today = new Date().toLocaleDateString("ar-EG-u-ca-gregory", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   return (
     <div className="bg-primary text-primary-foreground text-xs">
       <div className="container mx-auto flex items-center justify-between gap-2 px-3 sm:px-4 py-2">
@@ -28,7 +22,7 @@ export function TopBar() {
           <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:text-gold transition-colors shrink-0"><Youtube size={14} /></a>
           <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="hover:text-gold transition-colors shrink-0"><TiktokIcon size={14} /></a>
           <span className="hidden sm:inline mx-2 h-3 w-px bg-white/30 shrink-0" />
-          <span className="hidden sm:inline opacity-90 truncate">{today}</span>
+          <span className="hidden sm:inline opacity-90 truncate">{TODAY_LABEL}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <span className="hidden md:inline opacity-90">القاهرة • 21°</span>
