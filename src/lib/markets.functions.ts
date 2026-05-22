@@ -209,6 +209,19 @@ export const getMarkets = createServerFn({ method: "GET" }).handler(async () => 
       const r = toQuote(name, q.get(sym), d);
       if (r) out.stocks.push(r);
     }
+
+    // Override S&P 500 with Alpha Vantage (SPY ETF) if available — more reliable change%
+    if (avSpy) {
+      const row: Quote = {
+        name: "S&P 500",
+        value: fmt(avSpy.price * 10, 2), // SPY ~= S&P/10
+        change: `${avSpy.pct >= 0 ? "+" : ""}${avSpy.pct.toFixed(2)}%`,
+        up: avSpy.pct >= 0,
+      };
+      const idx = out.stocks.findIndex((s) => s.name === "S&P 500");
+      if (idx >= 0) out.stocks[idx] = row; else out.stocks.push(row);
+    }
+
   } catch (e) {
     console.error("markets fetch failed", e);
     if (out.crypto.length === 0) {
