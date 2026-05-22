@@ -37,15 +37,16 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 text-center text-xs opacity-70 space-y-1">
           <p>© {new Date().getFullYear()} القاهرة الكبرى — جميع الحقوق محفوظة</p>
-          <p>
-            تنفيذ وتصميم{" "}
+          <p className="flex items-center justify-center gap-2 flex-wrap">
+            <span>تنفيذ وتصميم</span>
             <a
               href="https://www.instatech.site"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-gold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/20 text-gold border border-gold/30 hover:bg-gold hover:text-primary hover:scale-105 hover:shadow-md transition-all duration-300 text-xs font-semibold"
             >
               Insta-Tech-Labs
+              <ExternalLink size={12} strokeWidth={2.5} />
             </a>
           </p>
         </div>
