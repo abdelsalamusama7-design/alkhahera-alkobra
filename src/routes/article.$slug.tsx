@@ -142,6 +142,10 @@ function ArticlePage() {
               {a.content || a.excerpt}
             </div>
 
+            <div className="my-6">
+              <SponsoredLink label="اقرأ المزيد من المحتوى المختار لك" />
+            </div>
+
             {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
                 {((a as any).tags as string[]).map((t) => (
