@@ -1,3 +1,4 @@
+import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/articles.functions";
@@ -6,7 +7,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { Footer } from "@/components/site/Footer";
-import { formatArabicDate, timeAgoAr } from "@/lib/format";
+import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -115,7 +116,7 @@ function ArticlePage() {
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground border-y border-border py-3 mb-6">
               {a.author_name && <span className="flex items-center gap-1"><User size={14} />{a.author_name}</span>}
-              <span className="flex items-center gap-1"><Clock size={14} />{formatArabicDate(a.published_at)} • {timeAgoAr(a.published_at)}</span>
+              <span className="flex items-center gap-1"><Clock size={14} />{formatArabicDate(a.published_at)} • <TimeAgo iso={a.published_at} /></span>
               <span className="font-semibold">{a.source}</span>
             </div>
 
@@ -128,6 +129,21 @@ function ArticlePage() {
             <div className="prose prose-lg max-w-none text-foreground leading-loose text-base md:text-lg whitespace-pre-line">
               {a.content || a.excerpt}
             </div>
+
+            {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {((a as any).tags as string[]).map((t) => (
+                  <Link
+                    key={t}
+                    to="/search"
+                    search={{ q: t } as any}
+                    className="text-xs bg-muted hover:bg-gold hover:text-gold-foreground transition-colors px-3 py-1 rounded-full border border-border font-bold text-primary"
+                  >
+                    #{t}
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {a.source_url && (
               <div className="mt-6 text-sm">
@@ -151,7 +167,7 @@ function ArticlePage() {
                     {r.cover_image && <img src={r.cover_image} alt={r.title} className="h-20 w-24 shrink-0 rounded object-cover" loading="lazy" />}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{r.title}</h3>
-                      <div className="text-[10px] text-muted-foreground mt-1">{timeAgoAr(r.published_at)}</div>
+                      <div className="text-[10px] text-muted-foreground mt-1"><TimeAgo iso={r.published_at} /></div>
                     </div>
                   </article>
                 </Link>

@@ -10,7 +10,7 @@ export function MarketsTicker() {
     staleTime: 30_000,
   });
 
-  const items = [...(data?.fx ?? []), ...(data?.stocks ?? [])];
+  const items = [...(data?.fx ?? []), ...(data?.crypto ?? []), ...(data?.stocks ?? [])];
 
   return (
     <div className="bg-primary text-primary-foreground border-y border-gold/40">
