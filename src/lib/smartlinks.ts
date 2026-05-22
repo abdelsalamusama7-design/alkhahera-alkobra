@@ -14,6 +14,7 @@ export const SMARTLINKS = {
     "https://revolthem.com/fceqmdxp?key=6fc3e626e4860e73fbf29950c6bab95f",
   POPUNDER:
     "https://revolthem.com/fcak1w86u?key=238a4e91256cf9754a69ff2edfdecbef",
+  POPUNDER_2: "https://omg10.com/4/11044564",
   BANNER:
     "https://revolthem.com/s6d4ai0a?key=220c7b8cdc8ee230678ab45b46bde510",
 } as const;
