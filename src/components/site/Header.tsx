@@ -1,7 +1,8 @@
 import logo from "@/assets/logo.png";
-import { Search } from "lucide-react";
+import { Search, LogIn, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const navigate = useNavigate();
