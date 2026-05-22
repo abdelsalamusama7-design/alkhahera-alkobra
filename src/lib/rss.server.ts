@@ -9,7 +9,7 @@ export type RssSource = {
   source: string;
 };
 
-// Curated reliable Arabic news feeds — اليوم السابع، المصري اليوم، MSN عربي + قنوات إضافية.
+// Curated reliable Arabic news feeds.
 export const RSS_SOURCES: RssSource[] = [
   // اليوم السابع
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=65", categorySlug: "politics", source: "اليوم السابع" },
@@ -17,12 +17,20 @@ export const RSS_SOURCES: RssSource[] = [
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=88", categorySlug: "sports", source: "اليوم السابع" },
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=203", categorySlug: "arts", source: "اليوم السابع" },
   { url: "https://www.youm7.com/rss/SectionRss?SectionID=319", categorySlug: "accidents", source: "اليوم السابع" },
+  { url: "https://www.youm7.com/rss/SectionRss?SectionID=94", categorySlug: "technology", source: "اليوم السابع" },
+  { url: "https://www.youm7.com/rss/SectionRss?SectionID=97", categorySlug: "local", source: "اليوم السابع" },
   // المصري اليوم
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=14", categorySlug: "politics", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=18", categorySlug: "economy", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=16", categorySlug: "sports", source: "المصري اليوم" },
   { url: "https://www.almasryalyoum.com/rss/rssfeeds?sectionId=20", categorySlug: "arts", source: "المصري اليوم" },
-  // MSN عربي (يجمع أخبار عربية من مصادر متعددة)
+  // مصراوي
+  { url: "https://www.masrawy.com/export/rss", categorySlug: "local", source: "مصراوي" },
+  { url: "https://www.masrawy.com/export/rss?sectionId=204895", categorySlug: "politics", source: "مصراوي" },
+  { url: "https://www.masrawy.com/export/rss?sectionId=204896", categorySlug: "economy", source: "مصراوي" },
+  { url: "https://www.masrawy.com/export/rss?sectionId=205220", categorySlug: "sports", source: "مصراوي" },
+  { url: "https://www.masrawy.com/export/rss?sectionId=205230", categorySlug: "technology", source: "مصراوي" },
+  // MSN عربي
   { url: "https://www.msn.com/ar-xl/news/rss", categorySlug: "world", source: "MSN عربي" },
   // دولي
   { url: "https://feeds.bbci.co.uk/arabic/rss.xml", categorySlug: "world", source: "BBC عربي" },
@@ -42,12 +50,12 @@ function stripHtml(s: string): string {
   return s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
 
-// AI rewriter: يعيد صياغة العنوان والمقدمة بأسلوب احترافي وجذاب.
+// AI rewriter: يعيد صياغة العنوان والمقدمة بأسلوب احترافي + يولّد وسومًا للمقال.
 async function rewriteWithHook(
   title: string,
   excerpt: string,
   source: string,
-): Promise<{ title: string; excerpt: string } | null> {
+): Promise<{ title: string; excerpt: string; tags: string[] } | null> {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) return null;
   try {
@@ -63,11 +71,11 @@ async function rewriteWithHook(
           {
             role: "system",
             content:
-              "أنت محرر صحفي عربي محترف في بوابة (القاهرة الكبرى). مهمتك إعادة صياغة الأخبار بأسلوب جذاب واحترافي، بعنوان قوي يحتوي على هوك (Hook) يثير الفضول دون مبالغة أو إثارة كاذبة، ومقدمة (lede) قصيرة 2-3 جمل تلخّص الخبر. حافظ على الدقة والحقائق، لا تخترع أرقامًا أو أسماء، استخدم العربية الفصحى المبسطة. أرجع JSON فقط بالحقلين title و excerpt.",
+              "أنت محرر صحفي عربي محترف في بوابة (القاهرة الكبرى). مهمتك إعادة صياغة الأخبار بأسلوب جذاب واحترافي، بعنوان قوي يحتوي على هوك (Hook) صديق لمحركات البحث (SEO) يثير الفضول دون مبالغة أو إثارة كاذبة، ومقدمة (lede) قصيرة 2-3 جمل تلخّص الخبر. حافظ على الدقة والحقائق، لا تخترع أرقامًا أو أسماء، استخدم العربية الفصحى المبسطة. ولّد أيضًا قائمة وسوم (tags) من 3 إلى 6 كلمات/عبارات قصيرة بالعربية تصف الموضوع. أرجع JSON فقط بالحقول title و excerpt و tags.",
           },
           {
             role: "user",
-            content: `المصدر: ${source}\nالعنوان الأصلي: ${title}\nالمقدمة الأصلية: ${excerpt}\n\nأعد الصياغة وأرجع JSON بالشكل: {"title":"...","excerpt":"..."}`,
+            content: `المصدر: ${source}\nالعنوان الأصلي: ${title}\nالمقدمة الأصلية: ${excerpt}\n\nأعد الصياغة وأرجع JSON بالشكل: {"title":"...","excerpt":"...","tags":["...","..."]}`,
           },
         ],
         response_format: { type: "json_object" },
@@ -80,8 +88,13 @@ async function rewriteWithHook(
     const parsed = JSON.parse(content);
     const t = String(parsed.title || "").trim();
     const e = String(parsed.excerpt || "").trim();
+    const rawTags = Array.isArray(parsed.tags) ? parsed.tags : [];
+    const tags = rawTags
+      .map((x: any) => String(x ?? "").trim())
+      .filter((x: string) => x.length > 0 && x.length <= 50)
+      .slice(0, 8);
     if (!t || !e) return null;
-    return { title: t.slice(0, 280), excerpt: e.slice(0, 600) };
+    return { title: t.slice(0, 280), excerpt: e.slice(0, 600), tags };
   } catch {
     return null;
   }
@@ -141,6 +154,7 @@ export async function ingestAllFeeds() {
         const rewrite = await rewriteWithHook(rawTitle, rawExcerpt, src.source);
         const finalTitle = rewrite?.title || rawTitle;
         const finalExcerpt = rewrite?.excerpt || rawExcerpt;
+        const finalTags = rewrite?.tags ?? [];
         if (rewrite) rewritten++;
 
         const slug = `${slugify(finalTitle)}-${Math.abs(hash(String(link || finalTitle))).toString(36).slice(0, 6)}`;
@@ -157,6 +171,7 @@ export async function ingestAllFeeds() {
           is_published: true,
           is_breaking: false,
           published_at,
+          tags: finalTags,
         });
         if (error) {
           errors.push(`${src.source}: ${error.message}`);
