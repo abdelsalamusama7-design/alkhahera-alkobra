@@ -7,7 +7,7 @@ type Quote = { name: string; value: string; change: string; up: boolean };
 
 // In-memory cache for Alpha Vantage
 const avCache = new Map<string, { ts: number; data: any }>();
-const AV_TTL_MS = 60 * 60 * 1000; // 1 hour
+const AV_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours (free tier: 25 req/day)
 
 async function alphaVantage(params: Record<string, string>): Promise<any | null> {
   const key = process.env.ALPHAVANTAGE_API_KEY;
