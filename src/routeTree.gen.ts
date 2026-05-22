@@ -19,6 +19,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminTrafficRouteImport } from './routes/admin.traffic'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminIngestRouteImport } from './routes/admin.ingest'
@@ -26,6 +27,7 @@ import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as ApiPublicIngestRssRouteImport } from './routes/api/public/ingest-rss'
 import { Route as AdminUsersIdRouteImport } from './routes/admin.users.$id'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
+import { Route as AdminArticleStatsSlugRouteImport } from './routes/admin.article-stats.$slug'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -77,6 +79,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTrafficRoute = AdminTrafficRouteImport.update({
+  id: '/traffic',
+  path: '/traffic',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminStatsRoute = AdminStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
@@ -112,6 +119,11 @@ const AdminEditIdRoute = AdminEditIdRouteImport.update({
   path: '/edit/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminArticleStatsSlugRoute = AdminArticleStatsSlugRouteImport.update({
+  id: '/article-stats/$slug',
+  path: '/article-stats/$slug',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,10 +136,12 @@ export interface FileRoutesByFullPath {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/stats': typeof AdminStatsRoute
+  '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/article-stats/$slug': typeof AdminArticleStatsSlugRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
@@ -142,10 +156,12 @@ export interface FileRoutesByTo {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/stats': typeof AdminStatsRoute
+  '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/article-stats/$slug': typeof AdminArticleStatsSlugRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
@@ -162,10 +178,12 @@ export interface FileRoutesById {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/stats': typeof AdminStatsRoute
+  '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/article/$slug': typeof ArticleSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/article-stats/$slug': typeof AdminArticleStatsSlugRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/admin/users/$id': typeof AdminUsersIdRoute
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
@@ -183,10 +201,12 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/stats'
+    | '/admin/traffic'
     | '/admin/users'
     | '/article/$slug'
     | '/category/$slug'
     | '/admin/'
+    | '/admin/article-stats/$slug'
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
@@ -201,10 +221,12 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/stats'
+    | '/admin/traffic'
     | '/admin/users'
     | '/article/$slug'
     | '/category/$slug'
     | '/admin'
+    | '/admin/article-stats/$slug'
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
@@ -220,10 +242,12 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/stats'
+    | '/admin/traffic'
     | '/admin/users'
     | '/article/$slug'
     | '/category/$slug'
     | '/admin/'
+    | '/admin/article-stats/$slug'
     | '/admin/edit/$id'
     | '/admin/users/$id'
     | '/api/public/ingest-rss'
@@ -313,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/traffic': {
+      id: '/admin/traffic'
+      path: '/traffic'
+      fullPath: '/admin/traffic'
+      preLoaderRoute: typeof AdminTrafficRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/stats': {
       id: '/admin/stats'
       path: '/stats'
@@ -362,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEditIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/article-stats/$slug': {
+      id: '/admin/article-stats/$slug'
+      path: '/article-stats/$slug'
+      fullPath: '/admin/article-stats/$slug'
+      preLoaderRoute: typeof AdminArticleStatsSlugRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -382,8 +420,10 @@ interface AdminRouteChildren {
   AdminIngestRoute: typeof AdminIngestRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminStatsRoute: typeof AdminStatsRoute
+  AdminTrafficRoute: typeof AdminTrafficRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminArticleStatsSlugRoute: typeof AdminArticleStatsSlugRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
 }
 
@@ -392,8 +432,10 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIngestRoute: AdminIngestRoute,
   AdminNewRoute: AdminNewRoute,
   AdminStatsRoute: AdminStatsRoute,
+  AdminTrafficRoute: AdminTrafficRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
+  AdminArticleStatsSlugRoute: AdminArticleStatsSlugRoute,
   AdminEditIdRoute: AdminEditIdRoute,
 }
 
