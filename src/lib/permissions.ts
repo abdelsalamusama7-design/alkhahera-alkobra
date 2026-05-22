@@ -34,30 +34,33 @@ export type Permission =
   | "delete_article"
   | "manage_categories"
   | "manage_users"
-  | "ingest_rss";
+  | "ingest_rss"
+  | "view_publish_stats";
+
 
 const PERMS: Record<AppRoleAll, Permission[]> = {
   admin: [
     "view_admin", "create_article", "edit_any_article", "edit_own_article",
     "publish_article", "mark_breaking", "delete_article",
-    "manage_categories", "manage_users", "ingest_rss",
+    "manage_categories", "manage_users", "ingest_rss", "view_publish_stats",
   ],
   president: [
     "view_admin", "edit_any_article", "publish_article",
-    "mark_breaking", "delete_article", "manage_categories",
+    "mark_breaking", "delete_article", "manage_categories", "view_publish_stats",
   ],
   board_director: [
     "view_admin", "edit_any_article", "publish_article",
-    "mark_breaking", "delete_article", "manage_categories",
+    "mark_breaking", "delete_article", "manage_categories", "view_publish_stats",
   ],
   editor_in_chief: [
     "view_admin", "create_article", "edit_any_article", "edit_own_article",
-    "publish_article", "mark_breaking", "delete_article", "manage_categories",
+    "publish_article", "mark_breaking", "delete_article", "manage_categories", "view_publish_stats",
   ],
   chief_editor: [
     "view_admin", "create_article", "edit_any_article", "edit_own_article",
-    "publish_article", "mark_breaking", "delete_article", "manage_categories",
+    "publish_article", "mark_breaking", "delete_article", "manage_categories", "view_publish_stats",
   ],
+
   editor: [
     "view_admin", "create_article", "edit_any_article", "edit_own_article",
     "publish_article",
