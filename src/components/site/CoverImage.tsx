@@ -104,7 +104,7 @@ export function CoverImage({
       className={cn(
         "relative w-full overflow-hidden bg-muted",
         RATIO_CLASS[ratio],
-        smRatio ? `sm:${RATIO_CLASS[smRatio]}` : null,
+        smRatio ? SM_RATIO_CLASS[smRatio] : null,
         className,
       )}
     >
