@@ -109,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: React.ReactNode }) {
   // Inline pre-hydration script: applies the saved theme before React paints,
   // avoiding a flash of the wrong theme and any class mismatch on <html>.
-  const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+  const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){t='light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
