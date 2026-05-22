@@ -68,11 +68,22 @@ function AdsManager() {
   const upsertFn = useServerFn(upsertPlacementFn);
   const deleteFn = useServerFn(deletePlacementFn);
   const checkFn = useServerFn(checkAdsNowFn);
+  const resetFn = useServerFn(resetAdCountersFn);
 
   const { data: serverList = [], isLoading } = useQuery({
     queryKey: ["ad-placements-all"],
     queryFn: () => listFn(),
   });
+
+  const totals = serverList.reduce(
+    (acc, r: any) => {
+      acc.impressions += Number(r.impressions ?? 0);
+      acc.clicks += Number(r.clicks ?? 0);
+      return acc;
+    },
+    { impressions: 0, clicks: 0 }
+  );
+  const totalCtr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
 
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [newItems, setNewItems] = useState<Draft[]>([]);
