@@ -27,8 +27,8 @@ export function NavBar() {
         {/* Mobile label */}
         <span className="md:hidden text-sm font-bold py-3">الأقسام</span>
 
-        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-wrap order-3 w-full" : "hidden md:flex"}`}>
-          <Link to="/" className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10">
+        <div className={`flex-1 items-center overflow-x-auto ${open ? "flex flex-col md:flex-row md:flex-wrap order-3 w-full" : "hidden md:flex"}`}>
+          <Link to="/" onClick={() => setOpen(false)} className="w-full md:w-auto px-4 py-3 min-h-[44px] text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors md:border-l border-white/10 text-right">
             الرئيسية
           </Link>
           {cats.map((c: any) => (
@@ -37,7 +37,7 @@ export function NavBar() {
               to="/category/$slug"
               params={{ slug: c.slug }}
               onClick={() => setOpen(false)}
-              className="px-3 sm:px-4 py-3 text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors border-l border-white/10"
+              className="w-full md:w-auto px-4 py-3 min-h-[44px] text-sm font-bold whitespace-nowrap hover:bg-white/10 hover:text-gold transition-colors md:border-l border-white/10 text-right"
             >
               {c.name}
             </Link>
@@ -53,17 +53,17 @@ export function NavBar() {
                   <Link
                     to="/admin/ingest"
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors"
+                    className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-sm font-semibold hover:bg-white/10 transition-colors"
                   >
-                    <Settings size={14} />
+                    <Settings size={16} />
                     لوحة التحكم
                   </Link>
                 )}
                 <button
                   onClick={() => { setOpen(false); signOut(); }}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors w-full text-right"
+                  className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-sm font-semibold hover:bg-white/10 transition-colors w-full text-right"
                 >
-                  <LogOut size={14} />
+                  <LogOut size={16} />
                   خروج
                 </button>
               </>
@@ -71,9 +71,9 @@ export function NavBar() {
               <Link
                 to="/login"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold hover:bg-white/10 transition-colors"
+                className="flex items-center gap-2 px-4 py-3 min-h-[44px] text-sm font-semibold hover:bg-white/10 transition-colors"
               >
-                <LogIn size={14} />
+                <LogIn size={16} />
                 دخول
               </Link>
             )}
@@ -89,8 +89,8 @@ export function NavBar() {
             className="bg-transparent border-0 outline-none text-sm py-1.5 px-2 placeholder:text-white/60 w-40"
           />
         </form>
-        <button className="md:hidden p-2 shrink-0" aria-label="القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-          <Menu size={22} />
+        <button className="md:hidden inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-2 shrink-0 rounded-md hover:bg-white/10 transition-colors" aria-label="القائمة" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          <Menu size={24} />
         </button>
       </div>
     </nav>

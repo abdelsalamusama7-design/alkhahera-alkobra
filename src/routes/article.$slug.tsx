@@ -123,8 +123,15 @@ function ArticlePage() {
             </div>
 
             {a.cover_image && (
-              <figure className="mb-6">
-                <img src={a.cover_image} alt={a.title} className="w-full rounded-lg object-cover" loading="eager" />
+              <figure className="mb-6 -mx-3 sm:mx-0">
+                <div className="relative w-full overflow-hidden sm:rounded-lg bg-muted aspect-[4/3] sm:aspect-[16/9]">
+                  <img
+                    src={a.cover_image}
+                    alt={a.title}
+                    className="absolute inset-0 h-full w-full object-cover object-center"
+                    loading="eager"
+                  />
+                </div>
               </figure>
             )}
 
