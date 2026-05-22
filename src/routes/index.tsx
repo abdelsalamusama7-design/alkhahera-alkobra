@@ -64,9 +64,12 @@ function Index() {
   const latestList = latestDb.length ? latestDb : latestNews;
   const mostRead = (mostReadDb.length ? mostReadDb : latestNews).slice(0, 5);
   const [hero, ...sideHero] = heroList;
-  const breakingItems = breakingDb.length ? breakingDb : [
-    "تصفّح أحدث الأخبار من لوحة التحكم — اسحب RSS لإضافة محتوى حقيقي.",
-  ];
+  const fallbackTitles = [...heroDb, ...latestDb].slice(0, 10).map((n) => n.title);
+  const breakingItems = breakingDb.length
+    ? breakingDb
+    : fallbackTitles.length
+      ? fallbackTitles
+      : ["تصفّح أحدث الأخبار من لوحة التحكم — اسحب RSS لإضافة محتوى حقيقي."];
 
   function ItemLink({ item, children }: { item: any; children: React.ReactNode }) {
     if (item.slug) return <Link to="/article/$slug" params={{ slug: item.slug }} className="block h-full">{children}</Link>;
