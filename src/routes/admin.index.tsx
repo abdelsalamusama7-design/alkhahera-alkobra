@@ -2,12 +2,12 @@ import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminListArticles, deleteArticle } from "@/lib/articles.functions";
+import { adminListArticles, deleteArticle, findDuplicateCovers } from "@/lib/articles.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, ExternalLink } from "lucide-react";
+import { Edit, Trash2, ExternalLink, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminList,
@@ -21,6 +21,12 @@ function AdminList() {
     queryKey: ["admin-articles", q],
     queryFn: () => adminListArticles({ data: { q: q || undefined, limit: 100 } }),
   });
+  const { data: dupData } = useQuery({
+    queryKey: ["admin-duplicate-covers"],
+    queryFn: () => findDuplicateCovers(),
+    staleTime: 60_000,
+  });
+  const duplicates = dupData?.duplicates ?? [];
 
   async function onDelete(id: string) {
     if (!confirm("هل تريد حذف هذا الخبر؟")) return;
@@ -37,6 +43,38 @@ function AdminList() {
         <h1 className="text-2xl font-extrabold text-primary">إدارة الأخبار</h1>
         {canCreate && <Link to="/admin/new"><Button>+ خبر جديد</Button></Link>}
       </div>
+
+      {duplicates.length > 0 && (
+        <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
+          <div className="flex items-center gap-2 mb-2 text-destructive font-bold">
+            <AlertTriangle size={18} />
+            تم اكتشاف {duplicates.length} صورة غلاف مكررة بين عدة مقالات
+          </div>
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {duplicates.slice(0, 10).map((g) => (
+              <div key={g.cover} className="flex gap-3 items-start bg-background/60 rounded p-2">
+                <img src={g.cover} alt="" className="w-16 h-16 object-cover rounded border border-border shrink-0" loading="lazy" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-muted-foreground mb-1">{g.articles.length} مقالات تستخدم نفس الصورة:</div>
+                  <ul className="space-y-1">
+                    {g.articles.map((a) => (
+                      <li key={a.id} className="text-sm">
+                        <Link to="/admin/edit/$id" params={{ id: a.id }} className="text-primary hover:underline line-clamp-1">
+                          {a.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+            {duplicates.length > 10 && (
+              <div className="text-xs text-muted-foreground text-center">…و {duplicates.length - 10} مجموعات أخرى</div>
+            )}
+          </div>
+        </div>
+      )}
+
       <Input placeholder="بحث بالعنوان..." value={q} onChange={(e) => setQ(e.target.value)} className="mb-4 max-w-md" />
       <div className="bg-card border border-border rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
