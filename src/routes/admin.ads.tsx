@@ -50,12 +50,15 @@ const TYPE_LABELS: Record<AdPlacementType, string> = {
   "custom-html": "HTML مخصص",
 };
 
-type Draft = Omit<AdPlacementRow, "health_status" | "fail_count" | "last_checked_at" | "last_error"> & {
+type Draft = {
   id?: string;
-  health_status?: string;
-  fail_count?: number;
-  last_checked_at?: string | null;
-  last_error?: string | null;
+  name: string;
+  slot: string;
+  type: AdPlacementType;
+  enabled: boolean;
+  order_index: number;
+  is_fallback: boolean;
+  config: Record<string, any>;
 };
 
 function AdsManager() {
