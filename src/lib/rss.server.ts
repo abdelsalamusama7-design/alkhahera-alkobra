@@ -75,14 +75,22 @@ function stripHtml(s: string): string {
   return s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
 
-// AI rewriter: يعيد صياغة العنوان والمقدمة بأسلوب احترافي + يولّد وسومًا للمقال.
+// AI rewriter: يعيد صياغة العنوان + المقدمة + يولّد محتوى مقال كامل متنوع + وسومًا.
 async function rewriteWithHook(
   title: string,
   excerpt: string,
   source: string,
-): Promise<{ title: string; excerpt: string; tags: string[] } | null> {
+): Promise<{ title: string; excerpt: string; content: string; tags: string[] } | null> {
   const apiKey = process.env.LOVABLE_API_KEY;
   if (!apiKey) return null;
+  const styles = [
+    "أسلوب تحليلي يربط الخبر بسياق أوسع وتداعياته على القارئ المصري",
+    "أسلوب سردي قصصي يبدأ بمشهد لافت ثم يفكّك الخبر",
+    "أسلوب تقريري مباشر يجيب على من/ماذا/متى/أين/لماذا بترتيب واضح",
+    "أسلوب أسئلة وأجوبة (3-4 أسئلة جوهرية مع إجابات موجزة)",
+    "أسلوب توضيحي Explainer يبسّط المصطلحات ويشرح الخلفية",
+  ];
+  const style = styles[Math.abs(hash(title + source)) % styles.length];
   try {
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -96,11 +104,11 @@ async function rewriteWithHook(
           {
             role: "system",
             content:
-              "أنت محرر صحفي عربي محترف في بوابة (القاهرة الكبرى). مهمتك إعادة صياغة الأخبار بأسلوب جذاب واحترافي، بعنوان قوي يحتوي على هوك (Hook) صديق لمحركات البحث (SEO) يثير الفضول دون مبالغة أو إثارة كاذبة، ومقدمة (lede) قصيرة 2-3 جمل تلخّص الخبر. حافظ على الدقة والحقائق، لا تخترع أرقامًا أو أسماء، استخدم العربية الفصحى المبسطة. ولّد أيضًا قائمة وسوم (tags) من 3 إلى 6 كلمات/عبارات قصيرة بالعربية تصف الموضوع. أرجع JSON فقط بالحقول title و excerpt و tags.",
+              "أنت محرر صحفي عربي محترف في بوابة (القاهرة الكبرى). أعد صياغة الخبر بأسلوب صحفي جذاب. أرجع JSON فقط بالحقول: title (عنوان قوي ≤ 90 حرفًا فيه هوك SEO صادق)، excerpt (مقدمة 2-3 جمل ≤ 280 حرفًا)، content (مقال كامل 280-450 كلمة، 4-6 فقرات مفصولة بسطر فارغ، يحتوي على عنوان فرعي واحد بصيغة ## في المنتصف، يلتزم بالحقائق دون اختراع أرقام أو أسماء أو اقتباسات)، tags (3-6 وسوم عربية قصيرة). استخدم العربية الفصحى المبسطة.",
           },
           {
             role: "user",
-            content: `المصدر: ${source}\nالعنوان الأصلي: ${title}\nالمقدمة الأصلية: ${excerpt}\n\nأعد الصياغة وأرجع JSON بالشكل: {"title":"...","excerpt":"...","tags":["...","..."]}`,
+            content: `المصدر: ${source}\nالأسلوب المطلوب: ${style}\nالعنوان الأصلي: ${title}\nالمحتوى الأصلي: ${excerpt}\n\nأرجع JSON: {"title":"...","excerpt":"...","content":"...","tags":["..."]}`,
           },
         ],
         response_format: { type: "json_object" },
@@ -113,16 +121,56 @@ async function rewriteWithHook(
     const parsed = JSON.parse(content);
     const t = String(parsed.title || "").trim();
     const e = String(parsed.excerpt || "").trim();
+    const body = String(parsed.content || "").trim();
     const rawTags = Array.isArray(parsed.tags) ? parsed.tags : [];
     const tags = rawTags
       .map((x: any) => String(x ?? "").trim())
       .filter((x: string) => x.length > 0 && x.length <= 50)
       .slice(0, 8);
-    if (!t || !e) return null;
-    return { title: t.slice(0, 280), excerpt: e.slice(0, 600), tags };
+    if (!t || !e || !body) return null;
+    return { title: t.slice(0, 280), excerpt: e.slice(0, 600), content: body.slice(0, 6000), tags };
   } catch {
     return null;
   }
+}
+
+// جلب الأخبار الرائجة من GNews
+async function fetchTrendingFromGNews(): Promise<
+  { title: string; excerpt: string; link: string | null; cover: string | null; published_at: string; categorySlug: string; source: string }[]
+> {
+  const key = process.env.GNEWS_API_KEY;
+  if (!key) return [];
+  const topics: { topic: string; categorySlug: string }[] = [
+    { topic: "world", categorySlug: "world" },
+    { topic: "business", categorySlug: "economy" },
+    { topic: "technology", categorySlug: "technology" },
+    { topic: "sports", categorySlug: "sports" },
+    { topic: "entertainment", categorySlug: "arts" },
+  ];
+  const out: any[] = [];
+  for (const t of topics) {
+    try {
+      const url = `https://gnews.io/api/v4/top-headlines?topic=${t.topic}&lang=ar&country=eg&max=6&apikey=${key}`;
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const j: any = await r.json();
+      for (const a of j.articles ?? []) {
+        if (!a?.title) continue;
+        out.push({
+          title: String(a.title).slice(0, 280),
+          excerpt: String(a.description || a.content || "").slice(0, 500),
+          link: a.url || null,
+          cover: a.image || null,
+          published_at: a.publishedAt ? new Date(a.publishedAt).toISOString() : new Date().toISOString(),
+          categorySlug: t.categorySlug,
+          source: `GNews · ${a.source?.name || "trending"}`,
+        });
+      }
+    } catch {
+      // skip topic
+    }
+  }
+  return out;
 }
 
 // مولّد صورة تلقائي للأخبار التي لا تحتوي على صورة
