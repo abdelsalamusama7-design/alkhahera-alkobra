@@ -186,8 +186,18 @@ function Index() {
           </div>
         </section>
 
+        {/* Native Banner — يندمج مع شكل الموقع */}
+        <section className="container mx-auto px-4 py-6">
+          <AdsterraNativeBanner />
+        </section>
+
+        {/* بانر 468x60 */}
+        <section className="container mx-auto px-4 py-3 flex justify-center">
+          <AdsterraBanner adKey="ffd24356f30f4d3b5eaa1598770263e5" width={468} height={60} />
+        </section>
 
         <BourseSection />
+
 
         <section className="container mx-auto px-4 py-6">
 
