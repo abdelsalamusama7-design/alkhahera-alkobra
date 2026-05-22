@@ -79,7 +79,14 @@ function LoginPage() {
               />
             </div>
             <div className="space-y-1">
-              <Label>كلمة السر</Label>
+              <div className="flex items-center justify-between">
+                <Label>كلمة السر</Label>
+                {mode === "login" && (
+                  <Link to="/forgot-password" className="text-xs text-gold hover:underline">
+                    نسيت كلمة السر؟
+                  </Link>
+                )}
+              </div>
               <Input
                 type="password"
                 required
