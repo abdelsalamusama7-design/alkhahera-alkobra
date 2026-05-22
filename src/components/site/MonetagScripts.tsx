@@ -13,13 +13,14 @@ export function MonetagScripts() {
     cfg.monetag.forEach((m) => {
       if (!m.enabled || !m.src || !m.zone) return;
       // تجنب الحقن المكرر
+      const src = m.src.startsWith("http") ? m.src : `https://${m.src}`;
       const existing = document.querySelector(
-        `script[data-monetag-id="${m.id}"]`
+        `script[data-monetag-id="${m.id}"], script[src="${src}"][data-zone="${m.zone}"]`
       );
       if (existing) return;
 
       const s = document.createElement("script");
-      s.src = m.src.startsWith("http") ? m.src : `https://${m.src}`;
+      s.src = src;
       s.async = true;
       s.dataset.zone = m.zone;
       s.dataset.cfasync = "false";

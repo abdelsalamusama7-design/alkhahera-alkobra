@@ -118,6 +118,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="242128"
+          data-cfasync="false"
+          data-monetag-id="quge5"
+          async
+        />
+        <script
+          src="https://al5sm.com/tag.min.js"
+          data-zone="11044569"
+          data-cfasync="false"
+          data-monetag-id="al5sm"
+          async
+        />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
