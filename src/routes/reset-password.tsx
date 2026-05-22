@@ -22,6 +22,7 @@ function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    supabase.auth.getSession();
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "PASSWORD_RECOVERY" && session) {
         // user clicked the link; session is set, ready to update password
