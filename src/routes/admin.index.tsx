@@ -2,12 +2,12 @@ import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminListArticles, deleteArticle } from "@/lib/articles.functions";
+import { adminListArticles, deleteArticle, findDuplicateCovers } from "@/lib/articles.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, ExternalLink } from "lucide-react";
+import { Edit, Trash2, ExternalLink, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminList,
