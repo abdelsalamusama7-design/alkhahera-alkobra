@@ -3,6 +3,7 @@ import { Search, LogIn, LogOut, Settings } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 export function Header() {
   const navigate = useNavigate();
@@ -65,35 +66,38 @@ export function Header() {
               ))}
             </div>
 
-            {/* Auth buttons */}
-            {user ? (
-              <div className="flex items-center gap-2">
-                {isAdmin && (
-                  <Link
-                    to="/admin/ingest"
-                    className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+            {/* Auth + theme */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin/ingest"
+                      className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                    >
+                      <Settings size={14} />
+                      لوحة التحكم
+                    </Link>
+                  )}
+                  <button
+                    onClick={signOut}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors"
                   >
-                    <Settings size={14} />
-                    لوحة التحكم
-                  </Link>
-                )}
-                <button
-                  onClick={signOut}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors"
+                    <LogOut size={14} />
+                    خروج
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
-                  <LogOut size={14} />
-                  خروج
-                </button>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                <LogIn size={14} />
-                دخول
-              </Link>
-            )}
+                  <LogIn size={14} />
+                  دخول
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
