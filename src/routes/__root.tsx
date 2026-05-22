@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { WhatsAppFab } from "@/components/site/WhatsAppFab";
 
 import appCss from "../styles.css?url";
 
@@ -126,6 +127,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <Outlet />
+        <WhatsAppFab />
       </ThemeProvider>
     </QueryClientProvider>
   );
