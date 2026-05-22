@@ -54,7 +54,7 @@ function IngestPage() {
               </span>
             </div>
           )}
-          {result.facebookErrors?.length > 1 && (
+          {result.facebookErrors?.length > 0 && (
             <div>
               <div className="text-sm font-bold text-breaking">أخطاء الفيسبوك:</div>
               <ul className="text-xs text-muted-foreground list-disc list-inside">
@@ -62,7 +62,7 @@ function IngestPage() {
               </ul>
             </div>
           )}
-          {result.errors?.length > 1 && (
+          {result.errors?.length > 0 && (
             <div>
               <div className="text-sm font-bold text-breaking">أخطاء:</div>
               <ul className="text-xs text-muted-foreground list-disc list-inside">
