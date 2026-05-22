@@ -7,6 +7,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
+import { SponsoredLink } from "@/components/site/SponsoredLink";
 import { Footer } from "@/components/site/Footer";
 import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
@@ -140,6 +141,10 @@ function ArticlePage() {
 
             <div className="prose prose-lg max-w-none text-foreground leading-loose text-base md:text-lg whitespace-pre-line">
               {a.content || a.excerpt}
+            </div>
+
+            <div className="my-6">
+              <SponsoredLink label="اقرأ المزيد من المحتوى المختار لك" />
             </div>
 
             {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (

@@ -95,6 +95,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap",
       },
     ],
+    scripts: [
+      // Adsterra Popunder (1 لكل صفحة)
+      { src: "https://pl29522752.effectivecpmnetwork.com/e3/0d/81/e30d81e12c8ca7fa9dced44373e6fa55.js", async: true },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
