@@ -178,6 +178,47 @@ export type Database = {
         }
         Relationships: []
       }
+      social_posts: {
+        Row: {
+          article_id: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          platform: string
+          post_id: string | null
+          posted_at: string | null
+          status: string
+        }
+        Insert: {
+          article_id: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          platform: string
+          post_id?: string | null
+          posted_at?: string | null
+          status?: string
+        }
+        Update: {
+          article_id?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          platform?: string
+          post_id?: string | null
+          posted_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_posts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
