@@ -10,7 +10,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
-  const { user, loading, isEditor, signOut } = useAuth();
+  const { user, loading, isStaff, can, signOut } = useAuth();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
@@ -20,12 +20,12 @@ function AdminLayout() {
 
   if (loading) return <div className="p-8 text-center" dir="rtl">جارٍ التحميل...</div>;
   if (!user) return null;
-  if (!isEditor) {
+  if (!isStaff) {
     return (
       <div className="min-h-screen flex items-center justify-center p-8" dir="rtl">
         <div className="text-center bg-card border border-border rounded-lg p-8 max-w-md">
           <h1 className="text-xl font-extrabold text-primary mb-2">ليس لديك صلاحية الوصول</h1>
-          <p className="text-sm text-muted-foreground mb-4">يجب أن يمنحك الأدمن دور محرر أو أدمن.</p>
+          <p className="text-sm text-muted-foreground mb-4">يجب أن يمنحك مسؤول النظام دوراً مناسباً.</p>
           <Button onClick={() => signOut().then(() => navigate({ to: "/login" }))}>تسجيل الخروج</Button>
         </div>
       </div>
@@ -33,12 +33,12 @@ function AdminLayout() {
   }
 
   const nav = [
-    { to: "/admin", label: "الأخبار", icon: Newspaper, exact: true },
-    { to: "/admin/new", label: "خبر جديد", icon: Plus },
-    { to: "/admin/categories", label: "الأقسام", icon: FolderTree },
-    { to: "/admin/users", label: "المستخدمون", icon: Users },
-    { to: "/admin/ingest", label: "سحب RSS", icon: Rss },
-  ];
+    { to: "/admin", label: "الأخبار", icon: Newspaper, exact: true, show: true },
+    { to: "/admin/new", label: "خبر جديد", icon: Plus, show: can("create_article") },
+    { to: "/admin/categories", label: "الأقسام", icon: FolderTree, show: can("manage_categories") },
+    { to: "/admin/users", label: "المستخدمون", icon: Users, show: can("manage_users") },
+    { to: "/admin/ingest", label: "سحب RSS", icon: Rss, show: can("ingest_rss") },
+  ].filter((n) => n.show);
 
   return (
     <div className="min-h-screen bg-muted/30" dir="rtl">
