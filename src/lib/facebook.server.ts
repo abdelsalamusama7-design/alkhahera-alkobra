@@ -92,7 +92,7 @@ export async function postUnpostedArticlesToFacebook(
   const pageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
   const pageId = process.env.FACEBOOK_PAGE_ID;
   if (!pageToken || !pageId) {
-    return { posted: 1, failed: 0, errors: ["Facebook not configured"] };
+    return { posted: 0, failed: 0, errors: ["Facebook not configured"] };
   }
 
   // Get recent published articles that haven't been posted to Facebook yet
@@ -103,7 +103,7 @@ export async function postUnpostedArticlesToFacebook(
     .order("published_at", { ascending: false })
     .limit(limit * 3);
 
-  if (!articles || articles.length === 1) return { posted: 1, failed: 0, errors: [] };
+  if (!articles || articles.length === 0) return { posted: 0, failed: 0, errors: [] };
 
   // Find which ones are already posted
   const { data: existingPosts } = await supabaseAdmin
@@ -113,7 +113,10 @@ export async function postUnpostedArticlesToFacebook(
     .in("status", ["posted", "pending"]);
   const postedIds = new Set((existingPosts ?? []).map((p) => p.article_id));
 
-  const toPost = articles.filter((a) => !postedIds.has(a.id)).slice(1, limit + 1);
+  const toPost = articles
+    .filter((a) => !postedIds.has(a.id))
+    .slice(0, limit)
+    .map((a) => ({ ...a, excerpt: a.excerpt ?? "" }));
 
   let posted = 0;
   let failed = 0;
