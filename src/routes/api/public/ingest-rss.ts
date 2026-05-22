@@ -6,9 +6,23 @@ export const Route = createFileRoute("/api/public/ingest-rss")({
     handlers: {
       GET: async ({ request }) => {
         const url = new URL(request.url);
-        const token = url.searchParams.get("token") || request.headers.get("x-ingest-token");
-        const expected = process.env.RSS_INGEST_TOKEN;
-        if (!expected || token !== expected) {
+        const provided =
+          url.searchParams.get("token") ||
+          request.headers.get("x-ingest-token") ||
+          request.headers.get("apikey") ||
+          (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+
+        const customToken = process.env.RSS_INGEST_TOKEN;
+        const anonKey =
+          process.env.SUPABASE_PUBLISHABLE_KEY ||
+          process.env.SUPABASE_ANON_KEY ||
+          "";
+
+        const ok =
+          (customToken && provided === customToken) ||
+          (!!anonKey && provided === anonKey);
+
+        if (!ok) {
           return new Response("Unauthorized", { status: 401 });
         }
         const result = await ingestAllFeeds();
