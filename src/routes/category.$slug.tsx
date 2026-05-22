@@ -49,9 +49,15 @@ function CategoryPage() {
               <Link key={a.id} to="/article/$slug" params={{ slug: a.slug }} className="block">
                 <article className="news-card group overflow-hidden rounded-md bg-card border border-border h-full">
                   {a.cover_image && (
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      <img src={a.cover_image} alt={a.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    </div>
+                    <CoverImage
+                      src={a.cover_image}
+                      alt={a.title}
+                      ratio="16/10"
+                      smRatio="16/9"
+                      focus="top"
+                      sizeHint={800}
+                      imgClassName="group-hover:scale-105"
+                    />
                   )}
                   <div className="p-3">
                     <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{a.title}</h3>
