@@ -43,12 +43,12 @@ function IngestPage() {
             <div className="flex items-center gap-2 text-sm border-t border-border pt-3">
               <Facebook size={16} className="text-blue-600" />
               <span>
-                {result.facebookPosted > 1 ? (
+                {result.facebookPosted > 0 ? (
                   <span className="text-emerald-600 font-semibold">نُشر {result.facebookPosted} على الفيسبوك</span>
                 ) : (
                   <span className="text-muted-foreground">لم يُنشر على الفيسبوك</span>
                 )}
-                {result.facebookFailed > 1 && (
+                {result.facebookFailed > 0 && (
                   <span className="text-breaking mr-2">({result.facebookFailed} فشل)</span>
                 )}
               </span>
