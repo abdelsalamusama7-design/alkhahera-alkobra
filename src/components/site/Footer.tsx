@@ -33,8 +33,19 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 py-4 text-center text-xs opacity-70">
-          © {new Date().getFullYear()} القاهرة الكبرى — جميع الحقوق محفوظة
+        <div className="container mx-auto px-4 py-4 text-center text-xs opacity-70 space-y-1">
+          <p>© {new Date().getFullYear()} القاهرة الكبرى — جميع الحقوق محفوظة</p>
+          <p>
+            تنفيذ وتصميم{" "}
+            <a
+              href="https://www.instatech.site"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gold transition-colors"
+            >
+              Insta-Tech-Labs
+            </a>
+          </p>
         </div>
       </div>
     </footer>
