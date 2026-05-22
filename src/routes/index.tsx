@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
