@@ -41,7 +41,7 @@ function LoginPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate({ to: "/admin" });
+        navigate({ to: "/admin/ingest" });
       }
     } catch (e: any) {
       setErr(e.message || "حدث خطأ");
