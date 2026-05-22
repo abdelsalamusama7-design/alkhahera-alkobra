@@ -116,9 +116,16 @@ function UserRow({
   return (
     <tr className="border-t border-border align-top">
       <td className="p-3">
-        <div className="font-bold">{user.display_name || "—"}</div>
+        <Link
+          to="/admin/users/$id"
+          params={{ id: user.user_id }}
+          className="font-bold hover:text-primary"
+        >
+          {user.display_name || "—"}
+        </Link>
         <div className="text-xs text-muted-foreground">{user.email}</div>
       </td>
+
       <td className="p-3">
         <div className="flex flex-wrap gap-1.5">
           {user.roles.length === 0 && (
