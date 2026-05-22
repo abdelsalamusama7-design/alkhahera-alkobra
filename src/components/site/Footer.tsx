@@ -22,7 +22,7 @@ export function Footer() {
             <span className="text-[11px] text-white/70 tracking-wide">بوابة الأخبار المصرية والعربية</span>
           </div>
         </div>
-      </<div>
+      </div>
       <div className="container mx-auto px-4 py-8 sm:py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
         <div>
           <h4 className="text-gold font-extrabold mb-3">القاهرة الكبرى</h4>
