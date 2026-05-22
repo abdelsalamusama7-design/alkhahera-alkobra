@@ -1,3 +1,4 @@
+import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getArticleBySlug } from "@/lib/articles.functions";
@@ -115,7 +116,7 @@ function ArticlePage() {
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground border-y border-border py-3 mb-6">
               {a.author_name && <span className="flex items-center gap-1"><User size={14} />{a.author_name}</span>}
-              <span className="flex items-center gap-1"><Clock size={14} />{formatArabicDate(a.published_at)} • {timeAgoAr(a.published_at)}</span>
+              <span className="flex items-center gap-1"><Clock size={14} />{formatArabicDate(a.published_at)} • <TimeAgo iso={a.published_at} /></span>
               <span className="font-semibold">{a.source}</span>
             </div>
 
@@ -151,7 +152,7 @@ function ArticlePage() {
                     {r.cover_image && <img src={r.cover_image} alt={r.title} className="h-20 w-24 shrink-0 rounded object-cover" loading="lazy" />}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{r.title}</h3>
-                      <div className="text-[10px] text-muted-foreground mt-1">{timeAgoAr(r.published_at)}</div>
+                      <div className="text-[10px] text-muted-foreground mt-1"><TimeAgo iso={r.published_at} /></div>
                     </div>
                   </article>
                 </Link>

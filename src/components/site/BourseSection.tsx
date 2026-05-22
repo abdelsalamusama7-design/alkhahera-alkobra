@@ -1,3 +1,4 @@
+import { TimeAgo } from "@/components/site/TimeAgo";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TrendingUp, TrendingDown, BarChart3, Clock } from "lucide-react";
@@ -103,7 +104,7 @@ export function BourseSection() {
                   )}
                   <div className="mt-auto pt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
                     <Clock className="h-3 w-3" />
-                    {timeAgoAr(n.published_at)}
+                    <TimeAgo iso={n.published_at} />
                     {n.source && <span className="mx-1">•</span>}
                     {n.source && <span>{n.source}</span>}
                   </div>

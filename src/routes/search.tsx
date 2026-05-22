@@ -1,3 +1,4 @@
+import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
@@ -113,7 +114,7 @@ function SearchPage() {
                 <div className="p-3">
                   {a.category && <div className="text-[10px] font-bold text-gold mb-1">{a.category.name}</div>}
                   <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{a.title}</h3>
-                  <div className="mt-2 text-[11px] text-muted-foreground">{timeAgoAr(a.published_at)}</div>
+                  <div className="mt-2 text-[11px] text-muted-foreground"><TimeAgo iso={a.published_at} /></div>
                 </div>
               </article>
             </Link>

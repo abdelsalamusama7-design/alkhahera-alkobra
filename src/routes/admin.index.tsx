@@ -1,3 +1,4 @@
+import { TimeAgo } from "@/components/site/TimeAgo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -62,7 +63,7 @@ function AdminList() {
                 <td className="p-3 hidden md:table-cell">{a.category?.name ?? "—"}</td>
                 <td className="p-3 hidden md:table-cell">{a.is_published ? <span className="text-emerald-600 font-bold">منشور</span> : <span className="text-muted-foreground">مسودة</span>}</td>
                 <td className="p-3 hidden lg:table-cell">{a.view_count}</td>
-                <td className="p-3 hidden lg:table-cell text-muted-foreground">{timeAgoAr(a.published_at)}</td>
+                <td className="p-3 hidden lg:table-cell text-muted-foreground"><TimeAgo iso={a.published_at} /></td>
                 <td className="p-3">
                   <div className="flex gap-2">
                     {a.is_published && (
