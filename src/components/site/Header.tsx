@@ -26,18 +26,27 @@ export function Header() {
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-5">
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group w-full md:w-auto justify-center md:justify-start">
-            <img
-              src={logo}
-              alt="القاهرة الكبرى - بوابة الأخبار المصرية والعربية"
-              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.02]"
-              loading="eager"
-            />
-            <span className="hidden md:inline-block h-10 w-px bg-border" />
-            <span className="hidden md:inline text-[11px] text-muted-foreground tracking-wider">
-              بوابة الأخبار المصرية والعربية
-            </span>
+          <a href="/" className="flex items-center gap-3 sm:gap-4 shrink-0 group w-full md:w-auto justify-center md:justify-start">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-110 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <img
+                src={logo}
+                alt="القاهرة الكبرى - بوابة الأخبار المصرية والعربية"
+                className="relative h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-[1.04]"
+                loading="eager"
+              />
+            </div>
+            <span className="hidden md:inline-block h-14 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
+            <div className="hidden md:flex flex-col">
+              <span className="text-base lg:text-lg font-extrabold text-primary tracking-tight leading-tight">
+                القاهرة الكبرى
+              </span>
+              <span className="text-[11px] lg:text-xs text-muted-foreground tracking-wider mt-0.5">
+                بوابة الأخبار المصرية والعربية
+              </span>
+            </div>
           </a>
+
 
           <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 w-full md:w-auto">
             {/* Search */}
