@@ -69,6 +69,7 @@ export type Database = {
           slug: string
           source: string | null
           source_url: string | null
+          tags: string[]
           title: string
           updated_at: string
           view_count: number
@@ -88,6 +89,7 @@ export type Database = {
           slug: string
           source?: string | null
           source_url?: string | null
+          tags?: string[]
           title: string
           updated_at?: string
           view_count?: number
@@ -107,6 +109,7 @@ export type Database = {
           slug?: string
           source?: string | null
           source_url?: string | null
+          tags?: string[]
           title?: string
           updated_at?: string
           view_count?: number
