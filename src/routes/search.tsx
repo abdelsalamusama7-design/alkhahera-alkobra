@@ -6,6 +6,7 @@ import { listArticles, listCategories } from "@/lib/articles.functions";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
+import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,7 @@ function SearchPage() {
       <TopBar />
       <Header />
       <NavBar />
+      <AdBanner />
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-2xl font-extrabold text-primary mb-4 flex items-center gap-2"><Search size={20} /> البحث في الموقع</h1>
         <form onSubmit={apply} className="bg-card border border-border rounded-lg p-4 mb-6 grid grid-cols-1 md:grid-cols-5 gap-3">

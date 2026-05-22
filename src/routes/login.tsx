@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
+import { AdBanner } from "@/components/site/AdBanner";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,7 @@ function LoginPage() {
     <div className="min-h-screen flex flex-col bg-background" dir="rtl">
       <TopBar />
       <Header />
+      <AdBanner />
       <main className="flex-1 container mx-auto px-4 py-10 flex items-center justify-center">
         <div className="w-full max-w-md bg-card border border-border rounded-lg p-6 shadow-sm">
           <h1 className="text-2xl font-extrabold text-primary mb-1">
