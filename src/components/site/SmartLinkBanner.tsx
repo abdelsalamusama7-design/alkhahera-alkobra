@@ -1,7 +1,8 @@
 import { ExternalLink } from "lucide-react";
+import { SMARTLINKS } from "@/lib/smartlinks";
 
-export const SMARTLINK_URL =
-  "https://www.effectivecpmnetwork.com/nqb3nvwtw?key=9aef419a4e1ff39475291adaa00a73f1";
+// لينك مخصص لأزرار التحميل / الـ CTA الكبيرة
+export const SMARTLINK_URL = SMARTLINKS.DOWNLOAD_BTN;
 
 export function SmartLinkBanner({ className = "" }: { className?: string }) {
   return (
@@ -9,6 +10,7 @@ export function SmartLinkBanner({ className = "" }: { className?: string }) {
       href={SMARTLINK_URL}
       target="_blank"
       rel="noopener noreferrer sponsored"
+      data-smartlink="download-btn"
       className={`block rounded-xl border border-gold/40 bg-gradient-to-l from-primary to-primary/80 text-primary-foreground px-4 py-4 sm:py-5 shadow-md hover:shadow-lg hover:scale-[1.01] transition-all ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
