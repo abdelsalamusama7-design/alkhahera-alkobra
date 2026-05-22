@@ -24,6 +24,7 @@ import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminIngestRouteImport } from './routes/admin.ingest'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
+import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAdSettingsRouteImport } from './routes/admin.ad-settings'
 import { Route as ApiPublicIngestRssRouteImport } from './routes/api/public/ingest-rss'
 import { Route as AdminUsersIdRouteImport } from './routes/admin.users.$id'
@@ -105,6 +106,11 @@ const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdsRoute = AdminAdsRouteImport.update({
+  id: '/ads',
+  path: '/ads',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAdSettingsRoute = AdminAdSettingsRouteImport.update({
   id: '/ad-settings',
   path: '/ad-settings',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
+  '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/admin/ad-settings'
+    | '/admin/ads'
     | '/admin/categories'
     | '/admin/ingest'
     | '/admin/new'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/admin/ad-settings'
+    | '/admin/ads'
     | '/admin/categories'
     | '/admin/ingest'
     | '/admin/new'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/search'
     | '/admin/ad-settings'
+    | '/admin/ads'
     | '/admin/categories'
     | '/admin/ingest'
     | '/admin/new'
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ads': {
+      id: '/admin/ads'
+      path: '/ads'
+      fullPath: '/admin/ads'
+      preLoaderRoute: typeof AdminAdsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ad-settings': {
       id: '/admin/ad-settings'
       path: '/ad-settings'
@@ -436,6 +455,7 @@ const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminAdSettingsRoute: typeof AdminAdSettingsRoute
+  AdminAdsRoute: typeof AdminAdsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminIngestRoute: typeof AdminIngestRoute
   AdminNewRoute: typeof AdminNewRoute
@@ -449,6 +469,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdSettingsRoute: AdminAdSettingsRoute,
+  AdminAdsRoute: AdminAdsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminIngestRoute: AdminIngestRoute,
   AdminNewRoute: AdminNewRoute,
