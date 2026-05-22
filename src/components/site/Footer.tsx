@@ -1,3 +1,5 @@
+import { ExternalLink } from "lucide-react";
+
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground mt-12">
