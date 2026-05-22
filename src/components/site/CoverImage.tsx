@@ -32,6 +32,14 @@ const RATIO_CLASS: Record<Ratio, string> = {
   "3/2": "aspect-[3/2]",
   "1/1": "aspect-square",
 };
+const SM_RATIO_CLASS: Record<Ratio, string> = {
+  "16/9": "sm:aspect-[16/9]",
+  "16/10": "sm:aspect-[16/10]",
+  "16/8": "sm:aspect-[16/8]",
+  "4/3": "sm:aspect-[4/3]",
+  "3/2": "sm:aspect-[3/2]",
+  "1/1": "sm:aspect-square",
+};
 
 const FOCUS_CLASS: Record<NonNullable<Props["focus"]>, string> = {
   top: "object-top",
