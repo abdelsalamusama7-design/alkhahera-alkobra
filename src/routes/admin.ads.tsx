@@ -16,12 +16,13 @@ import {
   upsertPlacementFn,
   deletePlacementFn,
   checkAdsNowFn,
+  resetAdCountersFn,
   type AdPlacementRow,
   type AdPlacementType,
 } from "@/lib/ad-placements.functions";
 import {
   Plus, Trash2, Save, ArrowUp, ArrowDown, Eye, EyeOff,
-  ShieldCheck, AlertTriangle, HelpCircle, RefreshCw,
+  ShieldCheck, AlertTriangle, HelpCircle, RefreshCw, BarChart3, RotateCcw,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/ads")({
@@ -67,11 +68,22 @@ function AdsManager() {
   const upsertFn = useServerFn(upsertPlacementFn);
   const deleteFn = useServerFn(deletePlacementFn);
   const checkFn = useServerFn(checkAdsNowFn);
+  const resetFn = useServerFn(resetAdCountersFn);
 
   const { data: serverList = [], isLoading } = useQuery({
     queryKey: ["ad-placements-all"],
     queryFn: () => listFn(),
   });
+
+  const totals = serverList.reduce(
+    (acc, r: any) => {
+      acc.impressions += Number(r.impressions ?? 0);
+      acc.clicks += Number(r.clicks ?? 0);
+      return acc;
+    },
+    { impressions: 0, clicks: 0 }
+  );
+  const totalCtr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
 
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [newItems, setNewItems] = useState<Draft[]>([]);
@@ -113,6 +125,15 @@ function AdsManager() {
       qc.invalidateQueries({ queryKey: ["ad-placements-active"] });
     },
     onError: (e: any) => toast.error(e?.message || "فشل الفحص"),
+  });
+
+  const resetM = useMutation({
+    mutationFn: (id?: string) => resetFn({ data: { id } }),
+    onSuccess: () => {
+      toast.success("تم تصفير العدّادات.");
+      qc.invalidateQueries({ queryKey: ["ad-placements-all"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "فشل التصفير"),
   });
 
   const saveAll = async () => {
@@ -191,6 +212,26 @@ function AdsManager() {
         </div>
       </div>
 
+      {/* لوحة إحصاءات إجمالية */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard label="إجمالي الظهور" value={totals.impressions.toLocaleString("ar-EG")} icon={<BarChart3 size={16} />} />
+        <StatCard label="إجمالي النقرات" value={totals.clicks.toLocaleString("ar-EG")} icon={<BarChart3 size={16} />} />
+        <StatCard label="معدل النقر (CTR)" value={`${totalCtr.toFixed(2)}%`} icon={<BarChart3 size={16} />} />
+        <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (confirm("تصفير عدّادات كل الإعلانات؟")) resetM.mutate(undefined);
+            }}
+            disabled={resetM.isPending}
+          >
+            <RotateCcw size={14} className="ml-1" />
+            تصفير كل العدّادات
+          </Button>
+        </div>
+      </div>
+
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
 
       {grouped.map(({ slot, items, newOnes }) => (
@@ -206,6 +247,8 @@ function AdsManager() {
             <div className="space-y-3">
               {items.map((row) => {
                 const d = getDraft(row);
+                const impressions = Number((row as any).impressions ?? 0);
+                const clicks = Number((row as any).clicks ?? 0);
                 return (
                   <PlacementEditor
                     key={row.id}
@@ -216,10 +259,14 @@ function AdsManager() {
                       lastError: row.last_error,
                       failCount: row.fail_count,
                     }}
+                    stats={{ impressions, clicks }}
                     onChange={(patch) => updateDraft(row.id, patch)}
                     onRemove={() => onDelete(row.id)}
                     onMoveUp={() => moveOrder(row, -1)}
                     onMoveDown={() => moveOrder(row, 1)}
+                    onResetCounters={() => {
+                      if (confirm(`تصفير عدّادات "${row.name}"؟`)) resetM.mutate(row.id);
+                    }}
                   />
                 );
               })}
@@ -270,8 +317,21 @@ function HealthBadge({ status, lastChecked, lastError, failCount }: {
   );
 }
 
+
+function StatCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+        {icon}
+        <span>{label}</span>
+      </div>
+      <div className="text-xl font-extrabold text-primary">{value}</div>
+    </div>
+  );
+}
+
 function PlacementEditor({
-  draft: p, onChange, onRemove, onMoveUp, onMoveDown, isNew, health,
+  draft: p, onChange, onRemove, onMoveUp, onMoveDown, isNew, health, stats, onResetCounters,
 }: {
   draft: Draft;
   onChange: (patch: Partial<Draft>) => void;
@@ -280,9 +340,12 @@ function PlacementEditor({
   onMoveDown?: () => void;
   isNew?: boolean;
   health?: { status: string; lastChecked: string | null; lastError: string | null; failCount: number };
+  stats?: { impressions: number; clicks: number };
+  onResetCounters?: () => void;
 }) {
   const cfg = p.config || {};
   const setCfg = (patch: Record<string, any>) => onChange({ config: { ...cfg, ...patch } });
+  const ctr = stats && stats.impressions > 0 ? (stats.clicks / stats.impressions) * 100 : 0;
 
   return (
     <div className={`border border-border rounded p-3 ${p.enabled ? "" : "opacity-60"} ${isNew ? "border-primary border-dashed" : ""}`}>
@@ -315,6 +378,20 @@ function PlacementEditor({
           <Trash2 size={14} className="text-destructive" />
         </Button>
       </div>
+
+      {stats && (
+        <div className="flex items-center gap-4 text-xs mb-3 flex-wrap bg-muted/40 rounded px-3 py-2">
+          <span><BarChart3 size={12} className="inline ml-1" /> ظهور: <strong className="text-primary">{stats.impressions.toLocaleString("ar-EG")}</strong></span>
+          <span>نقرات: <strong className="text-primary">{stats.clicks.toLocaleString("ar-EG")}</strong></span>
+          <span>CTR: <strong className="text-primary">{ctr.toFixed(2)}%</strong></span>
+          {onResetCounters && (
+            <Button size="sm" variant="ghost" className="ms-auto h-6 px-2 text-[10px]" onClick={onResetCounters}>
+              <RotateCcw size={12} className="ml-1" /> تصفير
+            </Button>
+          )}
+        </div>
+      )}
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
