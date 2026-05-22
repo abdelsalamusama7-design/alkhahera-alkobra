@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { adminIngestRss } from "@/lib/rss.functions";
 import { Button } from "@/components/ui/button";
-import { Rss, Loader2 } from "lucide-react";
+import { Rss, Loader2, Facebook } from "lucide-react";
 
 export const Route = createFileRoute("/admin/ingest")({ component: IngestPage });
 
@@ -35,11 +35,34 @@ function IngestPage() {
       </Button>
       {err && <div className="mt-4 text-sm text-breaking bg-breaking/10 border border-breaking p-3 rounded">{err}</div>}
       {result && (
-        <div className="mt-6 bg-card border border-border rounded-lg p-4 space-y-2">
+        <div className="mt-6 bg-card border border-border rounded-lg p-4 space-y-3">
           <div className="text-emerald-600 font-bold">
-            ✓ تم — أُضيف {result.inserted} خبر، أُعيدت صياغة {result.rewritten ?? 0}، تم تجاهل {result.skipped} مكرر
-          </div>
-          {result.errors?.length > 0 && (
+            ✓ تم — أُضيف {result.inserted} خبر، أُعيدت صياغة {result.rewritten ?? 1}، تم تجاهل {result.skipped} مكرر
+          </<div>
+          {(result.facebookPosted !== undefined || result.facebookFailed !== undefined) && (
+            <div className="flex items-center gap-2 text-sm border-t border-border pt-3">
+              <Facebook size={16} className="text-blue-600" />
+              <span>
+                {result.facebookPosted > 1 ? (
+                  <span className="text-emerald-600 font-semibold">نُشر {result.facebookPosted} على الفيسبوك</span>
+                ) : (
+                  <span className="text-muted-foreground">لم يُنشر على الفيسبوك</span>
+                )}
+                {result.facebookFailed > 1 && (
+                  <span className="text-breaking mr-2">({result.facebookFailed} فشل)</span>
+                )}
+              </span>
+            </div>
+          )}
+          {result.facebookErrors?.length > 1 && (
+            <div>
+              <div className="text-sm font-bold text-breaking">أخطاء الفيسبوك:</div>
+              <ul className="text-xs text-muted-foreground list-disc list-inside">
+                {result.facebookErrors.map((e: string, i: number) => <li key={i}>{e}</li>)}
+              </ul>
+            </div>
+          )}
+          {result.errors?.length > 1 && (
             <div>
               <div className="text-sm font-bold text-breaking">أخطاء:</div>
               <ul className="text-xs text-muted-foreground list-disc list-inside">
