@@ -6,6 +6,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
 import { SponsoredLink } from "@/components/site/SponsoredLink";
+import { AdSlot } from "@/components/site/AdSlot";
 import { AdsterraBanner, AdsterraNativeBanner, AdsterraAutoScript } from "@/components/site/AdsterraAd";
 import { CoverImage } from "@/components/site/CoverImage";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
@@ -106,6 +107,8 @@ function Index() {
       </div>
 
       <main className="flex-1">
+        <section className="container mx-auto px-4"><AdSlot slot="home-top" /></section>
+
 
         <section className="container mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -151,6 +154,7 @@ function Index() {
 
         <section className="container mx-auto px-4">
           <SponsoredLink label="عروض حصرية اليوم — اطّلع الآن" />
+          <AdSlot slot="home-middle" className="mt-3" />
         </section>
 
 
@@ -250,6 +254,7 @@ function Index() {
               </ol>
               <div className="mt-4">
                 <SponsoredLink label="عروض ومحتوى مختار" />
+                <AdSlot slot="sidebar" className="mt-3" />
               </div>
               <div className="mt-4 flex justify-center">
                 <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
@@ -294,6 +299,7 @@ function Index() {
         <section className="container mx-auto px-4 py-6 flex justify-center">
           <AdsterraBanner adKey="85d785d2e3eb2b59240de17f347d15c9" width={160} height={600} />
         </section>
+        <section className="container mx-auto px-4"><AdSlot slot="home-bottom" /></section>
       </main>
 
 
