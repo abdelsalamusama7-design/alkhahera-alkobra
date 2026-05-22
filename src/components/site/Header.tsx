@@ -22,14 +22,14 @@ export function Header() {
 
   return (
     <header className="bg-card border-b border-border">
-      <div className="container mx-auto px-4 py-5">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-3 shrink-0 group">
+          <a href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group w-full md:w-auto justify-center md:justify-start">
             <img
               src={logo}
               alt="القاهرة الكبرى - بوابة الأخبار المصرية والعربية"
-              className="h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.02]"
               loading="eager"
             />
             <span className="hidden md:inline-block h-10 w-px bg-border" />
@@ -38,19 +38,19 @@ export function Header() {
             </span>
           </a>
 
-          <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 w-full md:w-auto">
             {/* Search */}
-            <form onSubmit={onSearch} className="flex items-center bg-muted border border-border rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 transition-shadow">
+            <form onSubmit={onSearch} className="flex items-center bg-muted border border-border rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary/30 transition-shadow w-full md:w-auto">
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="ابحث عن خبر أو عنوان..."
-                className="bg-transparent border-0 outline-none text-sm py-2 px-3 placeholder:text-muted-foreground w-52 md:w-64"
+                className="bg-transparent border-0 outline-none text-sm py-2 px-3 placeholder:text-muted-foreground flex-1 min-w-0 md:w-64"
               />
               <button
                 type="submit"
                 aria-label="بحث"
-                className="px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                className="px-3 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shrink-0"
               >
                 <Search size={16} />
               </button>
@@ -67,7 +67,7 @@ export function Header() {
             </div>
 
             {/* Auth + theme */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
               <ThemeToggle />
               {user ? (
                 <>
