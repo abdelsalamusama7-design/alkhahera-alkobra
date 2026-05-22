@@ -4,6 +4,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
+import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { NewsCard } from "@/components/site/NewsCard";
 import { MarketsWidget, WeatherWidget, SportsWidget } from "@/components/site/Widgets";
 import { Footer } from "@/components/site/Footer";
@@ -77,6 +78,7 @@ function Index() {
       <Header />
       <NavBar />
       <BreakingTicker items={breakingItems} />
+      <MarketsTicker />
 
       <main className="flex-1">
         <section className="container mx-auto px-4 py-6">
