@@ -204,11 +204,22 @@ export async function ingestAllFeeds() {
 
         const slug = `${slugify(finalTitle)}-${Math.abs(hash(String(link || finalTitle))).toString(36).slice(0, 6)}`;
 
-        // توليد صورة تلقائياً عند غياب صورة من المصدر
+        // منع تكرار نفس الصورة عبر المقالات: لو الصورة مستخدمة قبل كده، استبدلها من مجموعة متنوعة
         let finalCover = cover;
+        if (finalCover) {
+          const { data: dup } = await supabaseAdmin
+            .from("articles")
+            .select("id")
+            .eq("cover_image", finalCover)
+            .limit(1)
+            .maybeSingle();
+          if (dup) finalCover = pickFallbackImage(slug);
+        }
         if (!finalCover) {
           finalCover = await generateCoverImage(finalTitle, slug);
         }
+        if (!finalCover) finalCover = pickFallbackImage(slug);
+
 
         const { data: newRows, error } = await supabaseAdmin.from("articles").insert({
           title: finalTitle,
