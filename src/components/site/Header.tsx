@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const navigate = useNavigate();
+  const { user, signOut, isAdmin } = useAuth();
   const [q, setQ] = useState("");
   const board = [
     { role: "رئيس مجلس الإدارة", name: "المهندس حاتم حمدي" },
