@@ -17,6 +17,7 @@ import { MarketsWidget, WeatherWidget, SportsWidget } from "@/components/site/Wi
 import { GoldBar } from "@/components/site/GoldBar";
 import { GoldWidget } from "@/components/site/GoldWidget";
 import { Footer } from "@/components/site/Footer";
+import { TopicsCircles } from "@/components/site/TopicsCircles";
 import { getHomeBundle } from "@/lib/articles.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
@@ -107,6 +108,7 @@ function Index() {
       </div>
 
       <main className="flex-1">
+        <TopicsCircles items={(trendingDb.length ? trendingDb : latestList).slice(0, 12)} />
         <section className="container mx-auto px-4"><AdSlot slot="home-top" /></section>
 
 
