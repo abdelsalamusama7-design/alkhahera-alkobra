@@ -16,12 +16,13 @@ import {
   upsertPlacementFn,
   deletePlacementFn,
   checkAdsNowFn,
+  resetAdCountersFn,
   type AdPlacementRow,
   type AdPlacementType,
 } from "@/lib/ad-placements.functions";
 import {
   Plus, Trash2, Save, ArrowUp, ArrowDown, Eye, EyeOff,
-  ShieldCheck, AlertTriangle, HelpCircle, RefreshCw,
+  ShieldCheck, AlertTriangle, HelpCircle, RefreshCw, BarChart3, RotateCcw,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/ads")({
