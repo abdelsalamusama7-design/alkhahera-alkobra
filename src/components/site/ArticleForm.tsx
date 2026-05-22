@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listCategories, saveArticle } from "@/lib/articles.functions";
 import { uploadArticleImage } from "@/lib/upload";
+import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,9 @@ type Initial = {
 };
 
 export function ArticleForm({ initial, onSaved }: { initial?: Initial; onSaved: (id: string) => void }) {
+  const { can } = useAuth();
+  const canPublish = can("publish_article");
+  const canBreaking = can("mark_breaking");
   const [form, setForm] = useState<Initial>({
     is_published: true,
     is_breaking: false,
@@ -135,15 +139,21 @@ export function ArticleForm({ initial, onSaved }: { initial?: Initial; onSaved: 
         <Label>الـ Slug (اختياري)</Label>
         <Input value={form.slug || ""} onChange={(e) => set("slug", e.target.value)} placeholder="auto-generated" />
       </div>
-      <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 text-sm font-bold">
-          <input type="checkbox" checked={!!form.is_breaking} onChange={(e) => set("is_breaking", e.target.checked)} />
-          خبر عاجل
-        </label>
-        <label className="flex items-center gap-2 text-sm font-bold">
-          <input type="checkbox" checked={form.is_published !== false} onChange={(e) => set("is_published", e.target.checked)} />
-          منشور
-        </label>
+      <div className="flex items-center gap-6 flex-wrap">
+        {canBreaking && (
+          <label className="flex items-center gap-2 text-sm font-bold">
+            <input type="checkbox" checked={!!form.is_breaking} onChange={(e) => set("is_breaking", e.target.checked)} />
+            خبر عاجل
+          </label>
+        )}
+        {canPublish ? (
+          <label className="flex items-center gap-2 text-sm font-bold">
+            <input type="checkbox" checked={form.is_published !== false} onChange={(e) => set("is_published", e.target.checked)} />
+            منشور
+          </label>
+        ) : (
+          <span className="text-xs text-muted-foreground">سيتم حفظ الخبر كمسودة بانتظار مراجعة المحرر.</span>
+        )}
       </div>
       {err && <div className="text-sm text-breaking">{err}</div>}
       <Button type="submit" disabled={saving || uploading} className="w-full md:w-auto">

@@ -2,30 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { ALL_ROLES, ROLE_LABELS, type AppRoleAll } from "@/lib/permissions";
 
-export const ALL_ROLES = [
-  "admin",
-  "president",
-  "board_director",
-  "editor_in_chief",
-  "chief_editor",
-  "editor",
-  "journalist",
-  "it_specialist",
-] as const;
-
-export type AppRoleAll = (typeof ALL_ROLES)[number];
-
-export const ROLE_LABELS: Record<AppRoleAll, string> = {
-  admin: "مسؤول النظام",
-  president: "الرئيس",
-  board_director: "مدير مجلس الإدارة",
-  editor_in_chief: "رئيس التحرير",
-  chief_editor: "مدير التحرير",
-  editor: "محرر",
-  journalist: "صحفي",
-  it_specialist: "أخصائي نظم معلومات",
-};
+export { ALL_ROLES, ROLE_LABELS };
+export type { AppRoleAll };
 
 async function ensureAdmin(userId: string) {
   const { data, error } = await supabaseAdmin

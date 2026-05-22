@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function NavBar() {
   const navigate = useNavigate();
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isStaff } = useAuth();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const { data: cats = [] } = useQuery({
@@ -45,7 +45,7 @@ export function NavBar() {
           <div className="md:hidden w-full flex flex-col gap-2 py-2 border-t border-white/10 mt-1">
             {user ? (
               <>
-                {isAdmin && (
+                {isStaff && (
                   <Link
                     to="/admin/ingest"
                     onClick={() => setOpen(false)}

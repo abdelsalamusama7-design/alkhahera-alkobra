@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
-
-export type AppRole = "admin" | "editor";
+import { hasPerm, isStaff as isStaffRoles, type Permission } from "@/lib/permissions";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export function useAuth() {
             .from("user_roles")
             .select("role")
             .eq("user_id", sess.user.id)
-            .then(({ data }) => setRoles(((data ?? []).map((r: any) => r.role)) as AppRole[]));
+            .then(({ data }) => setRoles((data ?? []).map((r: any) => r.role as string)));
         }, 0);
       } else {
         setRoles([]);
@@ -35,7 +34,7 @@ export function useAuth() {
           .from("user_roles")
           .select("role")
           .eq("user_id", data.session.user.id)
-          .then(({ data: rd }) => setRoles(((rd ?? []).map((r: any) => r.role)) as AppRole[]));
+          .then(({ data: rd }) => setRoles((rd ?? []).map((r: any) => r.role as string)));
       }
       setLoading(false);
     });
@@ -49,7 +48,8 @@ export function useAuth() {
     roles,
     loading,
     isAdmin: roles.includes("admin"),
-    isEditor: roles.includes("admin") || roles.includes("editor"),
+    isStaff: isStaffRoles(roles),
+    can: (perm: Permission) => hasPerm(roles, perm),
     signOut: () => supabase.auth.signOut(),
   };
 }
