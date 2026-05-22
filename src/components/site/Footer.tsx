@@ -51,7 +51,7 @@ export function Footer() {
         <div>
           <h4 className="text-gold font-bold mb-3">تواصل معنا</h4>
           <p className="text-sm opacity-80">القاهرة، جمهورية مصر العربية</p>
-          <p className="text-sm opacity-80 mt-1">info@cairo-elkobra.com</p>
+          <p className="text-sm opacity-80 mt-1">info@kaheraalkobra.online</p>
           <div className="mt-3 pt-3 border-t border-white/10">
             <p className="text-xs text-gold font-bold mb-1">للإعلان في الجريدة</p>
             <a href="tel:01113718006" className="text-sm font-bold hover:text-gold transition-colors" dir="ltr">
