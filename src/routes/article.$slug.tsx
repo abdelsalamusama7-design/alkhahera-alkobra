@@ -146,8 +146,14 @@ function ArticlePage() {
               {a.content || a.excerpt}
             </div>
 
-            <div className="my-6">
-              <SponsoredLink label="اقرأ المزيد من المحتوى المختار لك" />
+            <div className="my-6 text-sm text-muted-foreground">
+              لمزيد من التغطية،{" "}
+              <SponsoredLink
+                variant="inline"
+                kind="CONTEXT_LINK"
+                label="اقرأ المزيد من المحتوى المختار لك من هنا"
+              />
+              .
             </div>
 
             {Array.isArray((a as any).tags) && (a as any).tags.length > 0 && (

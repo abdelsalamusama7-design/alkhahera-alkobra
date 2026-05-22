@@ -10,6 +10,7 @@ import {
 import { ThemeProvider } from "@/hooks/use-theme";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
 import { SideRailAds } from "@/components/site/SideRailAds";
+import { PopunderSmartLink } from "@/components/site/PopunderSmartLink";
 
 import appCss from "../styles.css?url";
 
@@ -136,6 +137,7 @@ function RootComponent() {
         <Outlet />
         <SideRailAds />
         <WhatsAppFab />
+        <PopunderSmartLink />
       </ThemeProvider>
     </QueryClientProvider>
   );
