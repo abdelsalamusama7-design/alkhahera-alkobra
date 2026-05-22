@@ -86,6 +86,14 @@ if (rootTsx) {
   if (!/from\s+["']@\/components\/site\/MonetagScripts["']/.test(rootTsx)) {
     errors.push("__root.tsx: import MonetagScripts مفقود");
   }
+
+  for (const { src, zone } of EXPECTED_MONETAG) {
+    const fullSrc = `https://${src}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const tagRe = new RegExp(`<script[\\s\\S]*?src=["']${fullSrc}["'][\\s\\S]*?data-zone=["']${zone}["'][\\s\\S]*?>`);
+    if (!tagRe.test(rootTsx)) {
+      errors.push(`__root.tsx: سكربت ${src} غير موجود في head مع data-zone=${zone}`);
+    } else ok.push(`head multitag: ${src} data-zone=${zone}`);
+  }
 }
 
 // ---------- 4) المكوّن نفسه يقرأ من getAdConfig ----------
