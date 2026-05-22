@@ -5,6 +5,7 @@ import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
+import { BourseSection } from "@/components/site/BourseSection";
 import { NewsCard } from "@/components/site/NewsCard";
 import { MarketsWidget, WeatherWidget, SportsWidget } from "@/components/site/Widgets";
 import { Footer } from "@/components/site/Footer";
@@ -101,7 +102,10 @@ function Index() {
           </div>
         </section>
 
+        <BourseSection />
+
         <section className="container mx-auto px-4 py-6">
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <WeatherWidget />
             <MarketsWidget />
