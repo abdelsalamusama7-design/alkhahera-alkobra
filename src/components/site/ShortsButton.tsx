@@ -74,6 +74,7 @@ export function ShortsButton() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="أخبار باختصار"
+        data-shorts-fab
         className="fixed bottom-20 left-3 sm:bottom-24 sm:left-4 z-40 flex items-center gap-2 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full p-2 sm:pl-2 sm:pr-4 sm:py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         dir="rtl"
       >
