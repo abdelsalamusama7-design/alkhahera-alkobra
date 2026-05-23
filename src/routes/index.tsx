@@ -159,9 +159,11 @@ function Index() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4">
-          <AdSlot slot="home-middle" className="mt-3" />
-        </section>
+        {!isReadMode && (
+          <section className="container mx-auto px-4">
+            <AdSlot slot="home-middle" className="mt-3" />
+          </section>
+        )}
 
 
 
