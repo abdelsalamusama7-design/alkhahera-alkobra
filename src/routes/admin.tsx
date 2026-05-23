@@ -5,7 +5,12 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Newspaper, FolderTree, Plus, Rss, Users, BarChart3, Globe, Megaphone, LayoutGrid, FileEdit, Settings2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "لوحة التحكم — القاهرة الكبرى" }] }),
+  head: () => ({
+    meta: [
+      { title: "لوحة التحكم — القاهرة الكبرى" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: AdminLayout,
 });
 
