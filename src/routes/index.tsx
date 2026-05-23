@@ -154,7 +154,7 @@ function Index() {
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {trendingDb.map((n: NewsItem, i: number) => (
+              {trendingList.map((n: NewsItem, i: number) => (
                 <ItemLink key={n.id} item={n}>
                   <div className="relative news-card h-full">
                     <span className="absolute top-2 right-2 z-10 bg-gold text-gold-foreground text-[11px] font-extrabold rounded-full h-6 min-w-6 px-1.5 flex items-center justify-center shadow">#{i + 1}</span>
