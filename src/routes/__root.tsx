@@ -152,6 +152,7 @@ function RootComponent() {
         <Outlet />
         <SideRailAds />
         <WhatsAppFab />
+        <ShortsButton />
         <PopunderSmartLink />
         <MonetagScripts />
       </ThemeProvider>
