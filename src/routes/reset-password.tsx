@@ -9,7 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "إعادة تعيين كلمة السر — القاهرة الكبرى" }] }),
+  head: () => ({
+    meta: [
+      { title: "إعادة تعيين كلمة السر — القاهرة الكبرى" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: ResetPasswordPage,
 });
 
