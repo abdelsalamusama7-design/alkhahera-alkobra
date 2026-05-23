@@ -22,17 +22,58 @@ export const Route = createFileRoute("/article/$slug")({
     if (!res.article) throw notFound();
     return res;
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const a = loaderData?.article;
     if (!a) return { meta: [{ title: "خبر — القاهرة الكبرى" }] };
+    const url = `https://kaheraalkobra.online/article/${params.slug}`;
+    const desc = (a.excerpt ?? a.title ?? "").toString().slice(0, 160);
+    const img = a.cover_image || undefined;
     return {
       meta: [
         { title: `${a.title} — القاهرة الكبرى` },
-        { name: "description", content: a.excerpt ?? a.title },
+        { name: "description", content: desc },
+        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+        { name: "news_keywords", content: Array.isArray((a as any).tags) ? (a as any).tags.join(", ") : "" },
         { property: "og:title", content: a.title },
-        { property: "og:description", content: a.excerpt ?? a.title },
+        { property: "og:description", content: desc },
         { property: "og:type", content: "article" },
-        ...(a.cover_image ? [{ property: "og:image", content: a.cover_image }] : []),
+        { property: "og:url", content: url },
+        { property: "og:locale", content: "ar_EG" },
+        { property: "article:published_time", content: a.published_at ?? "" },
+        { property: "article:modified_time", content: (a as any).updated_at ?? a.published_at ?? "" },
+        { property: "article:section", content: a.category?.name ?? "أخبار" },
+        ...(a.author_name ? [{ property: "article:author", content: a.author_name }] : []),
+        ...(img ? [{ property: "og:image", content: img }] : []),
+        ...(img ? [{ property: "og:image:alt", content: a.title }] : []),
+        ...(img ? [{ name: "twitter:image", content: img }] : []),
+        { name: "twitter:card", content: img ? "summary_large_image" : "summary" },
+        { name: "twitter:title", content: a.title },
+        { name: "twitter:description", content: desc },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: a.title,
+            description: desc,
+            image: img ? [img] : undefined,
+            datePublished: a.published_at,
+            dateModified: (a as any).updated_at ?? a.published_at,
+            inLanguage: "ar",
+            articleSection: a.category?.name ?? "أخبار",
+            keywords: Array.isArray((a as any).tags) ? (a as any).tags.join(", ") : undefined,
+            author: a.author_name ? { "@type": "Person", name: a.author_name } : { "@type": "Organization", name: "القاهرة الكبرى" },
+            publisher: {
+              "@type": "NewsMediaOrganization",
+              name: "القاهرة الكبرى",
+              url: "https://kaheraalkobra.online",
+            },
+            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+          }),
+        },
       ],
     };
   },

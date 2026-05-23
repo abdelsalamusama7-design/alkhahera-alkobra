@@ -81,21 +81,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "القاهرة الكبرى - بوابة الأخبار المصرية والعربية" },
-      { name: "description", content: "موقع القاهرة الكبرى الإخباري: آخر أخبار مصر والعالم، سياسة، اقتصاد، رياضة، فن، حوادث، وأسعار العملات والبورصة." },
+      { name: "description", content: "موقع القاهرة الكبرى الإخباري: آخر أخبار مصر والعالم لحظة بلحظة — سياسة، اقتصاد، رياضة، فن، حوادث، أسعار الذهب والعملات والبورصة المصرية." },
       { name: "author", content: "القاهرة الكبرى" },
-      { property: "og:title", content: "القاهرة الكبرى - بوابة الأخبار المصرية والعربية" },
-      { property: "og:description", content: "موقع القاهرة الكبرى الإخباري: آخر أخبار مصر والعالم، سياسة، اقتصاد، رياضة، فن، حوادث، وأسعار العملات والبورصة." },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "googlebot", content: "index, follow, max-image-preview:large" },
+      { name: "theme-color", content: "#0f1b3d" },
+      { property: "og:site_name", content: "القاهرة الكبرى" },
+      { property: "og:locale", content: "ar_EG" },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: "القاهرة الكبرى - بوابة الأخبار المصرية والعربية" },
+      { property: "og:description", content: "آخر أخبار مصر والعالم لحظة بلحظة: سياسة، اقتصاد، رياضة، فن، أسعار الذهب والعملات." },
+      { property: "og:url", content: "https://kaheraalkobra.online" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@kaheraalkobra" },
       { name: "twitter:title", content: "القاهرة الكبرى - بوابة الأخبار المصرية والعربية" },
-      { name: "twitter:description", content: "موقع القاهرة الكبرى الإخباري: آخر أخبار مصر والعالم، سياسة، اقتصاد، رياضة، فن، حوادث، وأسعار العملات والبورصة." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/efdd7380-cded-41bc-8745-b44407129b99" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/efdd7380-cded-41bc-8745-b44407129b99" },
+      { name: "twitter:description", content: "آخر أخبار مصر والعالم لحظة بلحظة." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "dns-prefetch", href: "https://images.unsplash.com" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap",
@@ -104,7 +110,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       // Adsterra Popunder (1 لكل صفحة)
       { src: "https://pl29522752.effectivecpmnetwork.com/e3/0d/81/e30d81e12c8ca7fa9dced44373e6fa55.js", async: true },
-      // Monetag Multitag → يتم حقنها ديناميكيًا من <MonetagScripts /> حسب إعدادات لوحة التحكم
+      // JSON-LD: NewsMediaOrganization (سيتدمج في كل الصفحات — هوية الموقع)
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "NewsMediaOrganization",
+          name: "القاهرة الكبرى",
+          alternateName: "Kahera Alkobra",
+          url: "https://kaheraalkobra.online",
+          inLanguage: "ar",
+          sameAs: [
+            "https://www.facebook.com/kaheraalkobra",
+            "https://twitter.com/kaheraalkobra",
+            "https://www.youtube.com/@kaheraalkobra",
+          ],
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://kaheraalkobra.online/search?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
