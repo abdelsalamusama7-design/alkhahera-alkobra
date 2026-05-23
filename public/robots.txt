@@ -6,9 +6,22 @@ Disallow: /login
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /api/
+Crawl-delay: 1
 
-# Google news bot (يفضّل وصول كامل)
+# Google News bot
 User-agent: Googlebot-News
 Allow: /
 
+# Googlebot (الأفضلية لـ Google)
+User-agent: Googlebot
+Allow: /
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+
+# Host directive (النطاق الأساسي)
+Host: https://kaheraalkobra.online
+
+# Sitemap
 Sitemap: https://kaheraalkobra.online/sitemap.xml
