@@ -106,6 +106,66 @@ export type Database = {
         }
         Relationships: []
       }
+      article_drafts: {
+        Row: {
+          approved_article_id: string | null
+          category_id: string | null
+          content: string | null
+          cover_image: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          original_excerpt: string | null
+          original_title: string | null
+          published_at: string
+          rejected_reason: string | null
+          source: string | null
+          source_url: string | null
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_article_id?: string | null
+          category_id?: string | null
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          original_excerpt?: string | null
+          original_title?: string | null
+          published_at?: string
+          rejected_reason?: string | null
+          source?: string | null
+          source_url?: string | null
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_article_id?: string | null
+          category_id?: string | null
+          content?: string | null
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          original_excerpt?: string | null
+          original_title?: string | null
+          published_at?: string
+          rejected_reason?: string | null
+          source?: string | null
+          source_url?: string | null
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       article_views: {
         Row: {
           article_id: string
@@ -297,6 +357,60 @@ export type Database = {
           last_used_at?: string
           p256dh?: string
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      rss_sources: {
+        Row: {
+          auto_publish: boolean
+          category_slug: string
+          created_at: string
+          enabled: boolean
+          id: string
+          last_error: string | null
+          last_fetched_at: string | null
+          last_inserted_count: number
+          max_items: number
+          name: string
+          sort_order: number
+          source_label: string
+          total_inserted: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          auto_publish?: boolean
+          category_slug: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          last_fetched_at?: string | null
+          last_inserted_count?: number
+          max_items?: number
+          name: string
+          sort_order?: number
+          source_label: string
+          total_inserted?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          auto_publish?: boolean
+          category_slug?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          last_fetched_at?: string | null
+          last_inserted_count?: number
+          max_items?: number
+          name?: string
+          sort_order?: number
+          source_label?: string
+          total_inserted?: number
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }
