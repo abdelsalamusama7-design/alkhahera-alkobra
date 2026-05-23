@@ -120,14 +120,14 @@ function Index() {
       ? fallbackTitles
       : ["تصفّح أحدث الأخبار من لوحة التحكم — اسحب RSS لإضافة محتوى حقيقي."];
 
-  function ItemLink({ item, children }: { item: any; children: React.ReactNode }) {
+  function ItemLink({ item, children }: { item: any; children: ReactNode }) {
     if (item.slug) return <Link to="/article/$slug" params={{ slug: item.slug }} className="block h-full">{children}</Link>;
     return <div>{children}</div>;
   }
 
   // ===== وضع القراءة: عرض كصفحات جريدة ورقية =====
   if (isReadMode) {
-    const readerPages: { title: string; node: React.ReactNode }[] = [
+    const readerPages: { title: string; node: ReactNode }[] = [
       {
         title: "الصفحة الأولى",
         node: (
