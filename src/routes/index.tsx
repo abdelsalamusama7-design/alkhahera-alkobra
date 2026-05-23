@@ -280,16 +280,13 @@ function Index() {
 
 
         <section className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 min-h-[280px] sm:min-h-[380px] lg:min-h-[520px]">
-              <HeroCarousel items={heroCarouselItems.length ? heroCarouselItems : [hero].filter(Boolean)} intervalMs={5500} />
-            </div>
-            <div className="flex flex-col gap-4">
-              {sideHero.map((n: NewsItem) => (
-                <ItemLink key={n.id} item={n}><NewsCard item={n} size="large" /></ItemLink>
-              ))}
-            </div>
-          </div>
+          <HeroCarousel
+            items={[
+              ...(heroCarouselItems.length ? heroCarouselItems : [hero].filter(Boolean)),
+              ...sideHero,
+            ]}
+            intervalMs={5500}
+          />
         </section>
 
         {trendingList.length > 0 && (
