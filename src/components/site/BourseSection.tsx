@@ -82,19 +82,18 @@ export function BourseSection() {
                 params={{ slug: n.slug }}
                 className="news-card group bg-card border border-border rounded-lg overflow-hidden flex flex-col"
               >
-                {n.cover_image && (
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <img
-                      src={n.cover_image}
-                      alt={n.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span className="absolute top-2 right-2 bg-gold text-gold-foreground px-2 py-0.5 text-[10px] font-extrabold rounded">
-                      بورصة
-                    </span>
-                  </div>
-                )}
+                <CoverImage
+                  src={n.cover_image}
+                  alt={n.title}
+                  ratio="16/9"
+                  focus="top"
+                  sizeHint={800}
+                  imgClassName="group-hover:scale-105"
+                >
+                  <span className="absolute top-2 right-2 bg-gold text-gold-foreground px-2 py-0.5 text-[10px] font-extrabold rounded">
+                    بورصة
+                  </span>
+                </CoverImage>
                 <div className="p-3 flex-1 flex flex-col">
                   <h3 className="text-sm md:text-base font-bold text-primary leading-snug group-hover:text-gold transition-colors line-clamp-3">
                     {n.title}
