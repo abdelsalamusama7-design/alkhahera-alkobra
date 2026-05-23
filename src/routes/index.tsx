@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,7 @@ import { GoldBar } from "@/components/site/GoldBar";
 import { GoldWidget } from "@/components/site/GoldWidget";
 import { Footer } from "@/components/site/Footer";
 import { TopicsCircles } from "@/components/site/TopicsCircles";
+import { NewspaperPager } from "@/components/site/NewspaperPager";
 import { getHomeBundle } from "@/lib/articles.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
@@ -118,9 +120,137 @@ function Index() {
       ? fallbackTitles
       : ["تصفّح أحدث الأخبار من لوحة التحكم — اسحب RSS لإضافة محتوى حقيقي."];
 
-  function ItemLink({ item, children }: { item: any; children: React.ReactNode }) {
+  function ItemLink({ item, children }: { item: any; children: ReactNode }) {
     if (item.slug) return <Link to="/article/$slug" params={{ slug: item.slug }} className="block h-full">{children}</Link>;
     return <div>{children}</div>;
+  }
+
+  // ===== وضع القراءة: عرض كصفحات جريدة ورقية =====
+  if (isReadMode) {
+    const readerPages: { title: string; node: ReactNode }[] = [
+      {
+        title: "الصفحة الأولى",
+        node: (
+          <div className="space-y-5">
+            <HeroCarousel
+              items={heroCarouselItems.length ? heroCarouselItems : [hero].filter(Boolean)}
+              intervalMs={5500}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {sideHero.slice(0, 2).map((n: NewsItem) => (
+                <ItemLink key={n.id} item={n}>
+                  <NewsCard item={n} />
+                </ItemLink>
+              ))}
+            </div>
+          </div>
+        ),
+      },
+      ...(trendingList.length
+        ? [
+            {
+              title: "ترند الآن",
+              node: (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {trendingList.slice(0, 9).map((n: NewsItem, i: number) => (
+                    <ItemLink key={n.id} item={n}>
+                      <div className="relative news-card h-full">
+                        <span className="absolute top-2 right-2 z-10 bg-gold text-gold-foreground text-[11px] font-extrabold rounded-full h-6 min-w-6 px-1.5 flex items-center justify-center shadow">
+                          #{i + 1}
+                        </span>
+                        <NewsCard item={n} />
+                      </div>
+                    </ItemLink>
+                  ))}
+                </div>
+              ),
+            },
+          ]
+        : []),
+      {
+        title: "آخر الأخبار",
+        node: (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {latestList.slice(0, 9).map((n: NewsItem) => (
+              <ItemLink key={n.id} item={n}>
+                <NewsCard item={n} />
+              </ItemLink>
+            ))}
+          </div>
+        ),
+      },
+      {
+        title: "المزيد من الأخبار",
+        node: (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {latestList.slice(9, 18).map((n: NewsItem) => (
+              <ItemLink key={n.id} item={n}>
+                <NewsCard item={n} />
+              </ItemLink>
+            ))}
+          </div>
+        ),
+      },
+      {
+        title: "الأكثر قراءة",
+        node: (
+          <ol className="space-y-3">
+            {mostRead.map((n: NewsItem, i: number) => (
+              <ItemLink key={n.id} item={n}>
+                <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
+                  <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">
+                    {i + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[10px] font-bold text-gold mb-1">{n.category}</div>
+                    <h4 className="text-base font-bold text-primary leading-snug group-hover:text-gold transition-colors">
+                      {n.title}
+                    </h4>
+                  </div>
+                </li>
+              </ItemLink>
+            ))}
+          </ol>
+        ),
+      },
+      {
+        title: "آراء الكتّاب",
+        node: (
+          <div className="space-y-3">
+            {opinions.map((o) => (
+              <article
+                key={o.id}
+                className="news-card bg-card border border-border rounded-lg p-4 flex gap-4 items-start"
+              >
+                <img
+                  src={o.image}
+                  alt={o.source}
+                  loading="lazy"
+                  className="h-14 w-14 rounded-full object-cover border-2 border-gold shrink-0"
+                />
+                <div>
+                  <div className="text-xs font-bold text-gold">{o.source}</div>
+                  <h3 className="text-base font-bold text-primary mt-1 leading-snug">{o.title}</h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        ),
+      },
+    ];
+
+    return (
+      <div className="min-h-screen flex flex-col bg-background" dir="rtl">
+        <TopBar />
+        <Header />
+        <NavBar />
+        <BreakingTicker items={breakingItems} />
+        <main className="flex-1">
+          <NewspaperPager pages={readerPages} />
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (

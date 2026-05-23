@@ -132,3 +132,13 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.15);
 }
+
+/* Page curl hint pulse (newspaper reader) */
+@keyframes page-curl-hint {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); filter: drop-shadow(0 0 0 transparent); }
+  25% { transform: translate(5px, -5px) rotate(-8deg); filter: drop-shadow(2px -2px 8px rgb(0 0 0 / 0.3)); }
+  50% { transform: translate(0, 0) rotate(0deg); }
+}
+.animate-page-curl-hint {
+  animation: page-curl-hint 2.4s ease-in-out infinite;
+}
