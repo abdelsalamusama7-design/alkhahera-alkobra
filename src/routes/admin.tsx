@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Newspaper, FolderTree, Plus, Rss, Users, BarChart3, Globe, Megaphone, LayoutGrid, FileEdit, Settings2, Map } from "lucide-react";
+import { LogOut, Newspaper, FolderTree, Plus, Rss, Users, BarChart3, Globe, Megaphone, LayoutGrid, FileEdit, Settings2, Map, Clock, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({

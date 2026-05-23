@@ -23,6 +23,8 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTrafficRouteImport } from './routes/admin.traffic'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminSitemapRouteImport } from './routes/admin.sitemap'
+import { Route as AdminSeoRefreshRouteImport } from './routes/admin.seo-refresh'
+import { Route as AdminSeoLastmodRouteImport } from './routes/admin.seo-lastmod'
 import { Route as AdminRssSourcesRouteImport } from './routes/admin.rss-sources'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminIngestRouteImport } from './routes/admin.ingest'
@@ -107,6 +109,16 @@ const AdminSitemapRoute = AdminSitemapRouteImport.update({
   path: '/sitemap',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSeoRefreshRoute = AdminSeoRefreshRouteImport.update({
+  id: '/seo-refresh',
+  path: '/seo-refresh',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSeoLastmodRoute = AdminSeoLastmodRouteImport.update({
+  id: '/seo-lastmod',
+  path: '/seo-lastmod',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRssSourcesRoute = AdminRssSourcesRouteImport.update({
   id: '/rss-sources',
   path: '/rss-sources',
@@ -188,6 +200,8 @@ export interface FileRoutesByFullPath {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
+  '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
@@ -216,6 +230,8 @@ export interface FileRoutesByTo {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
+  '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
@@ -246,6 +262,8 @@ export interface FileRoutesById {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
+  '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
@@ -277,6 +295,8 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/seo-lastmod'
+    | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
@@ -305,6 +325,8 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/seo-lastmod'
+    | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
@@ -334,6 +356,8 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/seo-lastmod'
+    | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
@@ -464,6 +488,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSitemapRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/seo-refresh': {
+      id: '/admin/seo-refresh'
+      path: '/seo-refresh'
+      fullPath: '/admin/seo-refresh'
+      preLoaderRoute: typeof AdminSeoRefreshRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/seo-lastmod': {
+      id: '/admin/seo-lastmod'
+      path: '/seo-lastmod'
+      fullPath: '/admin/seo-lastmod'
+      preLoaderRoute: typeof AdminSeoLastmodRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/rss-sources': {
       id: '/admin/rss-sources'
       path: '/rss-sources'
@@ -578,6 +616,8 @@ interface AdminRouteChildren {
   AdminIngestRoute: typeof AdminIngestRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminRssSourcesRoute: typeof AdminRssSourcesRoute
+  AdminSeoLastmodRoute: typeof AdminSeoLastmodRoute
+  AdminSeoRefreshRoute: typeof AdminSeoRefreshRoute
   AdminSitemapRoute: typeof AdminSitemapRoute
   AdminStatsRoute: typeof AdminStatsRoute
   AdminTrafficRoute: typeof AdminTrafficRoute
@@ -595,6 +635,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIngestRoute: AdminIngestRoute,
   AdminNewRoute: AdminNewRoute,
   AdminRssSourcesRoute: AdminRssSourcesRoute,
+  AdminSeoLastmodRoute: AdminSeoLastmodRoute,
+  AdminSeoRefreshRoute: AdminSeoRefreshRoute,
   AdminSitemapRoute: AdminSitemapRoute,
   AdminStatsRoute: AdminStatsRoute,
   AdminTrafficRoute: AdminTrafficRoute,
