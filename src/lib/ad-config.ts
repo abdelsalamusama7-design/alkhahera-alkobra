@@ -44,8 +44,8 @@ export const DEFAULT_AD_CONFIG: AdConfig = {
   },
   monetag: [
     { id: "quge5", enabled: true, src: "https://quge5.com/88/tag.min.js", zone: "242128" },
-    { id: "quge5-242145", enabled: true, src: "https://quge5.com/88/tag.min.js", zone: "242145" },
-    { id: "al5sm", enabled: true, src: "https://al5sm.com/tag.min.js", zone: "11044569" },
+    { id: "quge5-242145", enabled: false, src: "https://quge5.com/88/tag.min.js", zone: "242145" },
+    { id: "al5sm", enabled: false, src: "https://al5sm.com/tag.min.js", zone: "11044569" },
   ],
   sw: { domain: "3nbf4.com", zoneId: "11044543" },
 };
