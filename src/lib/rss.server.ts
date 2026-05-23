@@ -10,28 +10,23 @@ export type RssSource = {
   source: string;
 };
 
-const FALLBACK_IMAGES = [
-  "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1611224923853-80b023f02d71?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1518544801976-3e159e50e5bb?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1496449903678-68ddcb189a24?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=800&h=500&q=80",
-  "https://images.unsplash.com/photo-1590650153855-d9e808231d41?auto=format&fit=crop&w=800&h=500&q=80",
-];
+// صور افتراضية مرتبطة بالقسم — تُستخدم فقط إذا فشل توليد صورة بالذكاء الاصطناعي.
+// لا تُستخدم صور عشوائية غير مرتبطة بالمحتوى أبدًا.
+const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
+  sports: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&h=750&q=80", // ملعب كرة قدم
+  politics: "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1200&h=750&q=80", // مبنى حكومي
+  economy: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&h=750&q=80", // أوراق نقدية
+  technology: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&h=750&q=80", // تقنية
+  arts: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&h=750&q=80", // فن/سينما
+  accidents: "https://images.unsplash.com/photo-1582820002321-cc34c4bb4f1f?auto=format&fit=crop&w=1200&h=750&q=80", // إسعاف/طوارئ
+  local: "https://images.unsplash.com/photo-1572252009286-268acec5ca0a?auto=format&fit=crop&w=1200&h=750&q=80", // القاهرة
+  world: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&h=750&q=80", // عالم/خريطة
+};
+const GENERIC_NEWS_FALLBACK =
+  "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&h=750&q=80"; // جريدة
 
-function pickFallbackImage(seed: string): string {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
-  return FALLBACK_IMAGES[Math.abs(h) % FALLBACK_IMAGES.length];
+function pickCategoryFallback(categorySlug: string): string {
+  return CATEGORY_FALLBACK_IMAGES[categorySlug] ?? GENERIC_NEWS_FALLBACK;
 }
 
 export const RSS_SOURCES: RssSource[] = [
@@ -322,6 +317,7 @@ export async function ingestAllFeeds() {
     const slug = `${slugify(finalTitle)}-${Math.abs(hash(String(link || finalTitle))).toString(36).slice(0, 6)}`;
 
     let finalCover = cover;
+    // لو الصورة الأصلية مكررة في مقال آخر، نعتبرها غير صالحة ونعيد التوليد بدل استخدام صورة عشوائية.
     if (finalCover) {
       const { data: dup } = await supabaseAdmin
         .from("articles")
@@ -329,12 +325,14 @@ export async function ingestAllFeeds() {
         .eq("cover_image", finalCover)
         .limit(1)
         .maybeSingle();
-      if (dup) finalCover = pickFallbackImage(slug);
+      if (dup) finalCover = null;
     }
+    // لا توجد صورة → نولّد واحدة بالذكاء الاصطناعي مرتبطة بالعنوان.
     if (!finalCover) {
       finalCover = await generateCoverImage(finalTitle, slug);
     }
-    if (!finalCover) finalCover = pickFallbackImage(slug);
+    // الملاذ الأخير: صورة افتراضية حسب القسم (مرتبطة بالموضوع وليست عشوائية).
+    if (!finalCover) finalCover = pickCategoryFallback(categorySlug);
 
     if (!autoPublish) {
       // Save as draft for review
