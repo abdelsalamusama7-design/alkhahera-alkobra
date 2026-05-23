@@ -495,7 +495,7 @@ export async function ingestAllFeeds() {
     }
   }
 
-  return { inserted, skipped, rewritten, errors, facebookPosted, facebookFailed, facebookErrors };
+  return { inserted, skipped, rewritten, drafted, errors, facebookPosted, facebookFailed, facebookErrors };
 }
 
 function hash(s: string) {
