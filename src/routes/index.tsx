@@ -110,7 +110,7 @@ function Index() {
 
       <main className="flex-1">
         <TopicsCircles items={(worldTopDb.length ? worldTopDb : trendingDb.length ? trendingDb : latestList).slice(0, 12)} title="أهم أحداث العالم" />
-        <section className="container mx-auto px-4"><AdSlot slot="home-top" /></section>
+        
 
 
         <section className="container mx-auto px-4 py-6">
@@ -156,7 +156,6 @@ function Index() {
         </section>
 
         <section className="container mx-auto px-4">
-          <SponsoredLink label="عروض حصرية اليوم — اطّلع الآن" />
           <AdSlot slot="home-middle" className="mt-3" />
         </section>
 
@@ -255,15 +254,8 @@ function Index() {
                   </ItemLink>
                 ))}
               </ol>
-              <div className="mt-4">
-                <SponsoredLink label="عروض ومحتوى مختار" />
-                <AdSlot slot="sidebar" className="mt-3" />
-              </div>
               <div className="mt-4 flex justify-center">
                 <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
-              </div>
-              <div className="mt-4 flex justify-center">
-                <AdsterraBanner adKey="9fa4dda683744d44af1745cccfc0f432" width={160} height={300} />
               </div>
             </aside>
 
@@ -298,11 +290,6 @@ function Index() {
           </div>
         </section>
 
-        {/* بانر 160x600 — Skyscraper */}
-        <section className="container mx-auto px-4 py-6 flex justify-center">
-          <AdsterraBanner adKey="85d785d2e3eb2b59240de17f347d15c9" width={160} height={600} />
-        </section>
-        <section className="container mx-auto px-4"><AdSlot slot="home-bottom" /></section>
       </main>
 
 
