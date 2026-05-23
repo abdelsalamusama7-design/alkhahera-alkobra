@@ -73,9 +73,25 @@ function Index() {
   const worldTopDb = ((data as any).worldTop ?? []).map(dbToMock);
   const breakingDb = data.breaking.map((b: any) => b.title);
 
-  const heroList = heroDb.length ? heroDb : heroNews;
-  const latestList = latestDb.length ? latestDb : latestNews;
-  const mostRead = (mostReadDb.length ? mostReadDb : latestNews).slice(0, 5);
+  // Global dedupe helper across sections (by id/slug/title/image)
+  const dedupe = (arr: NewsItem[], used: Set<string>) =>
+    arr.filter((n) => {
+      const keys = [n.id, n.slug, n.title?.trim(), n.image].filter(Boolean) as string[];
+      if (keys.some((k) => used.has(k))) return false;
+      keys.forEach((k) => used.add(k));
+      return true;
+    });
+
+  const usedKeys = new Set<string>();
+
+  const heroListRaw = heroDb.length ? heroDb : heroNews;
+  const heroList = dedupe(heroListRaw, usedKeys);
+  const latestListRaw = latestDb.length ? latestDb : latestNews;
+  const latestList = dedupe(latestListRaw, usedKeys);
+  const trendingList = dedupe(trendingDb, usedKeys);
+  const worldTopList = dedupe(worldTopDb, new Set<string>()); // circles use their own scope
+  const mostRead = dedupe(mostReadDb.length ? mostReadDb : latestNews, usedKeys).slice(0, 5);
+
   const [hero, ...sideHero] = heroList;
   const fallbackTitles = [...heroDb, ...latestDb].slice(0, 10).map((n) => n.title);
   const breakingItems = breakingDb.length
