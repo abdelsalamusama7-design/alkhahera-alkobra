@@ -60,6 +60,10 @@ export const RSS_SOURCES: RssSource[] = [
   // دولي
   { url: "https://feeds.bbci.co.uk/arabic/rss.xml", categorySlug: "world", source: "BBC عربي" },
   { url: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9", categorySlug: "world", source: "الجزيرة" },
+  // الشرق للأخبار (عبر Google News RSS)
+  { url: "https://news.google.com/rss/search?q=site:asharq.com&hl=ar&gl=EG&ceid=EG:ar", categorySlug: "world", source: "الشرق" },
+  { url: "https://news.google.com/rss/search?q=site:asharq.com+%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9&hl=ar&gl=EG&ceid=EG:ar", categorySlug: "politics", source: "الشرق" },
+  { url: "https://news.google.com/rss/search?q=site:asharq.com+%D8%A7%D9%82%D8%AA%D8%B5%D8%A7%D8%AF&hl=ar&gl=EG&ceid=EG:ar", categorySlug: "economy", source: "الشرق" },
 ];
 
 function pickImage(item: any): string | null {
