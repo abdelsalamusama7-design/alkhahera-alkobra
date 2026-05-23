@@ -414,6 +414,48 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_checks: {
+        Row: {
+          checked_at: string
+          content_type: string | null
+          duration_ms: number | null
+          error: string | null
+          http_status: number | null
+          id: string
+          image_count: number | null
+          latest_lastmod: string | null
+          source: string
+          status: string
+          url_count: number | null
+        }
+        Insert: {
+          checked_at?: string
+          content_type?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          image_count?: number | null
+          latest_lastmod?: string | null
+          source?: string
+          status: string
+          url_count?: number | null
+        }
+        Update: {
+          checked_at?: string
+          content_type?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          image_count?: number | null
+          latest_lastmod?: string | null
+          source?: string
+          status?: string
+          url_count?: number | null
+        }
+        Relationships: []
+      }
       social_posts: {
         Row: {
           article_id: string
