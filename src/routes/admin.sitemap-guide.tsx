@@ -19,7 +19,6 @@ export const Route = createFileRoute("/admin/sitemap-guide")({
 
 function SitemapGuidePage() {
   const [lastConfirmed, setLastConfirmed] = useState<string | null>(null);
-  const [sitemapInput, setSitemapInput] = useState("sitemap.xml");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -59,7 +58,7 @@ function SitemapGuidePage() {
     {
       num: 2,
       title: "اذهب لقسم Sitemaps",
-      desc: "من القائمة الجانبية اختار "Sitemaps" أو "خرائط الموقع".",
+      desc: "من القائمة الجانبية اختار Sitemaps أو خرائط الموقع.",
       link: {
         href: `https://search.google.com/search-console/sitemaps?resource_id=${encodeURIComponent(BASE_URL + "/")}`,
         label: "فتح قسم Sitemaps",
@@ -68,11 +67,10 @@ function SitemapGuidePage() {
     {
       num: 3,
       title: "أدخل رابط Sitemap",
-      desc: "انسخ الرابط التالي والصقه في خانة "أضف خريطة موقع جديدة".",
+      desc: "انسخ الرابط التالي والصقه في خانة أضف خريطة موقع جديدة.",
       action: (
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2 mt-2" dir="ltr">
           <Input
-            dir="ltr"
             readOnly
             value={`${BASE_URL}/sitemap.xml`}
             className="font-mono text-sm"
@@ -91,12 +89,12 @@ function SitemapGuidePage() {
     {
       num: 4,
       title: "اضغط إرسال",
-      desc: "بعد اللصق، اضغط "إرسال" (Submit). جوجل بيعالج الـ sitemap ويظهرلك حالة "نجاح" أو "تمت المعالجة".",
+      desc: "بعد اللصق، اضغط إرسال Submit. جوجل بيعالج الـ sitemap ويظهرلك حالة نجاح أو تمت المعالجة.",
     },
     {
       num: 5,
       title: "تحقق من الحالة",
-      desc: "انتظر قليلاً واضغط "تحديث" في GSC. إذا ظهرت حالة "Success" أو "Processed" يبقى كل شيء تمام.",
+      desc: "انتظر قليلاً واضغط تحديث في GSC. إذا ظهرت حالة Success أو Processed يبقى كل شيء تمام.",
     },
   ];
 
@@ -118,7 +116,7 @@ function SitemapGuidePage() {
           <div>
             <div className="text-sm font-bold text-primary">آخر مرة تأكدت فيها</div>
             <div className="text-xs text-muted-foreground">
-              {lastConfirmed ?? "لم يُسجل بعد — أكمل الخطوات ثم اضغط "تم التأكد الآن""}
+              {lastConfirmed ?? "لم يُسجل بعد — أكمل الخطوات ثم اضغط تم التأكد الآن"}
             </div>
           </div>
         </div>
@@ -132,7 +130,7 @@ function SitemapGuidePage() {
         <ul className="divide-y divide-border">
           {steps.map((s) => (
             <li key={s.num} className="p-4 flex items-start gap-4">
-              <div className="shrink-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-extrabold text-sm">
+              <div className="shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-extrabold text-sm">
                 {s.num}
               </div>
               <div className="flex-1">
@@ -195,7 +193,7 @@ function SitemapGuidePage() {
       </section>
 
       <div className="text-xs text-muted-foreground flex items-center gap-1">
-        <ArrowLeft size={12} /> بعد ما تخلص الخطوات، اضغط "تم التأكد الآن" عشان يسجل التاريخ.
+        <ArrowLeft size={12} /> بعد ما تخلص الخطوات، اضغط تم التأكد الآن عشان يسجل التاريخ.
       </div>
     </div>
   );
