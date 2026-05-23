@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { NewsItem } from "@/data/news";
 
-export function TopicsCircles({ items }: { items: NewsItem[] }) {
+export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: string }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   if (!items?.length) return null;
