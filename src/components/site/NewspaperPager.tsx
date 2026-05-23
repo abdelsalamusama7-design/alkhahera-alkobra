@@ -163,9 +163,9 @@ export function NewspaperPager({ pages }: NewspaperPagerProps) {
               }`}
               style={{
                 background:
-                  "linear-gradient(135deg, transparent 50%, hsl(var(--muted) / 0.4) 50%, hsl(var(--card)) 60%, hsl(var(--muted)) 100%)",
+                  "linear-gradient(135deg, transparent 50%, color-mix(in oklab, var(--muted) 40%, transparent) 50%, var(--card) 60%, var(--muted) 100%)",
                 clipPath: "polygon(0 100%, 100% 100%, 0 0)",
-                boxShadow: "inset 6px -6px 14px hsl(var(--background) / 0.5)",
+                boxShadow: "inset 6px -6px 14px color-mix(in oklab, var(--background) 50%, transparent)",
                 transition: "transform 0.3s ease",
               }}
             >
@@ -189,7 +189,7 @@ function PageSheet({ title, children }: { title: string; children: ReactNode }) 
       className="relative"
       style={{
         background:
-          "repeating-linear-gradient(180deg, hsl(var(--card)) 0px, hsl(var(--card)) 38px, hsl(var(--muted) / 0.15) 39px, hsl(var(--card)) 40px)",
+          "repeating-linear-gradient(180deg, var(--card) 0px, var(--card) 38px, color-mix(in oklab, var(--muted) 15%, transparent) 39px, var(--card) 40px)",
       }}
     >
       {/* رأس الصفحة الجريدي */}
