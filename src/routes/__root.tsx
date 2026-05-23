@@ -151,13 +151,26 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Outlet />
-        <SideRailAds />
-        <WhatsAppFab />
-        <ShortsButton />
-        <PopunderSmartLink />
-        <MonetagScripts />
+        <ReadModeProvider>
+          <InnerRoot />
+        </ReadModeProvider>
       </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+function InnerRoot() {
+  const { isReadMode } = useReadMode();
+
+  return (
+    <>
+      <Outlet />
+      <ReadModeButton />
+      <WhatsAppFab />
+      <ShortsButton />
+      {!isReadMode && <SideRailAds />}
+      {!isReadMode && <PopunderSmartLink />}
+      {!isReadMode && <MonetagScripts />}
+    </>
   );
 }
