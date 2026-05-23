@@ -224,9 +224,43 @@ export async function ingestAllFeeds() {
   const { data: cats } = await supabaseAdmin.from("categories").select("id,slug");
   const catBySlug = new Map((cats ?? []).map((c) => [c.slug, c.id]));
 
+  // Load active sources from DB (fallback to hardcoded if table empty)
+  const { data: dbSources } = await supabaseAdmin
+    .from("rss_sources")
+    .select("*")
+    .eq("enabled", true)
+    .order("sort_order", { ascending: true });
+
+  type ActiveSrc = {
+    id?: string;
+    url: string;
+    categorySlug: string;
+    source: string;
+    maxItems: number;
+    autoPublish: boolean;
+  };
+  const sources: ActiveSrc[] =
+    dbSources && dbSources.length > 0
+      ? dbSources.map((s) => ({
+          id: s.id,
+          url: s.url,
+          categorySlug: s.category_slug,
+          source: s.source_label,
+          maxItems: s.max_items ?? 8,
+          autoPublish: s.auto_publish ?? false,
+        }))
+      : RSS_SOURCES.map((s) => ({
+          url: s.url,
+          categorySlug: s.categorySlug,
+          source: s.source,
+          maxItems: 8,
+          autoPublish: true,
+        }));
+
   let inserted = 0;
   let skipped = 0;
   let rewritten = 0;
+  let drafted = 0;
   const errors: string[] = [];
   const insertedArticles: { id: string; title: string; excerpt: string; slug: string; cover_image: string | null; tags: string[] }[] = [];
 
@@ -239,9 +273,10 @@ export async function ingestAllFeeds() {
     published_at: string;
     categorySlug: string;
     source: string;
+    autoPublish: boolean;
   }) {
-    const { rawTitle, rawExcerpt, link, cover, published_at, categorySlug, source } = args;
-    if (!rawTitle) return;
+    const { rawTitle, rawExcerpt, link, cover, published_at, categorySlug, source, autoPublish } = args;
+    if (!rawTitle) return { ok: false as const };
     const sourceUrl = link?.trim() || null;
     if (sourceUrl) {
       const { data: bySourceUrl } = await supabaseAdmin
@@ -252,7 +287,17 @@ export async function ingestAllFeeds() {
         .maybeSingle();
       if (bySourceUrl) {
         skipped++;
-        return;
+        return { ok: false as const };
+      }
+      const { data: byDraft } = await supabaseAdmin
+        .from("article_drafts")
+        .select("id")
+        .eq("source_url", sourceUrl)
+        .limit(1)
+        .maybeSingle();
+      if (byDraft) {
+        skipped++;
+        return { ok: false as const };
       }
     }
 
@@ -264,7 +309,7 @@ export async function ingestAllFeeds() {
       .maybeSingle();
     if (existingSlug) {
       skipped++;
-      return;
+      return { ok: false as const };
     }
 
     const rewrite = await rewriteWithHook(rawTitle, rawExcerpt, source);
@@ -291,6 +336,31 @@ export async function ingestAllFeeds() {
     }
     if (!finalCover) finalCover = pickFallbackImage(slug);
 
+    if (!autoPublish) {
+      // Save as draft for review
+      const { error: dErr } = await supabaseAdmin.from("article_drafts").insert({
+        title: finalTitle,
+        excerpt: finalExcerpt,
+        content: finalContent,
+        cover_image: finalCover,
+        category_id: catBySlug.get(categorySlug) ?? null,
+        source,
+        source_url: sourceUrl,
+        tags: finalTags,
+        published_at,
+        original_title: rawTitle,
+        original_excerpt: rawExcerpt,
+        status: "pending",
+      });
+      if (dErr) {
+        if (dErr.code === "23505") skipped++;
+        else errors.push(`${source} (draft): ${dErr.message}`);
+        return { ok: false as const };
+      }
+      drafted++;
+      return { ok: true as const, draft: true };
+    }
+
     const { data: newRows, error } = await supabaseAdmin.from("articles").insert({
       title: finalTitle,
       slug,
@@ -308,64 +378,83 @@ export async function ingestAllFeeds() {
     if (error) {
       if (error.code === "23505") {
         skipped++;
-        return;
+        return { ok: false as const };
       }
       errors.push(`${source}: ${error.message}`);
-    } else {
-      inserted++;
-      if (newRows && newRows[0]) {
-        insertedArticles.push({
-          id: newRows[0].id,
-          title: finalTitle,
-          excerpt: finalExcerpt,
-          slug,
-          cover_image: finalCover,
-          tags: finalTags,
-        });
-      }
+      return { ok: false as const };
     }
+    inserted++;
+    if (newRows && newRows[0]) {
+      insertedArticles.push({
+        id: newRows[0].id,
+        title: finalTitle,
+        excerpt: finalExcerpt,
+        slug,
+        cover_image: finalCover,
+        tags: finalTags,
+      });
+    }
+    return { ok: true as const, draft: false };
   }
 
-  for (const src of RSS_SOURCES) {
+  for (const src of sources) {
+    let srcInsertedCount = 0;
+    let srcError: string | null = null;
     try {
       const res = await fetch(src.url, {
         headers: { "user-agent": "Mozilla/5.0 (compatible; AlqahiraBot/1.0)" },
       });
       if (!res.ok) {
-        errors.push(`${src.source}: HTTP ${res.status}`);
-        continue;
-      }
-      const xml = await res.text();
-      const parsed = parser.parse(xml);
-      const items = parsed?.rss?.channel?.item ?? parsed?.feed?.entry ?? [];
-      const list = Array.isArray(items) ? items : [items];
+        srcError = `HTTP ${res.status}`;
+        errors.push(`${src.source}: ${srcError}`);
+      } else {
+        const xml = await res.text();
+        const parsed = parser.parse(xml);
+        const items = parsed?.rss?.channel?.item ?? parsed?.feed?.entry ?? [];
+        const list = Array.isArray(items) ? items : [items];
 
-      for (const item of list.slice(0, 8)) {
-        const rawTitle = stripHtml(String(item.title?.["#text"] ?? item.title ?? "")).slice(0, 280);
-        if (!rawTitle) continue;
-        const link =
-          typeof item.link === "string"
-            ? item.link
-            : item.link?.["@_href"] || item.link?.["#text"] || item.guid?.["#text"] || item.guid || null;
-        const rawDesc = item.description || item.summary || item["content:encoded"] || "";
-        const rawExcerpt = stripHtml(String(rawDesc)).slice(0, 500);
-        const cover = pickImage(item);
-        const pub = item.pubDate || item.published || item.updated;
-        const published_at = pub ? new Date(String(pub)).toISOString() : new Date().toISOString();
-        await processItem({
-          rawTitle,
-          rawExcerpt,
-          link,
-          cover,
-          published_at,
-          categorySlug: src.categorySlug,
-          source: src.source,
-        });
+        for (const item of list.slice(0, src.maxItems)) {
+          const rawTitle = stripHtml(String(item.title?.["#text"] ?? item.title ?? "")).slice(0, 280);
+          if (!rawTitle) continue;
+          const link =
+            typeof item.link === "string"
+              ? item.link
+              : item.link?.["@_href"] || item.link?.["#text"] || item.guid?.["#text"] || item.guid || null;
+          const rawDesc = item.description || item.summary || item["content:encoded"] || "";
+          const rawExcerpt = stripHtml(String(rawDesc)).slice(0, 500);
+          const cover = pickImage(item);
+          const pub = item.pubDate || item.published || item.updated;
+          const published_at = pub ? new Date(String(pub)).toISOString() : new Date().toISOString();
+          const r = await processItem({
+            rawTitle,
+            rawExcerpt,
+            link,
+            cover,
+            published_at,
+            categorySlug: src.categorySlug,
+            source: src.source,
+            autoPublish: src.autoPublish,
+          });
+          if (r.ok) srcInsertedCount++;
+        }
       }
     } catch (e: any) {
+      srcError = e.message;
       errors.push(`${src.source}: ${e.message}`);
     }
+    if (src.id) {
+      await supabaseAdmin
+        .from("rss_sources")
+        .update({
+          last_fetched_at: new Date().toISOString(),
+          last_inserted_count: srcInsertedCount,
+          last_error: srcError,
+          total_inserted: ((dbSources?.find((d) => d.id === src.id)?.total_inserted ?? 0) as number) + srcInsertedCount,
+        })
+        .eq("id", src.id);
+    }
   }
+
 
   // الأخبار الرائجة من GNews
   try {
