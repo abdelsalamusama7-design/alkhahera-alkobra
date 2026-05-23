@@ -22,6 +22,7 @@ import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTrafficRouteImport } from './routes/admin.traffic'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
+import { Route as AdminSitemapRouteImport } from './routes/admin.sitemap'
 import { Route as AdminRssSourcesRouteImport } from './routes/admin.rss-sources'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminIngestRouteImport } from './routes/admin.ingest'
@@ -99,6 +100,11 @@ const AdminTrafficRoute = AdminTrafficRouteImport.update({
 const AdminStatsRoute = AdminStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSitemapRoute = AdminSitemapRouteImport.update({
+  id: '/sitemap',
+  path: '/sitemap',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminRssSourcesRoute = AdminRssSourcesRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
+  '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
+    | '/admin/sitemap'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -445,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStatsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sitemap': {
+      id: '/admin/sitemap'
+      path: '/sitemap'
+      fullPath: '/admin/sitemap'
+      preLoaderRoute: typeof AdminSitemapRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/rss-sources': {
       id: '/admin/rss-sources'
       path: '/rss-sources'
@@ -559,6 +578,7 @@ interface AdminRouteChildren {
   AdminIngestRoute: typeof AdminIngestRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminRssSourcesRoute: typeof AdminRssSourcesRoute
+  AdminSitemapRoute: typeof AdminSitemapRoute
   AdminStatsRoute: typeof AdminStatsRoute
   AdminTrafficRoute: typeof AdminTrafficRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
@@ -575,6 +595,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIngestRoute: AdminIngestRoute,
   AdminNewRoute: AdminNewRoute,
   AdminRssSourcesRoute: AdminRssSourcesRoute,
+  AdminSitemapRoute: AdminSitemapRoute,
   AdminStatsRoute: AdminStatsRoute,
   AdminTrafficRoute: AdminTrafficRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
