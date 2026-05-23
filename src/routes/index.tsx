@@ -97,8 +97,8 @@ function Index() {
       <BreakingTicker items={breakingItems} />
       <MarketsTicker />
       <GoldBar />
-      <AdBanner />
-      <AdsterraAutoScript />
+      {!isReadMode && <AdBanner />}
+      {!isReadMode && <AdsterraAutoScript />}
 
       {/* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */}
       <div className="container mx-auto px-4 py-3 flex justify-center">
