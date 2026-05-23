@@ -100,15 +100,17 @@ function Index() {
       {!isReadMode && <AdBanner />}
       {!isReadMode && <AdsterraAutoScript />}
 
-      {/* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */}
-      <div className="container mx-auto px-4 py-3 flex justify-center">
-        <div className="hidden md:block">
-          <AdsterraBanner adKey="f25eddd86f61a1b492cf411428805d2f" width={728} height={90} />
+      {!isReadMode && (
+        /* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */
+        <div className="container mx-auto px-4 py-3 flex justify-center">
+          <div className="hidden md:block">
+            <AdsterraBanner adKey="f25eddd86f61a1b492cf411428805d2f" width={728} height={90} />
+          </div>
+          <div className="md:hidden">
+            <AdsterraBanner adKey="c6fe2d73a2310bef756d61720fe43359" width={320} height={50} />
+          </div>
         </div>
-        <div className="md:hidden">
-          <AdsterraBanner adKey="c6fe2d73a2310bef756d61720fe43359" width={320} height={50} />
-        </div>
-      </div>
+      )}
 
       <main className="flex-1">
         <TopicsCircles items={(worldTopDb.length ? worldTopDb : trendingDb.length ? trendingDb : latestList).slice(0, 12)} title="أهم أحداث العالم" />
