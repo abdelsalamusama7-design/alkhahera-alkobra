@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
+import { useReadMode } from "@/hooks/use-read-mode";
 import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
@@ -56,6 +57,7 @@ function dbToMock(row: any): NewsItem {
 }
 
 function Index() {
+  const { isReadMode } = useReadMode();
   const initial = Route.useLoaderData();
   const { data = initial } = useQuery({
     queryKey: ["home"],
@@ -95,18 +97,20 @@ function Index() {
       <BreakingTicker items={breakingItems} />
       <MarketsTicker />
       <GoldBar />
-      <AdBanner />
-      <AdsterraAutoScript />
+      {!isReadMode && <AdBanner />}
+      {!isReadMode && <AdsterraAutoScript />}
 
-      {/* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */}
-      <div className="container mx-auto px-4 py-3 flex justify-center">
-        <div className="hidden md:block">
-          <AdsterraBanner adKey="f25eddd86f61a1b492cf411428805d2f" width={728} height={90} />
+      {!isReadMode && (
+        /* بانر علوي عريض (728x90 ديسكتوب / 320x50 موبايل) */
+        <div className="container mx-auto px-4 py-3 flex justify-center">
+          <div className="hidden md:block">
+            <AdsterraBanner adKey="f25eddd86f61a1b492cf411428805d2f" width={728} height={90} />
+          </div>
+          <div className="md:hidden">
+            <AdsterraBanner adKey="c6fe2d73a2310bef756d61720fe43359" width={320} height={50} />
+          </div>
         </div>
-        <div className="md:hidden">
-          <AdsterraBanner adKey="c6fe2d73a2310bef756d61720fe43359" width={320} height={50} />
-        </div>
-      </div>
+      )}
 
       <main className="flex-1">
         <TopicsCircles items={(worldTopDb.length ? worldTopDb : trendingDb.length ? trendingDb : latestList).slice(0, 12)} title="أهم أحداث العالم" />
@@ -155,9 +159,11 @@ function Index() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4">
-          <AdSlot slot="home-middle" className="mt-3" />
-        </section>
+        {!isReadMode && (
+          <section className="container mx-auto px-4">
+            <AdSlot slot="home-middle" className="mt-3" />
+          </section>
+        )}
 
 
 
@@ -192,15 +198,19 @@ function Index() {
           </div>
         </section>
 
-        {/* Native Banner — يندمج مع شكل الموقع */}
-        <section className="container mx-auto px-4 py-6">
-          <AdsterraNativeBanner />
-        </section>
+        {!isReadMode && (
+          /* Native Banner — يندمج مع شكل الموقع */
+          <section className="container mx-auto px-4 py-6">
+            <AdsterraNativeBanner />
+          </section>
+        )}
 
-        {/* بانر 468x60 */}
-        <section className="container mx-auto px-4 py-3 flex justify-center">
-          <AdsterraBanner adKey="ffd24356f30f4d3b5eaa1598770263e5" width={468} height={60} />
-        </section>
+        {!isReadMode && (
+          /* بانر 468x60 */
+          <section className="container mx-auto px-4 py-3 flex justify-center">
+            <AdsterraBanner adKey="ffd24356f30f4d3b5eaa1598770263e5" width={468} height={60} />
+          </section>
+        )}
 
         <BourseSection />
 
@@ -254,9 +264,11 @@ function Index() {
                   </ItemLink>
                 ))}
               </ol>
-              <div className="mt-4 flex justify-center">
-                <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
-              </div>
+              {!isReadMode && (
+                <div className="mt-4 flex justify-center">
+                  <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
+                </div>
+              )}
             </aside>
 
           </div>

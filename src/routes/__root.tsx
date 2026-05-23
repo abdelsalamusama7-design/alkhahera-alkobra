@@ -8,11 +8,13 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { ReadModeProvider, useReadMode } from "@/hooks/use-read-mode";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
 import { ShortsButton } from "@/components/site/ShortsButton";
 import { SideRailAds } from "@/components/site/SideRailAds";
 import { PopunderSmartLink } from "@/components/site/PopunderSmartLink";
 import { MonetagScripts } from "@/components/site/MonetagScripts";
+import { ReadModeButton } from "@/components/site/ReadModeButton";
 
 import appCss from "../styles.css?url";
 
@@ -149,13 +151,26 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Outlet />
-        <SideRailAds />
-        <WhatsAppFab />
-        <ShortsButton />
-        <PopunderSmartLink />
-        <MonetagScripts />
+        <ReadModeProvider>
+          <InnerRoot />
+        </ReadModeProvider>
       </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+function InnerRoot() {
+  const { isReadMode } = useReadMode();
+
+  return (
+    <>
+      <Outlet />
+      <ReadModeButton />
+      <WhatsAppFab />
+      <ShortsButton />
+      {!isReadMode && <SideRailAds />}
+      {!isReadMode && <PopunderSmartLink />}
+      {!isReadMode && <MonetagScripts />}
+    </>
   );
 }
