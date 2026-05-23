@@ -9,6 +9,26 @@ interface SitemapEntry {
   lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
+  image?: { loc: string; title?: string };
+}
+
+function xmlEscape(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function normalizeImage(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  if (trimmed.startsWith("/")) return `${BASE_URL}${trimmed}`;
+  return null;
 }
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -22,7 +42,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             supabaseAdmin.from("categories").select("id, slug"),
             supabaseAdmin
               .from("articles")
-              .select("slug, updated_at, published_at, category_id")
+              .select("slug, title, cover_image, updated_at, published_at, category_id")
               .eq("is_published", true)
               .order("updated_at", { ascending: false })
               .limit(5000),
@@ -53,11 +73,13 @@ export const Route = createFileRoute("/sitemap.xml")({
             });
           }
           for (const a of arts ?? []) {
+            const img = normalizeImage(a.cover_image);
             entries.push({
               path: `/article/${a.slug}`,
               lastmod: a.updated_at ?? a.published_at ?? undefined,
               changefreq: "weekly",
               priority: "0.8",
+              image: img ? { loc: img, title: a.title ?? undefined } : undefined,
             });
           }
         } catch (err) {
@@ -68,22 +90,29 @@ export const Route = createFileRoute("/sitemap.xml")({
           }
         }
 
-        const urls = entries.map((e) =>
-          [
+        const urls = entries.map((e) => {
+          const lines = [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
+            `    <loc>${xmlEscape(BASE_URL + e.path)}</loc>`,
             e.lastmod ? `    <lastmod>${new Date(e.lastmod).toISOString()}</lastmod>` : null,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
-            `  </url>`,
-          ]
-            .filter(Boolean)
-            .join("\n"),
-        );
+          ];
+          if (e.image) {
+            lines.push(`    <image:image>`);
+            lines.push(`      <image:loc>${xmlEscape(e.image.loc)}</image:loc>`);
+            if (e.image.title) {
+              lines.push(`      <image:title>${xmlEscape(e.image.title)}</image:title>`);
+            }
+            lines.push(`    </image:image>`);
+          }
+          lines.push(`  </url>`);
+          return lines.filter(Boolean).join("\n");
+        });
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`,
           ...urls,
           `</urlset>`,
         ].join("\n");
