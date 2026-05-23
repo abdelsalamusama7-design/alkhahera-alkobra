@@ -95,6 +95,13 @@ export function CoverImage({
   const initial = src && src.trim() ? src : FALLBACK_IMG;
   const [current, setCurrent] = useState(initial);
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // إن كانت الصورة كاشيد/جاهزة قبل ما React يربط onLoad (شائع بعد SSR)
+  useEffect(() => {
+    const el = imgRef.current;
+    if (el && el.complete && el.naturalWidth > 0) setLoaded(true);
+  }, [current]);
 
   const optimized = optimizeSrc(current, sizeHint, ratio);
   const srcSet = buildSrcSet(current, ratio);
@@ -108,15 +115,15 @@ export function CoverImage({
         className,
       )}
     >
-      {/* skeleton */}
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-br from-muted to-muted/60 animate-pulse",
-          loaded && "opacity-0 transition-opacity duration-300",
-        )}
-        aria-hidden
-      />
+      {/* skeleton — يختفي بمجرد ظهور الصورة */}
+      {!loaded && (
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-muted to-muted/60 animate-pulse"
+          aria-hidden
+        />
+      )}
       <img
+        ref={imgRef}
         src={optimized}
         srcSet={srcSet}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -134,9 +141,8 @@ export function CoverImage({
           }
         }}
         className={cn(
-          "absolute inset-0 h-full w-full object-cover transition-transform duration-500",
+          "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
           FOCUS_CLASS[focus],
-          loaded ? "opacity-100" : "opacity-0",
           imgClassName,
         )}
       />
