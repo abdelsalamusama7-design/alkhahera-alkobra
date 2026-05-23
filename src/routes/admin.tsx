@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tan
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Newspaper, FolderTree, Plus, Rss, Users, BarChart3, Globe, Megaphone, LayoutGrid, FileEdit, Settings2, Map, Clock, Zap } from "lucide-react";
+import { LogOut, Newspaper, FolderTree, Plus, Rss, Users, BarChart3, Globe, Megaphone, LayoutGrid, FileEdit, Settings2, Map, Clock, Zap, BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -52,6 +52,7 @@ function AdminLayout() {
     { to: "/admin/sitemap", label: "اختبار Sitemap", icon: Map, show: true },
     { to: "/admin/seo-lastmod", label: "آخر تحديث (lastmod)", icon: Clock, show: true },
     { to: "/admin/seo-refresh", label: "تحديث جوجل", icon: Zap, show: true },
+    { to: "/admin/sitemap-guide", label: "دليل رفع Sitemap", icon: BookOpen, show: true },
   ].filter((n) => n.show);
 
 
