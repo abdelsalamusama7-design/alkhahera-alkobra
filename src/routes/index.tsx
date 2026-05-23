@@ -290,11 +290,6 @@ function Index() {
           </div>
         </section>
 
-        {/* بانر 160x600 — Skyscraper */}
-        <section className="container mx-auto px-4 py-6 flex justify-center">
-          <AdsterraBanner adKey="85d785d2e3eb2b59240de17f347d15c9" width={160} height={600} />
-        </section>
-        <section className="container mx-auto px-4"><AdSlot slot="home-bottom" /></section>
       </main>
 
 
