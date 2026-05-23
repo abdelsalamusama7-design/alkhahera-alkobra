@@ -24,6 +24,7 @@ import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminRssSourcesRouteImport } from './routes/admin.rss-sources'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminIngestRouteImport } from './routes/admin.ingest'
+import { Route as AdminDraftsRouteImport } from './routes/admin.drafts'
 import { Route as AdminCategoriesRouteImport } from './routes/admin.categories'
 import { Route as AdminAdsRouteImport } from './routes/admin.ads'
 import { Route as AdminAdSettingsRouteImport } from './routes/admin.ad-settings'
@@ -109,6 +110,11 @@ const AdminIngestRoute = AdminIngestRouteImport.update({
   path: '/ingest',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDraftsRoute = AdminDraftsRouteImport.update({
+  id: '/drafts',
+  path: '/drafts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/drafts': typeof AdminDraftsRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/drafts': typeof AdminDraftsRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/drafts': typeof AdminDraftsRoute
   '/admin/ingest': typeof AdminIngestRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/rss-sources': typeof AdminRssSourcesRoute
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
+    | '/admin/drafts'
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
+    | '/admin/drafts'
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
+    | '/admin/drafts'
     | '/admin/ingest'
     | '/admin/new'
     | '/admin/rss-sources'
@@ -434,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIngestRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/drafts': {
+      id: '/admin/drafts'
+      path: '/drafts'
+      fullPath: '/admin/drafts'
+      preLoaderRoute: typeof AdminDraftsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories': {
       id: '/admin/categories'
       path: '/categories'
@@ -516,6 +535,7 @@ interface AdminRouteChildren {
   AdminAdSettingsRoute: typeof AdminAdSettingsRoute
   AdminAdsRoute: typeof AdminAdsRoute
   AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminDraftsRoute: typeof AdminDraftsRoute
   AdminIngestRoute: typeof AdminIngestRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminRssSourcesRoute: typeof AdminRssSourcesRoute
@@ -531,6 +551,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAdSettingsRoute: AdminAdSettingsRoute,
   AdminAdsRoute: AdminAdsRoute,
   AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminDraftsRoute: AdminDraftsRoute,
   AdminIngestRoute: AdminIngestRoute,
   AdminNewRoute: AdminNewRoute,
   AdminRssSourcesRoute: AdminRssSourcesRoute,
