@@ -156,7 +156,6 @@ function Index() {
         </section>
 
         <section className="container mx-auto px-4">
-          <SponsoredLink label="عروض حصرية اليوم — اطّلع الآن" />
           <AdSlot slot="home-middle" className="mt-3" />
         </section>
 
