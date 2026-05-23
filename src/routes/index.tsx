@@ -264,9 +264,11 @@ function Index() {
                   </ItemLink>
                 ))}
               </ol>
-              <div className="mt-4 flex justify-center">
-                <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
-              </div>
+              {!isReadMode && (
+                <div className="mt-4 flex justify-center">
+                  <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
+                </div>
+              )}
             </aside>
 
           </div>
