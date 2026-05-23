@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
@@ -35,6 +36,11 @@ import { Route as AdminArticleStatsSlugRouteImport } from './routes/admin.articl
 import { Route as ApiPublicHooksIngestRssRouteImport } from './routes/api/public/hooks/ingest-rss'
 import { Route as ApiPublicHooksCheckAdsRouteImport } from './routes/api/public/hooks/check-ads'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/search': typeof SearchRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ad-settings': typeof AdminAdSettingsRoute
   '/admin/ads': typeof AdminAdsRoute
   '/admin/categories': typeof AdminCategoriesRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/search'
+    | '/sitemap.xml'
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/search'
+    | '/sitemap.xml'
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/search'
+    | '/sitemap.xml'
     | '/admin/ad-settings'
     | '/admin/ads'
     | '/admin/categories'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SearchRoute: typeof SearchRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ApiPublicIngestRssRoute: typeof ApiPublicIngestRssRoute
@@ -341,6 +354,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -572,6 +592,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SearchRoute: SearchRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
   ApiPublicIngestRssRoute: ApiPublicIngestRssRoute,

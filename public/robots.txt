@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api/
+
+# Google news bot (يفضّل وصول كامل)
+User-agent: Googlebot-News
+Allow: /
+
+Sitemap: https://kaheraalkobra.online/sitemap.xml
