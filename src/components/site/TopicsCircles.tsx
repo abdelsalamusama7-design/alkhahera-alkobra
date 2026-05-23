@@ -52,7 +52,7 @@ export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: str
                   />
                 </div>
                 <span className="text-xs md:text-sm font-extrabold text-primary text-center leading-tight line-clamp-2 group-hover:text-gold transition-colors">
-                  {n.category}
+                  {n.title}
                 </span>
               </div>
             );
