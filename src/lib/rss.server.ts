@@ -468,6 +468,7 @@ export async function ingestAllFeeds() {
         published_at: t.published_at,
         categorySlug: t.categorySlug,
         source: t.source,
+        autoPublish: true,
       });
     }
   } catch (e: any) {
