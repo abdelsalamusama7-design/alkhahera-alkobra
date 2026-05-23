@@ -19,6 +19,12 @@ export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: str
   return (
     <section className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-4 relative" dir="rtl">
+        {title && (
+          <div className="flex items-center gap-2 mb-3 px-10">
+            <span className="inline-block w-1.5 h-5 bg-gold rounded" />
+            <h2 className="text-sm md:text-base font-extrabold text-primary">{title}</h2>
+          </div>
+        )}
         {/* Prev arrow (visual right in RTL) */}
         <button
           type="button"
