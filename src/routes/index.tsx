@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
