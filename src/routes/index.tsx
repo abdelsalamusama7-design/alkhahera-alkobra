@@ -57,6 +57,7 @@ function dbToMock(row: any): NewsItem {
 }
 
 function Index() {
+  const { isReadMode } = useReadMode();
   const initial = Route.useLoaderData();
   const { data = initial } = useQuery({
     queryKey: ["home"],
