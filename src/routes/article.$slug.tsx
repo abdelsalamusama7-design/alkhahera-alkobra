@@ -25,9 +25,15 @@ export const Route = createFileRoute("/article/$slug")({
   head: ({ loaderData, params }) => {
     const a = loaderData?.article;
     if (!a) return { meta: [{ title: "خبر — القاهرة الكبرى" }] };
-    const url = `https://kaheraalkobra.online/article/${params.slug}`;
+    const SITE = "https://kaheraalkobra.online";
+    const url = `${SITE}/article/${params.slug}`;
     const desc = (a.excerpt ?? a.title ?? "").toString().slice(0, 160);
-    const img = a.cover_image || undefined;
+    const rawImg = a.cover_image || undefined;
+    const img = rawImg
+      ? (rawImg.startsWith("http") ? rawImg : `${SITE}${rawImg.startsWith("/") ? "" : "/"}${rawImg}`)
+      : undefined;
+    const categoryName = a.category?.name ?? "أخبار";
+    const categorySlug = a.category?.slug;
     return {
       meta: [
         { title: `${a.title} — القاهرة الكبرى` },
@@ -41,7 +47,7 @@ export const Route = createFileRoute("/article/$slug")({
         { property: "og:locale", content: "ar_EG" },
         { property: "article:published_time", content: a.published_at ?? "" },
         { property: "article:modified_time", content: (a as any).updated_at ?? a.published_at ?? "" },
-        { property: "article:section", content: a.category?.name ?? "أخبار" },
+        { property: "article:section", content: categoryName },
         ...(a.author_name ? [{ property: "article:author", content: a.author_name }] : []),
         ...(img ? [{ property: "og:image", content: img }] : []),
         ...(img ? [{ property: "og:image:alt", content: a.title }] : []),
@@ -57,21 +63,42 @@ export const Route = createFileRoute("/article/$slug")({
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "NewsArticle",
-            headline: a.title,
+            headline: a.title?.toString().slice(0, 110),
             description: desc,
             image: img ? [img] : undefined,
             datePublished: a.published_at,
             dateModified: (a as any).updated_at ?? a.published_at,
             inLanguage: "ar",
-            articleSection: a.category?.name ?? "أخبار",
+            isAccessibleForFree: true,
+            articleSection: categoryName,
             keywords: Array.isArray((a as any).tags) ? (a as any).tags.join(", ") : undefined,
-            author: a.author_name ? { "@type": "Person", name: a.author_name } : { "@type": "Organization", name: "القاهرة الكبرى" },
+            author: a.author_name
+              ? { "@type": "Person", name: a.author_name }
+              : { "@type": "Organization", name: "القاهرة الكبرى", url: SITE },
             publisher: {
               "@type": "NewsMediaOrganization",
               name: "القاهرة الكبرى",
-              url: "https://kaheraalkobra.online",
+              url: SITE,
+              logo: {
+                "@type": "ImageObject",
+                url: `${SITE}/favicon.png`,
+              },
             },
             mainEntityOfPage: { "@type": "WebPage", "@id": url },
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "الرئيسية", item: SITE },
+              ...(categorySlug
+                ? [{ "@type": "ListItem", position: 2, name: categoryName, item: `${SITE}/category/${categorySlug}` }]
+                : []),
+              { "@type": "ListItem", position: categorySlug ? 3 : 2, name: a.title, item: url },
+            ],
           }),
         },
       ],
