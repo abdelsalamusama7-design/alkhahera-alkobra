@@ -74,10 +74,10 @@ export function ShortsButton() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="أخبار باختصار"
-        className="fixed bottom-24 left-4 z-40 flex items-center gap-2 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full pl-2 pr-4 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+        className="fixed bottom-20 left-3 sm:bottom-24 sm:left-4 z-40 flex items-center gap-2 bg-gradient-to-br from-red-600 to-red-700 text-white rounded-full p-2 sm:pl-2 sm:pr-4 sm:py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         dir="rtl"
       >
-        <span className="text-sm font-extrabold whitespace-nowrap">الأخبار باختصار</span>
+        <span className="hidden sm:inline text-sm font-extrabold whitespace-nowrap">الأخبار باختصار</span>
         <span className="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center">
           <Play className="h-5 w-5 fill-white" />
         </span>
