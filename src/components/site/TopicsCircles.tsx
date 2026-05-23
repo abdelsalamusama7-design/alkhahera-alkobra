@@ -6,7 +6,16 @@ import type { NewsItem } from "@/data/news";
 export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: string }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
-  if (!items?.length) return null;
+  // Dedupe by slug/id, title, and image to avoid repeated circles
+  const seen = new Set<string>();
+  const unique = (items ?? []).filter((n) => {
+    const keys = [n.slug, n.id, n.title?.trim(), n.image].filter(Boolean) as string[];
+    if (keys.some((k) => seen.has(k))) return false;
+    keys.forEach((k) => seen.add(k));
+    return true;
+  });
+
+  if (!unique.length) return null;
 
   const scroll = (dir: "next" | "prev") => {
     const el = scrollerRef.current;
