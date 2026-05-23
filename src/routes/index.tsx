@@ -14,6 +14,7 @@ import { BreakingTicker } from "@/components/site/BreakingTicker";
 import { MarketsTicker } from "@/components/site/MarketsTicker";
 import { BourseSection } from "@/components/site/BourseSection";
 import { NewsCard } from "@/components/site/NewsCard";
+import { HeroCarousel } from "@/components/site/HeroCarousel";
 import { MarketsWidget, WeatherWidget, SportsWidget } from "@/components/site/Widgets";
 import { GoldBar } from "@/components/site/GoldBar";
 import { GoldWidget } from "@/components/site/GoldWidget";
@@ -93,6 +94,23 @@ function Index() {
   const mostRead = dedupe(mostReadDb.length ? mostReadDb : latestNews, usedKeys).slice(0, 5);
 
   const [hero, ...sideHero] = heroList;
+  // كاروسيل البطل: نخلط أخبار من فئات متنوّعة (هيرو + ترند + آخر الأخبار) عشان كل ما يتحرّك يطلع خبر جديد بفئة مختلفة
+  const heroCarouselItems = (() => {
+    const seen = new Set<string>();
+    const pool: NewsItem[] = [];
+    const pushUnique = (arr: NewsItem[]) => {
+      for (const n of arr) {
+        const k = n.id || n.slug || n.title;
+        if (!k || seen.has(k)) continue;
+        seen.add(k);
+        pool.push(n);
+      }
+    };
+    pushUnique(heroList);
+    pushUnique(trendingList);
+    pushUnique(latestList);
+    return pool.slice(0, 7);
+  })();
   const fallbackTitles = [...heroDb, ...latestDb].slice(0, 10).map((n) => n.title);
   const breakingItems = breakingDb.length
     ? breakingDb
@@ -125,7 +143,9 @@ function Index() {
 
         <section className="container mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2"><ItemLink item={hero}><NewsCard item={hero} size="hero" /></ItemLink></div>
+            <div className="lg:col-span-2 min-h-[280px] sm:min-h-[380px] lg:min-h-[520px]">
+              <HeroCarousel items={heroCarouselItems.length ? heroCarouselItems : [hero].filter(Boolean)} intervalMs={5500} />
+            </div>
             <div className="flex flex-col gap-4">
               {sideHero.map((n: NewsItem) => (
                 <ItemLink key={n.id} item={n}><NewsCard item={n} size="large" /></ItemLink>
