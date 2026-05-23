@@ -144,7 +144,7 @@ function Index() {
           </div>
         </section>
 
-        {trendingDb.length > 0 && (
+        {trendingList.length > 0 && (
           <section className="container mx-auto px-4 py-6">
             <div className="flex items-center justify-between mb-4 border-b-2 border-gold pb-2">
               <h2 className="text-xl md:text-2xl font-extrabold text-primary flex items-center gap-2">
