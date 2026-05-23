@@ -43,7 +43,7 @@ export const DEFAULT_AD_CONFIG: AdConfig = {
     BANNER_4: "https://omg10.com/4/11044495",
   },
   monetag: [
-    { id: "quge5", enabled: true, src: "https://quge5.com/88/tag.min.js", zone: "242128" },
+    { id: "quge5", enabled: false, src: "https://quge5.com/88/tag.min.js", zone: "242128" },
     { id: "quge5-242145", enabled: false, src: "https://quge5.com/88/tag.min.js", zone: "242145" },
     { id: "al5sm", enabled: false, src: "https://al5sm.com/tag.min.js", zone: "11044569" },
   ],

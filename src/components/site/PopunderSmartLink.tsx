@@ -34,12 +34,6 @@ export function PopunderSmartLink() {
         if (!sessionStorage.getItem(SESSION_KEY_1)) {
           sessionStorage.setItem(SESSION_KEY_1, "1");
           openPopunder(SMARTLINKS.POPUNDER);
-          return;
-        }
-        if (!sessionStorage.getItem(SESSION_KEY_2)) {
-          sessionStorage.setItem(SESSION_KEY_2, "1");
-          openPopunder(SMARTLINKS.POPUNDER_2);
-          return;
         }
         window.removeEventListener("click", handler, true);
       } catch {}
