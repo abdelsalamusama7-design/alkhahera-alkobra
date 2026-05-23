@@ -37,6 +37,7 @@ import { Route as ApiPublicIngestRssRouteImport } from './routes/api/public/inge
 import { Route as AdminUsersIdRouteImport } from './routes/admin.users.$id'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as AdminArticleStatsSlugRouteImport } from './routes/admin.article-stats.$slug'
+import { Route as ApiPublicHooksSitemapCheckRouteImport } from './routes/api/public/hooks/sitemap-check'
 import { Route as ApiPublicHooksIngestRssRouteImport } from './routes/api/public/hooks/ingest-rss'
 import { Route as ApiPublicHooksCheckAdsRouteImport } from './routes/api/public/hooks/check-ads'
 
@@ -180,6 +181,12 @@ const AdminArticleStatsSlugRoute = AdminArticleStatsSlugRouteImport.update({
   path: '/article-stats/$slug',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicHooksSitemapCheckRoute =
+  ApiPublicHooksSitemapCheckRouteImport.update({
+    id: '/api/public/hooks/sitemap-check',
+    path: '/api/public/hooks/sitemap-check',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksIngestRssRoute = ApiPublicHooksIngestRssRouteImport.update({
   id: '/api/public/hooks/ingest-rss',
   path: '/api/public/hooks/ingest-rss',
@@ -222,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   id:
     | '__root__'
     | '/'
@@ -383,6 +395,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,6 +411,7 @@ export interface RootRouteChildren {
   ApiPublicIngestRssRoute: typeof ApiPublicIngestRssRoute
   ApiPublicHooksCheckAdsRoute: typeof ApiPublicHooksCheckAdsRoute
   ApiPublicHooksIngestRssRoute: typeof ApiPublicHooksIngestRssRoute
+  ApiPublicHooksSitemapCheckRoute: typeof ApiPublicHooksSitemapCheckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -598,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminArticleStatsSlugRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/hooks/sitemap-check': {
+      id: '/api/public/hooks/sitemap-check'
+      path: '/api/public/hooks/sitemap-check'
+      fullPath: '/api/public/hooks/sitemap-check'
+      preLoaderRoute: typeof ApiPublicHooksSitemapCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/ingest-rss': {
       id: '/api/public/hooks/ingest-rss'
       path: '/api/public/hooks/ingest-rss'
@@ -682,6 +703,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIngestRssRoute: ApiPublicIngestRssRoute,
   ApiPublicHooksCheckAdsRoute: ApiPublicHooksCheckAdsRoute,
   ApiPublicHooksIngestRssRoute: ApiPublicHooksIngestRssRoute,
+  ApiPublicHooksSitemapCheckRoute: ApiPublicHooksSitemapCheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
