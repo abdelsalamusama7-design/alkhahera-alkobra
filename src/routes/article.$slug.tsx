@@ -143,20 +143,8 @@ function ArticlePage() {
               </figure>
             )}
 
-            <AdSlot slot="article-top" className="my-4" />
             <div className="prose prose-lg max-w-none text-foreground leading-loose text-base md:text-lg whitespace-pre-line">
               {a.content || a.excerpt}
-            </div>
-            <AdSlot slot="article-middle" className="my-4" />
-
-            <div className="my-6 text-sm text-muted-foreground">
-              لمزيد من التغطية،{" "}
-              <SponsoredLink
-                variant="inline"
-                kind="CONTEXT_LINK"
-                label="اقرأ المزيد من المحتوى المختار لك من هنا"
-              />
-              .
             </div>
             <AdSlot slot="article-bottom" className="my-4" />
 
