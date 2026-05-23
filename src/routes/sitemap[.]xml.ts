@@ -22,7 +22,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const [{ data: cats }, { data: arts }] = await Promise.all([
-            supabaseAdmin.from("categories").select("slug, updated_at"),
+            supabaseAdmin.from("categories").select("slug"),
             supabaseAdmin
               .from("articles")
               .select("slug, updated_at, published_at")
@@ -34,7 +34,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           for (const c of cats ?? []) {
             entries.push({
               path: `/category/${c.slug}`,
-              lastmod: c.updated_at ?? undefined,
               changefreq: "daily",
               priority: "0.7",
             });
