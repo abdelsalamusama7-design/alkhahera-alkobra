@@ -18,9 +18,23 @@ export const Route = createFileRoute("/category/$slug")({
     const cat = cats.find((c: any) => c.slug === params.slug);
     return { list, catName: cat?.name ?? params.slug };
   },
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.catName ?? "قسم"} — القاهرة الكبرى` }],
-  }),
+  head: ({ loaderData, params }) => {
+    const name = loaderData?.catName ?? "قسم";
+    const url = `https://kaheraalkobra.online/category/${params.slug}`;
+    const desc = `أحدث أخبار ${name} على موقع القاهرة الكبرى — تغطية لحظية ومتابعة شاملة.`;
+    return {
+      meta: [
+        { title: `${name} — القاهرة الكبرى` },
+        { name: "description", content: desc },
+        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+        { property: "og:title", content: `${name} — القاهرة الكبرى` },
+        { property: "og:description", content: desc },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "website" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: CategoryPage,
 });
 
