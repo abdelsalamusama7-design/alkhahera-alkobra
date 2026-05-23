@@ -49,7 +49,7 @@ export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: str
           className="flex gap-5 overflow-x-auto scroll-smooth px-10 no-scrollbar"
           style={{ scrollbarWidth: "none" }}
         >
-          {items.map((n) => {
+          {unique.map((n) => {
             const content = (
               <div className="flex flex-col items-center gap-2 shrink-0 w-20 md:w-24 group">
                 <div className="h-20 w-20 md:h-24 md:w-24 rounded-full overflow-hidden border-2 border-border group-hover:border-gold transition shadow-sm">
