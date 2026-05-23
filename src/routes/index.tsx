@@ -28,6 +28,14 @@ import { timeAgoAr } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
   loader: () => getHomeBundle(),
+  head: () => ({
+    meta: [
+      { property: "og:url", content: "https://kaheraalkobra.online/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://kaheraalkobra.online/" },
+    ],
+  }),
   component: Index,
 });
 

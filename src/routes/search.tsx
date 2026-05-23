@@ -22,7 +22,13 @@ export const Route = createFileRoute("/search")({
     to: (s.to as string) || "",
     breaking: (s.breaking as string) || "",
   }),
-  head: () => ({ meta: [{ title: "البحث — القاهرة الكبرى" }] }),
+  head: () => ({
+    meta: [
+      { title: "البحث — القاهرة الكبرى" },
+      { name: "robots", content: "noindex, follow" },
+    ],
+    links: [{ rel: "canonical", href: "https://kaheraalkobra.online/search" }],
+  }),
   component: SearchPage,
 });
 

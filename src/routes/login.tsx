@@ -10,7 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/login")({
-  head: () => ({ meta: [{ title: "تسجيل الدخول — القاهرة الكبرى" }] }),
+  head: () => ({
+    meta: [
+      { title: "تسجيل الدخول — القاهرة الكبرى" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: LoginPage,
 });
 
