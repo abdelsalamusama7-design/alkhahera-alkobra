@@ -168,7 +168,7 @@ function InnerRoot() {
       <ReadModeButton />
       <WhatsAppFab />
       <ShortsButton />
-      {!isReadMode && <SideRailAds />}
+      {/* SideRailAds (160x600) أُزيلت — كانت تستهلك 311 impression بدون أي ربح */}
       {!isReadMode && <PopunderSmartLink />}
       {!isReadMode && <MonetagScripts />}
     </>
