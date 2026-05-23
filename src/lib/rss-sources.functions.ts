@@ -70,10 +70,10 @@ export const toggleRssSource = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin
-      .from("rss_sources")
-      .update({ [data.field]: data.value })
-      .eq("id", data.id);
+    const patch: { enabled?: boolean; auto_publish?: boolean } = {};
+    if (data.field === "enabled") patch.enabled = data.value;
+    else patch.auto_publish = data.value;
+    const { error } = await supabaseAdmin.from("rss_sources").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
