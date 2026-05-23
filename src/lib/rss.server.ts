@@ -402,7 +402,12 @@ export async function ingestAllFeeds() {
     let srcError: string | null = null;
     try {
       const res = await fetch(src.url, {
-        headers: { "user-agent": "Mozilla/5.0 (compatible; AlqahiraBot/1.0)" },
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          accept: "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.5",
+          "accept-language": "ar,en;q=0.8",
+        },
       });
       if (!res.ok) {
         srcError = `HTTP ${res.status}`;
