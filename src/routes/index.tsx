@@ -110,7 +110,7 @@ function Index() {
 
       <main className="flex-1">
         <TopicsCircles items={(worldTopDb.length ? worldTopDb : trendingDb.length ? trendingDb : latestList).slice(0, 12)} title="أهم أحداث العالم" />
-        <section className="container mx-auto px-4"><AdSlot slot="home-top" /></section>
+        
 
 
         <section className="container mx-auto px-4 py-6">
