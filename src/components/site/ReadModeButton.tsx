@@ -9,7 +9,7 @@ export function ReadModeButton() {
       onClick={toggleReadMode}
       title={isReadMode ? "إلغاء وضع القراءة" : "تفعيل وضع القراءة (إخفاء الإعلانات)"}
       className={`
-        fixed left-3 bottom-3 sm:left-4 sm:bottom-6 z-[60]
+        fixed right-3 bottom-3 sm:right-4 sm:bottom-6 z-[60]
         flex items-center gap-2
         px-3 py-2 rounded-full shadow-xl backdrop-blur-md
         transition-all duration-300 ease-out
