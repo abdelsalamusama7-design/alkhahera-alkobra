@@ -96,14 +96,29 @@ export const listCategories = createServerFn({ method: "GET" }).handler(async ()
 // PUBLIC: home bundle
 export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () => {
   const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
-  const [{ data: hero }, { data: latest }, { data: breaking }, { data: mostRead }, { data: recentViews }] =
+  const [{ data: hero }, { data: latest }, { data: breaking }, { data: mostRead }, { data: recentViews }, { data: worldCat }] =
     await Promise.all([
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).limit(3),
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).range(3, 14),
       supabaseAdmin.from("articles").select("id,slug,title").eq("is_published", true).eq("is_breaking", true).order("published_at", { ascending: false }).limit(8),
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("view_count", { ascending: false }).limit(5),
       supabaseAdmin.from("article_views").select("article_id").gte("viewed_at", since),
+      supabaseAdmin.from("categories").select("id").eq("slug", "world").maybeSingle(),
     ]);
+
+  // World top events (for the circular topics strip)
+  let worldTop: any[] = [];
+  if (worldCat?.id) {
+    const { data: w } = await supabaseAdmin
+      .from("articles")
+      .select(ARTICLE_SELECT)
+      .eq("is_published", true)
+      .eq("category_id", worldCat.id)
+      .not("cover_image", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(12);
+    worldTop = w ?? [];
+  }
 
   // Trending: score = views_48h / (hours_since_published + 2)^1.3
   const viewCounts = new Map<string, number>();
