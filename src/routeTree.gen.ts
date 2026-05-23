@@ -22,6 +22,7 @@ import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTrafficRouteImport } from './routes/admin.traffic'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
+import { Route as AdminSitemapHealthRouteImport } from './routes/admin.sitemap-health'
 import { Route as AdminSitemapGuideRouteImport } from './routes/admin.sitemap-guide'
 import { Route as AdminSitemapRouteImport } from './routes/admin.sitemap'
 import { Route as AdminSeoRefreshRouteImport } from './routes/admin.seo-refresh'
@@ -104,6 +105,11 @@ const AdminTrafficRoute = AdminTrafficRouteImport.update({
 const AdminStatsRoute = AdminStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSitemapHealthRoute = AdminSitemapHealthRouteImport.update({
+  id: '/sitemap-health',
+  path: '/sitemap-health',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSitemapGuideRoute = AdminSitemapGuideRouteImport.update({
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -505,6 +517,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/admin/stats'
       preLoaderRoute: typeof AdminStatsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sitemap-health': {
+      id: '/admin/sitemap-health'
+      path: '/sitemap-health'
+      fullPath: '/admin/sitemap-health'
+      preLoaderRoute: typeof AdminSitemapHealthRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sitemap-guide': {
@@ -660,6 +679,7 @@ interface AdminRouteChildren {
   AdminSeoRefreshRoute: typeof AdminSeoRefreshRoute
   AdminSitemapRoute: typeof AdminSitemapRoute
   AdminSitemapGuideRoute: typeof AdminSitemapGuideRoute
+  AdminSitemapHealthRoute: typeof AdminSitemapHealthRoute
   AdminStatsRoute: typeof AdminStatsRoute
   AdminTrafficRoute: typeof AdminTrafficRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
@@ -680,6 +700,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSeoRefreshRoute: AdminSeoRefreshRoute,
   AdminSitemapRoute: AdminSitemapRoute,
   AdminSitemapGuideRoute: AdminSitemapGuideRoute,
+  AdminSitemapHealthRoute: AdminSitemapHealthRoute,
   AdminStatsRoute: AdminStatsRoute,
   AdminTrafficRoute: AdminTrafficRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
