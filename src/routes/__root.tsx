@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
+import { ShortsButton } from "@/components/site/ShortsButton";
 import { SideRailAds } from "@/components/site/SideRailAds";
 import { PopunderSmartLink } from "@/components/site/PopunderSmartLink";
 import { MonetagScripts } from "@/components/site/MonetagScripts";
@@ -151,6 +152,7 @@ function RootComponent() {
         <Outlet />
         <SideRailAds />
         <WhatsAppFab />
+        <ShortsButton />
         <PopunderSmartLink />
         <MonetagScripts />
       </ThemeProvider>
