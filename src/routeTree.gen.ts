@@ -22,6 +22,7 @@ import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTrafficRouteImport } from './routes/admin.traffic'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
+import { Route as AdminSitemapHealthRouteImport } from './routes/admin.sitemap-health'
 import { Route as AdminSitemapGuideRouteImport } from './routes/admin.sitemap-guide'
 import { Route as AdminSitemapRouteImport } from './routes/admin.sitemap'
 import { Route as AdminSeoRefreshRouteImport } from './routes/admin.seo-refresh'
@@ -37,6 +38,7 @@ import { Route as ApiPublicIngestRssRouteImport } from './routes/api/public/inge
 import { Route as AdminUsersIdRouteImport } from './routes/admin.users.$id'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as AdminArticleStatsSlugRouteImport } from './routes/admin.article-stats.$slug'
+import { Route as ApiPublicHooksSitemapCheckRouteImport } from './routes/api/public/hooks/sitemap-check'
 import { Route as ApiPublicHooksIngestRssRouteImport } from './routes/api/public/hooks/ingest-rss'
 import { Route as ApiPublicHooksCheckAdsRouteImport } from './routes/api/public/hooks/check-ads'
 
@@ -103,6 +105,11 @@ const AdminTrafficRoute = AdminTrafficRouteImport.update({
 const AdminStatsRoute = AdminStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSitemapHealthRoute = AdminSitemapHealthRouteImport.update({
+  id: '/sitemap-health',
+  path: '/sitemap-health',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSitemapGuideRoute = AdminSitemapGuideRouteImport.update({
@@ -180,6 +187,12 @@ const AdminArticleStatsSlugRoute = AdminArticleStatsSlugRouteImport.update({
   path: '/article-stats/$slug',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiPublicHooksSitemapCheckRoute =
+  ApiPublicHooksSitemapCheckRouteImport.update({
+    id: '/api/public/hooks/sitemap-check',
+    path: '/api/public/hooks/sitemap-check',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksIngestRssRoute = ApiPublicHooksIngestRssRouteImport.update({
   id: '/api/public/hooks/ingest-rss',
   path: '/api/public/hooks/ingest-rss',
@@ -210,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -222,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -241,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -253,6 +269,7 @@ export interface FileRoutesByTo {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -274,6 +291,7 @@ export interface FileRoutesById {
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
+  '/admin/sitemap-health': typeof AdminSitemapHealthRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/traffic': typeof AdminTrafficRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
@@ -286,6 +304,7 @@ export interface FileRoutesById {
   '/api/public/ingest-rss': typeof ApiPublicIngestRssRoute
   '/api/public/hooks/check-ads': typeof ApiPublicHooksCheckAdsRoute
   '/api/public/hooks/ingest-rss': typeof ApiPublicHooksIngestRssRoute
+  '/api/public/hooks/sitemap-check': typeof ApiPublicHooksSitemapCheckRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -308,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -320,6 +340,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -339,6 +360,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -351,6 +373,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   id:
     | '__root__'
     | '/'
@@ -371,6 +394,7 @@ export interface FileRouteTypes {
     | '/admin/seo-refresh'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
+    | '/admin/sitemap-health'
     | '/admin/stats'
     | '/admin/traffic'
     | '/admin/users'
@@ -383,6 +407,7 @@ export interface FileRouteTypes {
     | '/api/public/ingest-rss'
     | '/api/public/hooks/check-ads'
     | '/api/public/hooks/ingest-rss'
+    | '/api/public/hooks/sitemap-check'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,6 +423,7 @@ export interface RootRouteChildren {
   ApiPublicIngestRssRoute: typeof ApiPublicIngestRssRoute
   ApiPublicHooksCheckAdsRoute: typeof ApiPublicHooksCheckAdsRoute
   ApiPublicHooksIngestRssRoute: typeof ApiPublicHooksIngestRssRoute
+  ApiPublicHooksSitemapCheckRoute: typeof ApiPublicHooksSitemapCheckRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -491,6 +517,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/admin/stats'
       preLoaderRoute: typeof AdminStatsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sitemap-health': {
+      id: '/admin/sitemap-health'
+      path: '/sitemap-health'
+      fullPath: '/admin/sitemap-health'
+      preLoaderRoute: typeof AdminSitemapHealthRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sitemap-guide': {
@@ -598,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminArticleStatsSlugRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/public/hooks/sitemap-check': {
+      id: '/api/public/hooks/sitemap-check'
+      path: '/api/public/hooks/sitemap-check'
+      fullPath: '/api/public/hooks/sitemap-check'
+      preLoaderRoute: typeof ApiPublicHooksSitemapCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/ingest-rss': {
       id: '/api/public/hooks/ingest-rss'
       path: '/api/public/hooks/ingest-rss'
@@ -639,6 +679,7 @@ interface AdminRouteChildren {
   AdminSeoRefreshRoute: typeof AdminSeoRefreshRoute
   AdminSitemapRoute: typeof AdminSitemapRoute
   AdminSitemapGuideRoute: typeof AdminSitemapGuideRoute
+  AdminSitemapHealthRoute: typeof AdminSitemapHealthRoute
   AdminStatsRoute: typeof AdminStatsRoute
   AdminTrafficRoute: typeof AdminTrafficRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
@@ -659,6 +700,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSeoRefreshRoute: AdminSeoRefreshRoute,
   AdminSitemapRoute: AdminSitemapRoute,
   AdminSitemapGuideRoute: AdminSitemapGuideRoute,
+  AdminSitemapHealthRoute: AdminSitemapHealthRoute,
   AdminStatsRoute: AdminStatsRoute,
   AdminTrafficRoute: AdminTrafficRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
@@ -682,17 +724,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIngestRssRoute: ApiPublicIngestRssRoute,
   ApiPublicHooksCheckAdsRoute: ApiPublicHooksCheckAdsRoute,
   ApiPublicHooksIngestRssRoute: ApiPublicHooksIngestRssRoute,
+  ApiPublicHooksSitemapCheckRoute: ApiPublicHooksSitemapCheckRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
