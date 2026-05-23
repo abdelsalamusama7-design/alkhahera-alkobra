@@ -129,7 +129,7 @@ function Index() {
       )}
 
       <main className="flex-1">
-        <TopicsCircles items={(worldTopDb.length ? worldTopDb : trendingDb.length ? trendingDb : latestList).slice(0, 12)} title="أهم أحداث العالم" />
+        <TopicsCircles items={(worldTopList.length ? worldTopList : trendingList.length ? trendingList : latestList).slice(0, 12)} title="أهم أحداث العالم" />
         
 
 
