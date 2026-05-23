@@ -50,6 +50,8 @@ function AdminLayout() {
     { to: "/admin/ad-settings", label: "إعدادات الإعلانات", icon: Megaphone, show: true },
     { to: "/admin/ads", label: "إدارة الإعلانات", icon: LayoutGrid, show: true },
     { to: "/admin/sitemap", label: "اختبار Sitemap", icon: Map, show: true },
+    { to: "/admin/seo-lastmod", label: "آخر تحديث (lastmod)", icon: Clock, show: true },
+    { to: "/admin/seo-refresh", label: "تحديث جوجل", icon: Zap, show: true },
   ].filter((n) => n.show);
 
 
