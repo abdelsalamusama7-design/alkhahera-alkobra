@@ -152,6 +152,7 @@ export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () 
     breaking: breaking ?? [],
     mostRead: mostRead ?? [],
     trending,
+    worldTop,
   };
 });
 
