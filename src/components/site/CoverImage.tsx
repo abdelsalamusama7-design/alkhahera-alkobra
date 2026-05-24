@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import brandWatermark from "@/assets/brand-watermark.png";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&h=750&q=80";
@@ -23,7 +24,12 @@ type Props = {
   sizeHint?: number;
   /** أبعاد إضافية تُغلّف الصورة (مثلًا overlay/badges) */
   children?: React.ReactNode;
+  /** إخفاء العلامة المائية (اللوجو) — افتراضيًا تظهر على كل الصور */
+  hideWatermark?: boolean;
+  /** حجم العلامة المائية */
+  watermarkSize?: "sm" | "md" | "lg";
 };
+
 
 const RATIO_CLASS: Record<Ratio, string> = {
   "16/9": "aspect-[16/9]",
@@ -101,6 +107,8 @@ export function CoverImage({
   imgClassName,
   sizeHint = 1200,
   children,
+  hideWatermark = false,
+  watermarkSize = "md",
 }: Props & { mdRatio?: Ratio }) {
   const initial = src && src.trim() ? src : FALLBACK_IMG;
   const [current, setCurrent] = useState(initial);
@@ -108,6 +116,7 @@ export function CoverImage({
   const [inView, setInView] = useState(priority);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
 
   // IntersectionObserver للـ Lazy Loading بدقة — الصورة ما بتتحملش غير لما تقترب من viewport
   useEffect(() => {
@@ -186,7 +195,23 @@ export function CoverImage({
           )}
         />
       )}
+      {!hideWatermark && (
+        <img
+          src={brandWatermark}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          decoding="async"
+          className={cn(
+            "absolute top-1 right-1 sm:top-2 sm:right-2 z-10 pointer-events-none select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)] opacity-95",
+            watermarkSize === "sm" && "w-10 sm:w-12",
+            watermarkSize === "md" && "w-14 sm:w-20 md:w-24",
+            watermarkSize === "lg" && "w-20 sm:w-28 md:w-36",
+          )}
+        />
+      )}
       {children}
     </div>
   );
 }
+

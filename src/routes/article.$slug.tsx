@@ -15,6 +15,8 @@ import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
 import { useState, useEffect } from "react";
+import brandWatermark from "@/assets/brand-watermark.png";
+
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
@@ -208,10 +210,12 @@ function ArticlePage() {
                 focus="top"
                 priority
                 sizeHint={1920}
+                watermarkSize="lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
               <HeroOverlay article={a} />
             </div>
+
           ) : (
             <div className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[60vh] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
               {/* نقش زخرفي خفيف */}
@@ -292,9 +296,13 @@ function ArticlePage() {
                 {a.content || a.excerpt}
               </div>
 
-              <p className="mt-6 pt-4 border-t border-border text-sm md:text-base font-bold text-primary text-left">
-                تم تحرير الخبر ونشره بواسطة <span className="text-gold">القاهرة الكبرى</span>
-              </p>
+              <div className="mt-6 pt-5 border-t border-border flex flex-col items-center gap-2 text-center">
+                <img src={brandWatermark} alt="القاهرة الكبرى" className="w-20 md:w-24 h-auto drop-shadow" loading="lazy" />
+                <p className="text-sm md:text-base font-bold text-primary">
+                  تم تحرير الخبر ونشره بواسطة <span className="text-gold">القاهرة الكبرى</span>
+                </p>
+              </div>
+
 
               <AdSlot slot="article-middle" className="my-6" />
 
