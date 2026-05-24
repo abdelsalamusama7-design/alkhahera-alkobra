@@ -192,7 +192,7 @@ function InnerRoot() {
 
   // منع سكربتات الإعلانات (popunder/social-bar) من التقاط النقر
   // على الأزرار الموسومة بـ data-no-ad="true" (زر وضع القراءة، أزرار "المزيد"...)
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const blocker = (e: Event) => {
       const t = e.target as HTMLElement | null;
