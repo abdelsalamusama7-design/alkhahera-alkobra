@@ -21,9 +21,11 @@ import { GoldBar } from "@/components/site/GoldBar";
 import { GoldWidget } from "@/components/site/GoldWidget";
 import { Footer } from "@/components/site/Footer";
 import { TopicsCircles } from "@/components/site/TopicsCircles";
+import { HomeSection } from "@/components/site/HomeSection";
 import { NewspaperPager } from "@/components/site/NewspaperPager";
 import { getHomeBundle } from "@/lib/articles.functions";
 import { getSiteSetting } from "@/lib/site-settings.functions";
+import { listHomeSections, type HomeSectionConfig, type HomeSectionItem } from "@/lib/home-sections.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
 
