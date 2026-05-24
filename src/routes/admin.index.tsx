@@ -45,6 +45,11 @@ function AdminList() {
         {canCreate && <Link to="/admin/new"><Button>+ خبر جديد</Button></Link>}
       </div>
 
+      <div className="mb-4">
+        <DailyAdCtrPanel compact />
+      </div>
+
+
       {duplicates.length > 0 && (
         <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
           <div className="flex items-center gap-2 mb-2 text-destructive font-bold">
