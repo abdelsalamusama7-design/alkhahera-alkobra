@@ -18,6 +18,7 @@ import { MonetagScripts } from "@/components/site/MonetagScripts";
 import { ReadModeButton } from "@/components/site/ReadModeButton";
 import { AdModalGuard } from "@/components/site/AdModalGuard";
 import { FlashAdOverlay } from "@/components/site/FlashAdOverlay";
+import { AdsterraAutoScript } from "@/components/site/AdsterraAd";
 
 import appCss from "../styles.css?url";
 
