@@ -124,6 +124,18 @@
   animation: ticker 45s linear infinite;
 }
 
+/* Seamless RTL marquee (duplicates content; translates by -50%) */
+@keyframes marquee-rtl {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+.animate-marquee-rtl {
+  animation: marquee-rtl 40s linear infinite;
+}
+.marquee-pause:hover .animate-marquee-rtl {
+  animation-play-state: paused;
+}
+
 /* Subtle card hover */
 .news-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;

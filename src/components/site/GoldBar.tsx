@@ -27,25 +27,37 @@ export function GoldBar() {
     { k: "سبيكة 100ج", v: data.ingot100, unit: "ج.م" },
   ].filter((x) => x.v > 0);
 
+  const row = (
+    <div className="flex items-center gap-x-8 shrink-0 pl-8">
+      {items.map((it, idx) => (
+        <span key={`${it.k}-${idx}`} className="font-bold text-primary whitespace-nowrap text-sm">
+          {it.k}: <span className="text-gold">{fmt(it.v)}</span>
+          <span className="text-muted-foreground text-xs mr-1">{it.unit}</span>
+        </span>
+      ))}
+      {typeof data.chp === "number" && (
+        <span className={`text-xs font-bold whitespace-nowrap ${data.chp >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+          {data.chp >= 0 ? "▲" : "▼"} {Math.abs(data.chp).toFixed(2)}%
+        </span>
+      )}
+    </div>
+  );
+
   return (
-    <div className="bg-gradient-to-l from-gold/20 via-gold/10 to-transparent border-y border-gold/40" dir="rtl">
-      <div className="container mx-auto px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-        <span className="font-extrabold text-gold flex items-center gap-1 shrink-0">
+    <div className="bg-gradient-to-l from-gold/20 via-gold/10 to-transparent border-y border-gold/40 overflow-hidden marquee-pause" dir="rtl">
+      <div className="container mx-auto px-4 py-2 flex items-center gap-3">
+        <span className="font-extrabold text-gold flex items-center gap-1 shrink-0 text-sm border-l border-gold/40 pl-3">
           <span aria-hidden>🪙</span> أسعار الذهب اليوم
         </span>
-        {items.map((it) => (
-          <span key={it.k} className="font-bold text-primary whitespace-nowrap">
-            {it.k}: <span className="text-gold">{fmt(it.v)}</span>
-            <span className="text-muted-foreground text-xs mr-1">{it.unit}</span>
-          </span>
-        ))}
-        {typeof data.chp === "number" && (
-          <span className={`text-xs font-bold ${data.chp >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-            {data.chp >= 0 ? "▲" : "▼"} {Math.abs(data.chp).toFixed(2)}%
-          </span>
-        )}
+        <div className="flex-1 overflow-hidden relative">
+          <div className="flex animate-marquee-rtl w-max" dir="ltr">
+            <div dir="rtl">{row}</div>
+            <div dir="rtl" aria-hidden>{row}</div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+
 
