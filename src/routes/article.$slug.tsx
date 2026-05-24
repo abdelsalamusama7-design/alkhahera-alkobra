@@ -292,6 +292,10 @@ function ArticlePage() {
                 {a.content || a.excerpt}
               </div>
 
+              <p className="mt-6 pt-4 border-t border-border text-sm md:text-base font-bold text-primary text-left">
+                تم تحرير الخبر ونشره بواسطة <span className="text-gold">القاهرة الكبرى</span>
+              </p>
+
               <AdSlot slot="article-middle" className="my-6" />
 
               {/* مشاركة أفقية — موبايل */}
