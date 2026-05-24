@@ -20,6 +20,11 @@ const ALWAYS_FILLED: AdSlotKey[] = [
   "article-top",
   "article-middle",
   "article-bottom",
+  "home-top",
+  "home-middle",
+  "home-bottom",
+  "header",
+  "footer",
 ];
 
 export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: string }) {
@@ -42,11 +47,13 @@ export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: 
     const shouldFallback =
       ALWAYS_FILLED.includes(slot) && (isLoading || isError || !!data);
     if (!shouldFallback) return null;
-    const label =
+    const label1 =
       slot === "sidebar" ? "الأكثر تداولًا الآن" : "محتوى مقترح لك";
+    const label2 = "عروض ومكافآت حصرية — اطّلع الآن";
     return (
       <div className={`flex flex-col gap-3 ${className}`} data-ad-slot={slot} data-ad-fallback="true">
-        <SponsoredLink variant="card" label={label} />
+        <SponsoredLink variant="card" label={label1} />
+        <SponsoredLink variant="card" label={label2} />
       </div>
     );
   }

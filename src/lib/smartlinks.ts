@@ -12,7 +12,7 @@ export function getSmartLink(kind: SmartLinkKind): string {
   return getAdConfig().smartlinks[kind] ?? DEFAULT_AD_CONFIG.smartlinks[kind];
 }
 
-const BANNER_POOL: SmartLinkKind[] = ["BANNER", "BANNER_2", "BANNER_3", "BANNER_4"];
+const BANNER_POOL: SmartLinkKind[] = ["BANNER", "BANNER_2", "BANNER_3", "BANNER_4", "BANNER_5", "BANNER_6"];
 export function pickBannerKind(): SmartLinkKind {
   return BANNER_POOL[Math.floor(Math.random() * BANNER_POOL.length)];
 }

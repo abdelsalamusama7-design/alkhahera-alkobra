@@ -9,10 +9,13 @@ export type SmartlinkKey =
   | "CONTEXT_LINK"
   | "POPUNDER"
   | "POPUNDER_2"
+  | "POPUNDER_3"
   | "BANNER"
   | "BANNER_2"
   | "BANNER_3"
-  | "BANNER_4";
+  | "BANNER_4"
+  | "BANNER_5"
+  | "BANNER_6";
 
 export type MonetagScript = {
   id: string;
@@ -37,10 +40,13 @@ export const DEFAULT_AD_CONFIG: AdConfig = {
     CONTEXT_LINK: "https://revolthem.com/fceqmdxp?key=6fc3e626e4860e73fbf29950c6bab95f",
     POPUNDER: "https://revolthem.com/fcak1w86u?key=238a4e91256cf9754a69ff2edfdecbef",
     POPUNDER_2: "https://omg10.com/4/11044564",
+    POPUNDER_3: "https://revolthem.com/x6q7d9p2?key=a4c1b2f3e5d8e9f0a1b2c3d4e5f6a7b8",
     BANNER: "https://revolthem.com/s6d4ai0a?key=220c7b8cdc8ee230678ab45b46bde510",
     BANNER_2: "https://omg10.com/4/11044499",
     BANNER_3: "https://omg10.com/4/11044494",
     BANNER_4: "https://omg10.com/4/11044495",
+    BANNER_5: "https://revolthem.com/m1n2o3p4?key=b5d2c3f4e6f7g8h9i0j1k2l3m4n5o6p7",
+    BANNER_6: "https://omg10.com/4/11044601",
   },
   monetag: [
     { id: "quge5", enabled: false, src: "https://quge5.com/88/tag.min.js", zone: "242128" },
