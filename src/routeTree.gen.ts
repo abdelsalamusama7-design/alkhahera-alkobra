@@ -25,6 +25,7 @@ import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminSitemapHealthRouteImport } from './routes/admin.sitemap-health'
 import { Route as AdminSitemapGuideRouteImport } from './routes/admin.sitemap-guide'
 import { Route as AdminSitemapRouteImport } from './routes/admin.sitemap'
+import { Route as AdminSiteSettingsRouteImport } from './routes/admin.site-settings'
 import { Route as AdminSeoRefreshRouteImport } from './routes/admin.seo-refresh'
 import { Route as AdminSeoLastmodRouteImport } from './routes/admin.seo-lastmod'
 import { Route as AdminRssSourcesRouteImport } from './routes/admin.rss-sources'
@@ -120,6 +121,11 @@ const AdminSitemapGuideRoute = AdminSitemapGuideRouteImport.update({
 const AdminSitemapRoute = AdminSitemapRouteImport.update({
   id: '/sitemap',
   path: '/sitemap',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSiteSettingsRoute = AdminSiteSettingsRouteImport.update({
+  id: '/site-settings',
+  path: '/site-settings',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSeoRefreshRoute = AdminSeoRefreshRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/admin/rss-sources': typeof AdminRssSourcesRoute
   '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
   '/admin/sitemap-health': typeof AdminSitemapHealthRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/admin/rss-sources': typeof AdminRssSourcesRoute
   '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
   '/admin/sitemap-health': typeof AdminSitemapHealthRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/admin/rss-sources': typeof AdminRssSourcesRoute
   '/admin/seo-lastmod': typeof AdminSeoLastmodRoute
   '/admin/seo-refresh': typeof AdminSeoRefreshRoute
+  '/admin/site-settings': typeof AdminSiteSettingsRoute
   '/admin/sitemap': typeof AdminSitemapRoute
   '/admin/sitemap-guide': typeof AdminSitemapGuideRoute
   '/admin/sitemap-health': typeof AdminSitemapHealthRoute
@@ -325,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin/rss-sources'
     | '/admin/seo-lastmod'
     | '/admin/seo-refresh'
+    | '/admin/site-settings'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
     | '/admin/sitemap-health'
@@ -358,6 +368,7 @@ export interface FileRouteTypes {
     | '/admin/rss-sources'
     | '/admin/seo-lastmod'
     | '/admin/seo-refresh'
+    | '/admin/site-settings'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
     | '/admin/sitemap-health'
@@ -392,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/rss-sources'
     | '/admin/seo-lastmod'
     | '/admin/seo-refresh'
+    | '/admin/site-settings'
     | '/admin/sitemap'
     | '/admin/sitemap-guide'
     | '/admin/sitemap-health'
@@ -540,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSitemapRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/site-settings': {
+      id: '/admin/site-settings'
+      path: '/site-settings'
+      fullPath: '/admin/site-settings'
+      preLoaderRoute: typeof AdminSiteSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/seo-refresh': {
       id: '/admin/seo-refresh'
       path: '/seo-refresh'
@@ -677,6 +696,7 @@ interface AdminRouteChildren {
   AdminRssSourcesRoute: typeof AdminRssSourcesRoute
   AdminSeoLastmodRoute: typeof AdminSeoLastmodRoute
   AdminSeoRefreshRoute: typeof AdminSeoRefreshRoute
+  AdminSiteSettingsRoute: typeof AdminSiteSettingsRoute
   AdminSitemapRoute: typeof AdminSitemapRoute
   AdminSitemapGuideRoute: typeof AdminSitemapGuideRoute
   AdminSitemapHealthRoute: typeof AdminSitemapHealthRoute
@@ -698,6 +718,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminRssSourcesRoute: AdminRssSourcesRoute,
   AdminSeoLastmodRoute: AdminSeoLastmodRoute,
   AdminSeoRefreshRoute: AdminSeoRefreshRoute,
+  AdminSiteSettingsRoute: AdminSiteSettingsRoute,
   AdminSitemapRoute: AdminSitemapRoute,
   AdminSitemapGuideRoute: AdminSitemapGuideRoute,
   AdminSitemapHealthRoute: AdminSitemapHealthRoute,

@@ -23,6 +23,7 @@ import { Footer } from "@/components/site/Footer";
 import { TopicsCircles } from "@/components/site/TopicsCircles";
 import { NewspaperPager } from "@/components/site/NewspaperPager";
 import { getHomeBundle } from "@/lib/articles.functions";
+import { getSiteSetting } from "@/lib/site-settings.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
 
@@ -76,6 +77,16 @@ function Index() {
     initialData: initial,
     refetchInterval: 5 * 60_000,
   });
+  const { data: circlesSetting } = useQuery({
+    queryKey: ["site-setting", "topics_circles_count"],
+    queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
+    staleTime: 5 * 60_000,
+  });
+  const circlesCount = (() => {
+    const v = circlesSetting?.value;
+    const n = typeof v === "number" ? v : Number(v);
+    return Number.isFinite(n) && n > 0 ? Math.min(60, Math.max(3, n)) : 24;
+  })();
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
@@ -275,7 +286,7 @@ function Index() {
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
       <main className="flex-1">
-        <TopicsCircles items={[...worldTopList, ...trendingList, ...latestList].slice(0, 24)} title="أهم أحداث العالم" />
+        <TopicsCircles items={[...worldTopList, ...trendingList, ...latestList].slice(0, circlesCount)} title="أهم أحداث العالم" />
         
 
 
