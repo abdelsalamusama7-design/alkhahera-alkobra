@@ -167,9 +167,9 @@ function ArticlePage() {
       <AdBanner />
 
       <main className="flex-1">
-        {/* HERO: صورة الغلاف بعرض كامل مع التدرّج والعنوان فوقها */}
-        {a.cover_image && (
-          <section className="relative w-full bg-black">
+        {/* HERO: صورة الغلاف بعرض كامل — أو تصميم بديل مُعبِّر لو مفيش صورة */}
+        <section className="relative w-full bg-black">
+          {a.cover_image ? (
             <div className="relative w-full max-h-[70vh] overflow-hidden">
               <CoverImage
                 src={a.cover_image}
@@ -181,28 +181,29 @@ function ArticlePage() {
                 sizeHint={1920}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 container mx-auto px-4 pb-6 md:pb-10">
-                <div className="max-w-4xl">
-                  {a.category && (
-                    <Link
-                      to="/category/$slug"
-                      params={{ slug: a.category.slug }}
-                      className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3"
-                    >
-                      {a.category.name}
-                    </Link>
-                  )}
-                  {a.is_breaking && (
-                    <span className="inline-block bg-breaking text-white px-3 py-1 text-xs font-extrabold rounded mb-3 mr-2 animate-pulse">عاجل</span>
-                  )}
-                  <h1 className="text-2xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
-                    {a.title}
-                  </h1>
-                </div>
-              </div>
+              <HeroOverlay article={a} />
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[60vh] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
+              {/* نقش زخرفي خفيف */}
+              <div
+                className="absolute inset-0 opacity-[0.08] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 20% 20%, white 1px, transparent 1.5px), radial-gradient(circle at 80% 60%, white 1px, transparent 1.5px)",
+                  backgroundSize: "32px 32px, 48px 48px",
+                }}
+                aria-hidden
+              />
+              {/* شارة "خبر" كبيرة كعنصر بصري */}
+              <div className="absolute top-6 left-6 md:top-10 md:left-10 text-[80px] md:text-[160px] font-extrabold text-white/10 leading-none select-none pointer-events-none" aria-hidden>
+                خبر
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+              <HeroOverlay article={a} />
+            </div>
+          )}
+        </section>
 
         <div className="container mx-auto px-4 py-6 md:py-8">
           <nav className="text-xs text-muted-foreground mb-4">
@@ -224,14 +225,7 @@ function ArticlePage() {
             </aside>
 
             <article className="lg:col-span-8">
-              {!a.cover_image && (
-                <>
-                  {a.category && (
-                    <span className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3">{a.category.name}</span>
-                  )}
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-primary leading-tight mb-4">{a.title}</h1>
-                </>
-              )}
+
 
               {a.excerpt && (
                 <p className="text-lg md:text-xl text-foreground/85 leading-relaxed mb-5 font-semibold border-r-4 border-gold pr-4">
