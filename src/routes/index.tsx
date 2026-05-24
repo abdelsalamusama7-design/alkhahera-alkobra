@@ -114,7 +114,7 @@ function Index() {
       } as NewsItem;
     });
 
-  const cfgCircles = configFor("circles", { layout: "circles", display_count: 12, max_count: 48 });
+  const cfgCircles = configFor("circles", { layout: "circles", display_count: 18, max_count: 60 });
   const cfgTrending = configFor("trending", { columns: 6, display_count: 6, max_count: 48 });
   const cfgLatest = configFor("latest", { columns: 4, display_count: 8, max_count: 48 });
   const cfgMoreLatest = configFor("more_latest", { columns: 4, display_count: 8, max_count: 48 });
