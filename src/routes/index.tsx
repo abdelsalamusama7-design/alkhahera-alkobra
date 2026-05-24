@@ -450,10 +450,10 @@ function Index() {
           </section>
         )}
 
+        {/* بانر 468x60 الزائد تم استبداله بـ AdSlot قابل للإدارة (home-bottom) لتقليل الإزعاج وتمكين الاستبدال التلقائي */}
         {!isReadMode && (
-          /* بانر 468x60 */
-          <section className="container mx-auto px-4 py-3 flex justify-center">
-            <AdsterraBanner adKey="ffd24356f30f4d3b5eaa1598770263e5" width={468} height={60} />
+          <section className="container mx-auto px-4 py-3">
+            <AdSlot slot="home-bottom" />
           </section>
         )}
 
