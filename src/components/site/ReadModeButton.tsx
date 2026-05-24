@@ -49,6 +49,7 @@ export function ReadModeButton() {
 
   return (
     <button
+      data-no-ad="true"
       onClick={toggleReadMode}
       title={isReadMode ? "إلغاء وضع القراءة" : "تفعيل وضع القراءة (إخفاء الإعلانات)"}
       style={{ bottom: `${bottomOffset}px` }}
