@@ -199,6 +199,81 @@ export const getDailyAdStatsFn = createServerFn({ method: "GET" })
     });
   });
 
+/** ظهور/نقرات لكل يوم خلال آخر N يوم لكل placement — للإدمن. */
+export const getAdStatsRangeFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ days: z.number().int().min(1).max(90).default(14) }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    const days = data.days;
+    const end = new Date();
+    const start = new Date();
+    start.setUTCDate(end.getUTCDate() - (days - 1));
+    const startStr = start.toISOString().slice(0, 10);
+
+    const { data: rows, error } = await supabaseAdmin
+      .from("ad_events_daily")
+      .select("placement_id, day, impressions, clicks")
+      .gte("day", startStr)
+      .order("day", { ascending: true });
+    if (error) throw new Error(error.message);
+
+    const { data: placements } = await supabaseAdmin
+      .from("ad_placements")
+      .select("id,name,slot");
+
+    const placementMap = new Map<string, { name: string; slot: string }>();
+    for (const p of placements ?? []) {
+      placementMap.set(p.id as string, { name: (p as any).name, slot: (p as any).slot });
+    }
+
+    // قائمة الأيام كاملة (حتى لو ما فيش بيانات)
+    const dayList: string[] = [];
+    for (let i = 0; i < days; i++) {
+      const d = new Date(start);
+      d.setUTCDate(start.getUTCDate() + i);
+      dayList.push(d.toISOString().slice(0, 10));
+    }
+
+    type Bucket = { impressions: number; clicks: number };
+    const perPlacement = new Map<string, Map<string, Bucket>>();
+    const totalsByDay = new Map<string, Bucket>(dayList.map((d) => [d, { impressions: 0, clicks: 0 }]));
+
+    for (const r of rows ?? []) {
+      const pid = r.placement_id as string;
+      const day = r.day as string;
+      const imp = Number((r as any).impressions ?? 0);
+      const clk = Number((r as any).clicks ?? 0);
+      if (!perPlacement.has(pid)) perPlacement.set(pid, new Map());
+      perPlacement.get(pid)!.set(day, { impressions: imp, clicks: clk });
+      const t = totalsByDay.get(day);
+      if (t) { t.impressions += imp; t.clicks += clk; }
+    }
+
+    const series = Array.from(perPlacement.entries()).map(([pid, byDay]) => {
+      const meta = placementMap.get(pid) ?? { name: "غير معروف", slot: "?" };
+      const points = dayList.map((d) => {
+        const b = byDay.get(d) ?? { impressions: 0, clicks: 0 };
+        return { day: d, impressions: b.impressions, clicks: b.clicks };
+      });
+      const totals = points.reduce(
+        (a, p) => ({ impressions: a.impressions + p.impressions, clicks: a.clicks + p.clicks }),
+        { impressions: 0, clicks: 0 }
+      );
+      const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
+      return { id: pid, name: meta.name, slot: meta.slot, points, totals, ctr };
+    });
+
+    const totalsTimeline = dayList.map((d) => {
+      const t = totalsByDay.get(d) ?? { impressions: 0, clicks: 0 };
+      return { day: d, impressions: t.impressions, clicks: t.clicks };
+    });
+
+    return { days: dayList, series, totalsTimeline };
+  });
+
+
 /** تصفير عدّادات إعلان واحد أو كلها. */
 export const resetAdCountersFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
