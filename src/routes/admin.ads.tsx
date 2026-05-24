@@ -25,6 +25,8 @@ import {
   ShieldCheck, AlertTriangle, HelpCircle, RefreshCw, BarChart3, RotateCcw,
 } from "lucide-react";
 import { DailyAdCtrPanel } from "@/components/admin/DailyAdCtrPanel";
+import { AdCtrAlertsPanel } from "@/components/admin/AdCtrAlertsPanel";
+
 
 export const Route = createFileRoute("/admin/ads")({
   head: () => ({ meta: [{ title: "إدارة الإعلانات — لوحة التحكم" }] }),
@@ -233,7 +235,10 @@ function AdsManager() {
         </div>
       </div>
 
+      <AdCtrAlertsPanel />
+
       <DailyAdCtrPanel />
+
 
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
 
