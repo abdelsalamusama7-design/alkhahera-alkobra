@@ -295,12 +295,12 @@ function ArticlePage() {
 
               <AdSlot slot="article-bottom" className="my-6" />
 
-              {/* اقرأ أيضاً */}
-              {data.related && data.related.length > 0 && (
+              {/* اقرأ أيضاً — مُنقّى من التكرار (يستبعد المقال الحالي + أي تطابق في الصورة/العنوان) */}
+              {relatedDeduped.length > 0 && (
                 <section className="mt-10 pt-6 border-t-2 border-gold">
                   <h2 className="text-xl md:text-2xl font-extrabold text-primary mb-5">اقرأ أيضاً</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {(data.related ?? []).slice(0, 4).map((r: any) => (
+                    {relatedDeduped.slice(0, 4).map((r: any) => (
                       <Link key={r.id} to="/article/$slug" params={{ slug: r.slug }} className="block group">
                         <article className="flex gap-3 bg-card p-3 rounded-lg border border-border news-card hover:border-gold transition-colors h-full">
                           {r.cover_image && (
@@ -324,7 +324,7 @@ function ArticlePage() {
               <div>
                 <h2 className="text-base font-extrabold text-primary border-b-2 border-gold pb-2 mb-3">الأكثر قراءة</h2>
                 <div className="space-y-3">
-                  {(data.related ?? []).slice(0, 5).map((r: any, i: number) => (
+                  {sidebarDeduped.slice(0, 5).map((r: any, i: number) => (
                     <Link key={r.id} to="/article/$slug" params={{ slug: r.slug }} className="block group">
                       <article className="flex gap-2 items-start">
                         <span className="text-2xl font-extrabold text-gold/70 leading-none w-6 shrink-0">{i + 1}</span>
@@ -335,7 +335,7 @@ function ArticlePage() {
                       </article>
                     </Link>
                   ))}
-                  {(!data.related || data.related.length === 0) && (
+                  {sidebarDeduped.length === 0 && (
                     <p className="text-sm text-muted-foreground">لا توجد أخبار مرتبطة بعد.</p>
                   )}
                 </div>
@@ -343,22 +343,8 @@ function ArticlePage() {
             </aside>
           </div>
         </div>
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "NewsArticle",
-              headline: a.title,
-              datePublished: a.published_at,
-              image: a.cover_image ? [a.cover_image] : undefined,
-              author: { "@type": "Person", name: a.author_name || a.source },
-              publisher: { "@type": "Organization", name: "القاهرة الكبرى" },
-            }),
-          }}
-        />
       </main>
+
       <Footer />
     </div>
   );
