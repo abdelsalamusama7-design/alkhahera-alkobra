@@ -519,6 +519,7 @@ function Index() {
                       <div className="mt-3 flex justify-center">
                         <button
                           type="button"
+                          data-no-ad="true"
                           onClick={() => setMostReadShown((c) => c + (cfgMostRead.load_more_step || 5))}
                           className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold/10 border border-gold text-gold text-sm font-bold hover:bg-gold hover:text-gold-foreground transition"
                         >
