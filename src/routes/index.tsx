@@ -84,13 +84,54 @@ function Index() {
     queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
     staleTime: 5 * 60_000,
   });
+  const { data: sectionsData } = useQuery({
+    queryKey: ["home-sections-public"],
+    queryFn: () => listHomeSections(),
+    staleTime: 5 * 60_000,
+  });
+  const sectionConfigs: HomeSectionConfig[] = sectionsData?.sections ?? [];
+  const pinnedItems: HomeSectionItem[] = sectionsData?.items ?? [];
+  const configFor = (key: string, fallback: Partial<HomeSectionConfig>): HomeSectionConfig =>
+    (sectionConfigs.find((s) => s.key === key) as HomeSectionConfig) ?? ({
+      key, title: key, enabled: true, layout: "grid", columns: 4,
+      display_count: 8, load_more_step: 8, max_count: 48, sort_order: 0,
+      ...fallback,
+    } as HomeSectionConfig);
+  const pinsToNews = (key: string): NewsItem[] =>
+    pinnedItems.filter((p) => p.section_key === key).map((p) => {
+      if (p.kind === "article" && p.article) {
+        return {
+          id: p.article.id, slug: p.article.slug, title: p.article.title,
+          image: p.article.cover_image ?? "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&h=500&q=80",
+          source: p.article.source ?? "القاهرة الكبرى", category: "مثبّت", timeAgo: "",
+        } as NewsItem;
+      }
+      return {
+        id: p.id, title: p.custom_title ?? "",
+        image: p.custom_image ?? "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&h=500&q=80",
+        source: p.custom_source ?? "", category: "مخصّص", timeAgo: "",
+        externalUrl: p.custom_url ?? undefined,
+      } as NewsItem;
+    });
+
+  const cfgCircles = configFor("circles", { layout: "circles", display_count: 12, max_count: 48 });
+  const cfgTrending = configFor("trending", { columns: 6, display_count: 6, max_count: 48 });
+  const cfgLatest = configFor("latest", { columns: 4, display_count: 8, max_count: 48 });
+  const cfgMoreLatest = configFor("more_latest", { columns: 4, display_count: 8, max_count: 48 });
+  const cfgMostRead = configFor("most_read", { layout: "list", display_count: 5, max_count: 20 });
+
+  // Backward-compat: original site setting can still override circles max
   const maxCircles = (() => {
     const v = circlesSetting?.value;
     const n = typeof v === "number" ? v : Number(v);
-    return Number.isFinite(n) && n > 1 ? Math.min(60, Math.max(3, n)) : 48;
+    if (Number.isFinite(n) && n > 1) return Math.min(60, Math.max(3, n));
+    return cfgCircles.max_count;
   })();
-  const [displayedCount, setDisplayedCount] = useState(12);
-  const circlesStep = 12;
+  const [circlesShown, setCirclesShown] = useState(cfgCircles.display_count);
+  const [trendingShown, setTrendingShown] = useState(cfgTrending.display_count);
+  const [latestShown, setLatestShown] = useState(cfgLatest.display_count);
+  const [moreLatestShown, setMoreLatestShown] = useState(cfgMoreLatest.display_count);
+  const [mostReadShown, setMostReadShown] = useState(cfgMostRead.display_count);
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
