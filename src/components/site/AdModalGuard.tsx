@@ -72,6 +72,15 @@ export function AdModalGuard() {
             max-height: 75vh !important;
           }
         }
+        body > iframe:not([id^="ad-"]):not([title]),
+        html > iframe:not([id^="ad-"]):not([title]){
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+          width: 0 !important;
+          height: 0 !important;
+          opacity: 0 !important;
+        }
       `;
       document.head.appendChild(style);
     }
@@ -91,6 +100,17 @@ export function AdModalGuard() {
     const guard = (el: HTMLElement) => {
       if (el.dataset.adModalGuarded === "true") return;
       el.dataset.adModalGuarded = "true";
+
+      // النوافذ الإعلانية من نوع "Download is ready" بتخطف الضغطات وتحوّل لمواقع خارجية.
+      // الأفضل إزالتها فورًا بدل ترك زر Continue ظاهر للمستخدم.
+      try {
+        el.remove();
+        return;
+      } catch {
+        el.style.setProperty("display", "none", "important");
+        el.style.setProperty("pointer-events", "none", "important");
+        return;
+      }
 
       // زر إغلاق مضمون
       if (!el.querySelector(".ad-modal-guard-close")) {
@@ -113,14 +133,30 @@ export function AdModalGuard() {
     };
 
     const scan = (root: ParentNode) => {
-      const candidates = root.querySelectorAll<HTMLElement>(
-        'div, section, aside, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"]'
-      );
+      document.querySelectorAll<HTMLIFrameElement>('body > iframe:not([id^="ad-"]), html > iframe:not([id^="ad-"])').forEach((frame) => {
+        frame.remove();
+      });
+
+      const candidates = [
+        ...(root instanceof HTMLElement ? [root] : []),
+        ...Array.from(root.querySelectorAll<HTMLElement>(
+        'iframe, div, section, aside, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"]'
+        )),
+      ];
       candidates.forEach((el) => {
         if (el.dataset.adModalGuarded === "true") return;
         const cs = window.getComputedStyle(el);
-        if (cs.position !== "fixed") return;
         const rect = el.getBoundingClientRect();
+        if (el.tagName === "IFRAME") {
+          const z = Number.parseInt(cs.zIndex || "0", 10) || 0;
+          const isFloatingAdFrame =
+            cs.position === "fixed" ||
+            z > 999 ||
+            (rect.width > 250 && rect.height > 120 && cs.position === "absolute");
+          if (isFloatingAdFrame) guard(el);
+          return;
+        }
+        if (cs.position !== "fixed") return;
         // تجاهل أشرطة صغيرة جدًا (social-bar) أو عناصر فاضية
         if (rect.width < 200 || rect.height < 150) return;
         if (!looksLikeDownloadModal(el)) return;

@@ -146,9 +146,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
   // Inline pre-hydration script: applies the saved theme before React paints,
   // avoiding a flash of the wrong theme and any class mismatch on <html>.
   const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(!t){t='light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+  const noAdGuardScript = `(function(){try{if(window.__kkNoAdGuardInstalled)return;window.__kkNoAdGuardInstalled=1;var SUPPRESS_MS=2500;var selector='[data-no-ad="true"],[aria-label*="السابق"],[aria-label*="التالي"],[aria-label*="أعلى"],[aria-label*="الأعلى"],[aria-label*="أسفل"],[aria-label*="الأسفل"],[aria-label*="للأعلى"],[aria-label*="للأسفل"],[aria-label*="إغلاق"],[aria-label*="scroll" i],[aria-label*="next" i],[aria-label*="prev" i]';function purge(){try{document.querySelectorAll('body > iframe, html > iframe').forEach(function(f){f.remove();});}catch(e){}}function isSafe(t){return !!(t&&t.closest&&t.closest(selector));}function mark(){window.__kkNoAdSafeUntil=Date.now()+SUPPRESS_MS;purge();}window.__kkMarkNoAdInteraction=mark;var originalOpen=window.open&&window.open.bind(window);if(originalOpen){window.open=function(){if(Date.now()<(window.__kkNoAdSafeUntil||0)){try{console.debug('[no-ad] blocked window.open during safe-button window',arguments[0]);}catch(e){}purge();return null;}return originalOpen.apply(window,arguments);};}['pointerdown','mousedown','touchstart','click','auxclick'].forEach(function(type){window.addEventListener(type,function(e){purge();if(isSafe(e.target))mark();},true);});new MutationObserver(purge).observe(document.documentElement,{childList:true,subtree:false});var n=0,t=setInterval(function(){purge();if(++n>80)clearInterval(t);},250);purge();}catch(e){}})();`;
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: noAdGuardScript }} />
         <HeadContent />
         <script
           src="https://quge5.com/88/tag.min.js"
@@ -191,20 +193,20 @@ function RootComponent() {
 function InnerRoot() {
   const { isReadMode } = useReadMode();
 
-  // منع سكربتات الإعلانات (popunder/social-bar) من التقاط النقر
+  // منع سكربتات الإعلانات (popunder/social-bar) من فتح روابط خارجية
   // على الأزرار الموسومة بـ data-no-ad="true" (زر وضع القراءة، أزرار "المزيد"...)
-  // + تعطيل window.open مؤقتًا في نافذة 1.2 ثانية بعد الضغط على هذه الأزرار
-  // لمنع popunder من فتح تبويب إعلان حتى لو الـ handler الخاص بيه ركض قبل الـ stopPropagation.
+  // + تعطيل window.open مؤقتًا بعد الضغط على هذه الأزرار بدون تعطيل عمل الزر نفسه.
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     let suppressUntil = 0;
-    const SUPPRESS_MS = 1200;
+    const SUPPRESS_MS = 2500;
     const originalOpen = window.open.bind(window);
 
     // Override window.open: لو في فترة الكبت، رجّع null وامنع الإعلان من الفتح
     (window as any).open = function patchedOpen(...args: any[]) {
-      if (Date.now() < suppressUntil) {
+      const globalSuppressUntil = Number((window as any).__kkNoAdSafeUntil || 0);
+      if (Date.now() < suppressUntil || Date.now() < globalSuppressUntil) {
         // eslint-disable-next-line no-console
         console.debug("[no-ad] blocked window.open during safe-button window", args?.[0]);
         return null;
@@ -234,8 +236,7 @@ function InnerRoot() {
       const t = e.target as HTMLElement | null;
       if (t && t.closest && t.closest(SAFE_SELECTOR)) {
         suppressUntil = Date.now() + SUPPRESS_MS;
-        e.stopPropagation();
-        (e as any).stopImmediatePropagation?.();
+        (window as any).__kkNoAdSafeUntil = suppressUntil;
       }
     };
 
