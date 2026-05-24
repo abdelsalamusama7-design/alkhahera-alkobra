@@ -127,14 +127,23 @@ export function AdModalGuard() {
       const candidates = [
         ...(root instanceof HTMLElement ? [root] : []),
         ...Array.from(root.querySelectorAll<HTMLElement>(
-        'div, section, aside, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"]'
+        'iframe, div, section, aside, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"]'
         )),
       ];
       candidates.forEach((el) => {
         if (el.dataset.adModalGuarded === "true") return;
         const cs = window.getComputedStyle(el);
-        if (cs.position !== "fixed") return;
         const rect = el.getBoundingClientRect();
+        if (el.tagName === "IFRAME") {
+          const z = Number.parseInt(cs.zIndex || "0", 10) || 0;
+          const isFloatingAdFrame =
+            cs.position === "fixed" ||
+            z > 999 ||
+            (rect.width > 250 && rect.height > 120 && cs.position === "absolute");
+          if (isFloatingAdFrame) guard(el);
+          return;
+        }
+        if (cs.position !== "fixed") return;
         // تجاهل أشرطة صغيرة جدًا (social-bar) أو عناصر فاضية
         if (rect.width < 200 || rect.height < 150) return;
         if (!looksLikeDownloadModal(el)) return;
