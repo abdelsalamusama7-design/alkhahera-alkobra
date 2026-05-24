@@ -23,7 +23,8 @@ export function NavBar() {
 
   return (
     <nav className="bg-primary text-primary-foreground sticky top-0 z-40 shadow-md">
-      <div className="container mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+      <div className="container mx-auto px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 flex-wrap min-w-0">
+
         {/* Mobile label */}
         <span className="md:hidden text-sm font-bold py-3">الأقسام</span>
 
