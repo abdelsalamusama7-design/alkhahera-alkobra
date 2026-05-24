@@ -161,6 +161,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
           async
         />
         <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="242145"
+          data-cfasync="false"
+          data-monetag-id="quge5-242145"
+          async
+        />
+        <script
           src="https://al5sm.com/tag.min.js"
           data-zone="11044569"
           data-cfasync="false"
