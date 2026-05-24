@@ -296,9 +296,13 @@ function ArticlePage() {
                 {a.content || a.excerpt}
               </div>
 
-              <p className="mt-6 pt-4 border-t border-border text-sm md:text-base font-bold text-primary text-left">
-                تم تحرير الخبر ونشره بواسطة <span className="text-gold">القاهرة الكبرى</span>
-              </p>
+              <div className="mt-6 pt-5 border-t border-border flex flex-col items-center gap-2 text-center">
+                <img src={brandWatermark} alt="القاهرة الكبرى" className="w-20 md:w-24 h-auto drop-shadow" loading="lazy" />
+                <p className="text-sm md:text-base font-bold text-primary">
+                  تم تحرير الخبر ونشره بواسطة <span className="text-gold">القاهرة الكبرى</span>
+                </p>
+              </div>
+
 
               <AdSlot slot="article-middle" className="my-6" />
 
