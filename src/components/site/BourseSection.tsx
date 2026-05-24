@@ -85,7 +85,8 @@ export function BourseSection() {
                 <CoverImage
                   src={n.cover_image}
                   alt={n.title}
-                  ratio="16/9"
+                  ratio="16/10"
+                  smRatio="16/9"
                   focus="top"
                   sizeHint={800}
                   imgClassName="group-hover:scale-105"

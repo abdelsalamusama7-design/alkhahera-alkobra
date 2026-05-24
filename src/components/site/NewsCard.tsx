@@ -51,16 +51,16 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
   if (size === "compact") {
     return (
       <article className="news-card group flex gap-3 bg-card p-3 rounded-md border border-border">
-        <div className="h-20 w-24 sm:h-24 sm:w-28 shrink-0 rounded overflow-hidden">
+        <div className="w-24 sm:w-28 shrink-1 rounded overflow-hidden aspect-[4/3] min-h-0">
           <CoverImage
             src={item.image}
             alt={item.title}
-            ratio="1/1"
+            ratio="4/3"
             focus="top"
             sizeHint={200}
           />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-1">
           <div className="text-[10px] font-bold text-gold mb-1">{item.category}</div>
           <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 sm:line-clamp-3 group-hover:text-gold transition-colors">
             {item.title}
@@ -77,7 +77,8 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
         <CoverImage
           src={item.image}
           alt={item.title}
-          ratio="16/9"
+          ratio="16/10"
+          smRatio="16/9"
           focus="top"
           sizeHint={1200}
           imgClassName="group-hover:scale-105"
