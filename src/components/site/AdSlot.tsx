@@ -14,9 +14,17 @@ import { AdsterraBanner } from "./AdsterraAd";
  * يعرض كل الإعلانات المفعّلة لمكان (slot) معيّن — يقرأ من قاعدة البيانات.
  * يُعاد الجلب كل 5 دقائق ليلتقط أي استبدال تلقائي للإعلانات الميتة.
  */
+/** السلوتات اللي لازم متبقاش فاضية أبداً — لو الـ DB رجّع لا شيء نعرض إعلان افتراضي. */
+const ALWAYS_FILLED: AdSlotKey[] = [
+  "sidebar",
+  "article-top",
+  "article-middle",
+  "article-bottom",
+];
+
 export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: string }) {
   const fetchFn = useServerFn(getActivePlacementsFn);
-  const { data } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["ad-placements-active"],
     queryFn: () => fetchFn(),
     staleTime: 5 * 60 * 1000,
@@ -28,7 +36,20 @@ export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: 
     .filter((p) => p.slot === slot)
     .sort((a, b) => a.order_index - b.order_index);
 
-  if (!items.length) return null;
+  // Fallback مضمون: لو السلوت من النوع اللي مينفعش يفضى — نعرض إعلان افتراضي
+  // أثناء التحميل/الفشل أو حتى لو مفيش placements مفعّلة في الـ DB.
+  if (!items.length) {
+    const shouldFallback =
+      ALWAYS_FILLED.includes(slot) && (isLoading || isError || !!data);
+    if (!shouldFallback) return null;
+    const label =
+      slot === "sidebar" ? "الأكثر تداولًا الآن" : "محتوى مقترح لك";
+    return (
+      <div className={`flex flex-col gap-3 ${className}`} data-ad-slot={slot} data-ad-fallback="true">
+        <SponsoredLink variant="card" label={label} />
+      </div>
+    );
+  }
 
   return (
     <div className={`flex flex-col gap-3 ${className}`} data-ad-slot={slot}>
