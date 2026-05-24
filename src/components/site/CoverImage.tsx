@@ -203,13 +203,15 @@ export function CoverImage({
           loading="lazy"
           decoding="async"
           className={cn(
-            "absolute top-1 right-1 sm:top-2 sm:right-2 z-10 pointer-events-none select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)] opacity-95",
-            watermarkSize === "sm" && "w-10 sm:w-12",
-            watermarkSize === "md" && "w-14 sm:w-20 md:w-24",
-            watermarkSize === "lg" && "w-20 sm:w-28 md:w-36",
+            "absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-10 pointer-events-none select-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] opacity-90",
+            // الحجم نسبي للصورة نفسها — مش بكسل ثابت — عشان مياخدش مساحة كبيرة في البطاقات الصغيرة
+            watermarkSize === "sm" && "w-[14%] max-w-[44px] min-w-[24px]",
+            watermarkSize === "md" && "w-[14%] max-w-[64px] min-w-[28px]",
+            watermarkSize === "lg" && "w-[12%] max-w-[120px] min-w-[60px]",
           )}
         />
       )}
+
       {children}
     </div>
   );
