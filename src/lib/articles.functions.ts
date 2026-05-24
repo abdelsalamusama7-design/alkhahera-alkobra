@@ -99,7 +99,7 @@ export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () 
   const [{ data: hero }, { data: latest }, { data: breaking }, { data: mostRead }, { data: recentViews }, { data: worldCat }] =
     await Promise.all([
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).limit(3),
-      supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).range(3, 14),
+      supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("published_at", { ascending: false }).range(3, 80),
       supabaseAdmin.from("articles").select("id,slug,title").eq("is_published", true).eq("is_breaking", true).order("published_at", { ascending: false }).limit(8),
       supabaseAdmin.from("articles").select(ARTICLE_SELECT).eq("is_published", true).order("view_count", { ascending: false }).limit(5),
       supabaseAdmin.from("article_views").select("article_id").gte("viewed_at", since),
@@ -116,7 +116,7 @@ export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () 
       .eq("category_id", worldCat.id)
       .not("cover_image", "is", null)
       .order("published_at", { ascending: false })
-      .limit(12);
+      .limit(60);
     worldTop = w ?? [];
   }
 
