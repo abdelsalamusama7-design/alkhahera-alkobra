@@ -404,3 +404,28 @@ function VerticalShareButtons({ url, title }: { url: string; title: string }) {
     </>
   );
 }
+
+/** طبقة عرض موحّدة فوق الهيرو — تستخدم سواء كان فيه صورة غلاف أو تصميم بديل */
+function HeroOverlay({ article: a }: { article: any }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 container mx-auto px-4 pb-6 md:pb-10">
+      <div className="max-w-4xl">
+        {a.category && (
+          <Link
+            to="/category/$slug"
+            params={{ slug: a.category.slug }}
+            className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3"
+          >
+            {a.category.name}
+          </Link>
+        )}
+        {a.is_breaking && (
+          <span className="inline-block bg-breaking text-white px-3 py-1 text-xs font-extrabold rounded mb-3 mr-2 animate-pulse">عاجل</span>
+        )}
+        <h1 className="text-2xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
+          {a.title}
+        </h1>
+      </div>
+    </div>
+  );
+}
