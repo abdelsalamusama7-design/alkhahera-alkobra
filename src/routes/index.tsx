@@ -331,14 +331,18 @@ function Index() {
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
       <main className="flex-1">
-        <TopicsCircles
-          items={[...worldTopList, ...trendingList, ...latestList].slice(0, Math.min(displayedCount, maxCircles))}
-          title="أهم أحداث العالم"
-          hasMore={displayedCount < Math.min(maxCircles, [...worldTopList, ...trendingList, ...latestList].length)}
-          onLoadMore={() => setDisplayedCount((c) => c + circlesStep)}
-        />
-        
-
+        {(() => {
+          const circlesAll = [...pinsToNews("circles"), ...worldTopList, ...trendingList, ...latestList];
+          const total = Math.min(maxCircles, circlesAll.length);
+          return (
+            <TopicsCircles
+              items={circlesAll.slice(0, Math.min(circlesShown, maxCircles))}
+              title="أهم أحداث العالم"
+              hasMore={circlesShown < total}
+              onLoadMore={() => setCirclesShown((c) => c + (cfgCircles.load_more_step || 12))}
+            />
+          );
+        })()}
 
         <section className="container mx-auto px-4 py-6">
           <HeroCarousel
@@ -350,36 +354,40 @@ function Index() {
           />
         </section>
 
-        {trendingList.length > 0 && (
-          <section className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4 border-b-2 border-gold pb-2">
-              <h2 className="text-xl md:text-2xl font-extrabold text-primary flex items-center gap-2">
-                <span className="text-2xl" aria-hidden>🔥</span>
-                ترند الآن
-                <span className="text-[10px] font-bold bg-gold/20 text-gold-foreground border border-gold px-2 py-0.5 rounded-full mr-1">آخر 48 ساعة</span>
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {trendingList.map((n: NewsItem, i: number) => (
-                <ItemLink key={n.id} item={n}>
-                  <div className="relative news-card h-full">
-                    <span className="absolute top-2 right-2 z-10 bg-gold text-gold-foreground text-[11px] font-extrabold rounded-full h-6 min-w-6 px-1.5 flex items-center justify-center shadow">#{i + 1}</span>
-                    <NewsCard item={n} />
-                  </div>
-                </ItemLink>
-              ))}
-            </div>
-          </section>
-        )}
+        {cfgTrending.enabled && (() => {
+          const merged = [...pinsToNews("trending"), ...trendingList];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgTrending.title || "ترند الآن"}
+              items={merged}
+              layout={cfgTrending.layout}
+              columns={cfgTrending.columns}
+              displayedCount={trendingShown}
+              totalAvailable={Math.min(cfgTrending.max_count, merged.length)}
+              onLoadMore={() => setTrendingShown((c) => c + (cfgTrending.load_more_step || 6))}
+              numbered
+              accentEmoji="🔥"
+              accentBadge="آخر 48 ساعة"
+            />
+          );
+        })()}
 
-        <section className="container mx-auto px-4 py-6">
-          <SectionTitle title="آخر الأخبار" accent="عرض المزيد" to="/search" />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(0, 8).map((n: NewsItem) => (
-              <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
-            ))}
-          </div>
-        </section>
+        {cfgLatest.enabled && (() => {
+          const merged = [...pinsToNews("latest"), ...latestList];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgLatest.title || "آخر الأخبار"}
+              items={merged}
+              layout={cfgLatest.layout}
+              columns={cfgLatest.columns}
+              displayedCount={latestShown}
+              totalAvailable={Math.min(cfgLatest.max_count, merged.length)}
+              onLoadMore={() => setLatestShown((c) => c + (cfgLatest.load_more_step || 8))}
+            />
+          );
+        })()}
 
         {!isReadMode && (
           <section className="container mx-auto px-4">
