@@ -20,6 +20,11 @@ const ALWAYS_FILLED: AdSlotKey[] = [
   "article-top",
   "article-middle",
   "article-bottom",
+  "home-top",
+  "home-middle",
+  "home-bottom",
+  "header",
+  "footer",
 ];
 
 export function AdSlot({ slot, className = "" }: { slot: AdSlotKey; className?: string }) {
