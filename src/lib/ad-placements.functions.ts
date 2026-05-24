@@ -123,7 +123,7 @@ export const getHealthLogFn = createServerFn({ method: "GET" })
 
 /**
  * تسجيل ظهور/نقرة لإعلان — يستدعى من المتصفح (بدون auth).
- * يستخدم RPC ذرّي لزيادة العدّاد.
+ * يحدّث العدّاد الإجمالي + عدّاد اليوم في جدول ad_events_daily.
  */
 export const trackAdEventFn = createServerFn({ method: "POST" })
   .inputValidator((input) =>
@@ -134,7 +134,7 @@ export const trackAdEventFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const column = data.kind === "click" ? "clicks" : "impressions";
-    // قراءة الحالي ثم التحديث (service role يتجاوز RLS)
+    // (1) العدّاد الإجمالي (lifetime) على ad_placements
     const { data: row } = await supabaseAdmin
       .from("ad_placements")
       .select(column)
@@ -142,12 +142,61 @@ export const trackAdEventFn = createServerFn({ method: "POST" })
       .single();
     const current = Number((row as any)?.[column] ?? 0);
     const patch: any = { [column]: current + 1 };
-    const { error } = await supabaseAdmin
-      .from("ad_placements")
-      .update(patch)
-      .eq("id", data.id);
-    if (error) return { ok: false };
+    await supabaseAdmin.from("ad_placements").update(patch).eq("id", data.id);
+
+    // (2) عدّاد اليوم (per-day) — upsert ذرّي
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
+    const { data: dayRow } = await supabaseAdmin
+      .from("ad_events_daily")
+      .select(column)
+      .eq("placement_id", data.id)
+      .eq("day", today)
+      .maybeSingle();
+    const dayCur = Number((dayRow as any)?.[column] ?? 0);
+    await supabaseAdmin
+      .from("ad_events_daily")
+      .upsert({
+        placement_id: data.id,
+        day: today,
+        [column]: dayCur + 1,
+        updated_at: new Date().toISOString(),
+      } as any);
     return { ok: true };
+  });
+
+/** ملخص يومي لكل إعلان (اليوم الحالي UTC) — للإدمن. */
+export const getDailyAdStatsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: daily, error } = await supabaseAdmin
+      .from("ad_events_daily")
+      .select("placement_id, impressions, clicks")
+      .eq("day", today);
+    if (error) throw new Error(error.message);
+    const { data: placements } = await supabaseAdmin
+      .from("ad_placements")
+      .select("id,name,slot,enabled");
+    const map = new Map<string, { impressions: number; clicks: number }>();
+    for (const r of daily ?? []) {
+      map.set(r.placement_id as string, {
+        impressions: Number((r as any).impressions ?? 0),
+        clicks: Number((r as any).clicks ?? 0),
+      });
+    }
+    return (placements ?? []).map((p: any) => {
+      const s = map.get(p.id) ?? { impressions: 0, clicks: 0 };
+      const ctr = s.impressions > 0 ? (s.clicks / s.impressions) * 100 : 0;
+      return {
+        id: p.id,
+        name: p.name,
+        slot: p.slot,
+        enabled: p.enabled,
+        impressions: s.impressions,
+        clicks: s.clicks,
+        ctr,
+      };
+    });
   });
 
 /** تصفير عدّادات إعلان واحد أو كلها. */
@@ -161,5 +210,12 @@ export const resetAdCountersFn = createServerFn({ method: "POST" })
     q = data.id ? q.eq("id", data.id) : q.neq("id", "00000000-0000-0000-0000-000000000000");
     const { error } = await q;
     if (error) throw new Error(error.message);
+    // امسح كمان عدّادات اليوم
+    let dq = supabaseAdmin.from("ad_events_daily").delete();
+    dq = data.id
+      ? dq.eq("placement_id", data.id)
+      : dq.neq("placement_id", "00000000-0000-0000-0000-000000000000");
+    await dq;
     return { ok: true };
   });
+
