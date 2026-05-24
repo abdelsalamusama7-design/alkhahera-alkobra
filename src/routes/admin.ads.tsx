@@ -235,7 +235,10 @@ function AdsManager() {
         </div>
       </div>
 
+      <AdCtrAlertsPanel />
+
       <DailyAdCtrPanel />
+
 
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
 
