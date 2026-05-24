@@ -62,7 +62,7 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-[10px] font-bold text-gold mb-1">{item.category}</div>
-          <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
+          <h3 className="text-sm font-bold text-primary leading-snug line-clamp-2 sm:line-clamp-3 group-hover:text-gold transition-colors">
             {item.title}
           </h3>
           <div className="text-[10px] text-muted-foreground mt-1"><span suppressHydrationWarning>{item.timeAgo}</span></div>
