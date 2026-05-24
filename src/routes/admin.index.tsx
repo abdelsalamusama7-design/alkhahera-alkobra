@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, ExternalLink, AlertTriangle } from "lucide-react";
+import { DailyAdCtrPanel } from "@/components/admin/DailyAdCtrPanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminList,
