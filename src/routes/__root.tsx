@@ -193,12 +193,32 @@ function InnerRoot() {
 
   // منع سكربتات الإعلانات (popunder/social-bar) من التقاط النقر
   // على الأزرار الموسومة بـ data-no-ad="true" (زر وضع القراءة، أزرار "المزيد"...)
+  // + تعطيل window.open مؤقتًا في نافذة 1.2 ثانية بعد الضغط على هذه الأزرار
+  // لمنع popunder من فتح تبويب إعلان حتى لو الـ handler الخاص بيه ركض قبل الـ stopPropagation.
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    let suppressUntil = 0;
+    const SUPPRESS_MS = 1200;
+    const originalOpen = window.open.bind(window);
+
+    // Override window.open: لو في فترة الكبت، رجّع null وامنع الإعلان من الفتح
+    (window as any).open = function patchedOpen(...args: any[]) {
+      if (Date.now() < suppressUntil) {
+        // eslint-disable-next-line no-console
+        console.debug("[no-ad] blocked window.open during safe-button window", args?.[0]);
+        return null;
+      }
+      return originalOpen(...(args as [any]));
+    };
+
     const blocker = (e: Event) => {
       const t = e.target as HTMLElement | null;
       if (t && t.closest && t.closest('[data-no-ad="true"]')) {
+        suppressUntil = Date.now() + SUPPRESS_MS;
         e.stopPropagation();
+        // stopImmediatePropagation يمنع أي listener آخر مسجل على نفس العنصر
+        (e as any).stopImmediatePropagation?.();
       }
     };
     const opts = { capture: true } as AddEventListenerOptions;
@@ -211,8 +231,10 @@ function InnerRoot() {
       window.removeEventListener("mousedown", blocker, opts);
       window.removeEventListener("pointerdown", blocker, opts);
       window.removeEventListener("touchstart", blocker, opts);
+      (window as any).open = originalOpen;
     };
   }, []);
+
 
   return (
     <>
