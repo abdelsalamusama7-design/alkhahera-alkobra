@@ -195,7 +195,23 @@ export function CoverImage({
           )}
         />
       )}
+      {!hideWatermark && (
+        <img
+          src={brandWatermark}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          decoding="async"
+          className={cn(
+            "absolute top-1 right-1 sm:top-2 sm:right-2 z-10 pointer-events-none select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)] opacity-95",
+            watermarkSize === "sm" && "w-10 sm:w-12",
+            watermarkSize === "md" && "w-14 sm:w-20 md:w-24",
+            watermarkSize === "lg" && "w-20 sm:w-28 md:w-36",
+          )}
+        />
+      )}
       {children}
     </div>
   );
 }
+
