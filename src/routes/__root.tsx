@@ -212,15 +212,33 @@ function InnerRoot() {
       return originalOpen(...(args as [any]));
     };
 
+    // أي عنصر له data-no-ad أو aria-label من قائمة التنقل (سابق/تالي/أعلى/أسفل/إغلاق)
+    // أو زر سكرول، يتم حمايته تلقائيًا — يغطي الأزرار الحالية والمستقبلية.
+    const SAFE_SELECTOR = [
+      '[data-no-ad="true"]',
+      '[aria-label*="السابق"]',
+      '[aria-label*="التالي"]',
+      '[aria-label*="أعلى"]',
+      '[aria-label*="الأعلى"]',
+      '[aria-label*="أسفل"]',
+      '[aria-label*="الأسفل"]',
+      '[aria-label*="للأعلى"]',
+      '[aria-label*="للأسفل"]',
+      '[aria-label*="إغلاق"]',
+      '[aria-label*="scroll" i]',
+      '[aria-label*="next" i]',
+      '[aria-label*="prev" i]',
+    ].join(",");
+
     const blocker = (e: Event) => {
       const t = e.target as HTMLElement | null;
-      if (t && t.closest && t.closest('[data-no-ad="true"]')) {
+      if (t && t.closest && t.closest(SAFE_SELECTOR)) {
         suppressUntil = Date.now() + SUPPRESS_MS;
         e.stopPropagation();
-        // stopImmediatePropagation يمنع أي listener آخر مسجل على نفس العنصر
         (e as any).stopImmediatePropagation?.();
       }
     };
+
     const opts = { capture: true } as AddEventListenerOptions;
     window.addEventListener("click", blocker, opts);
     window.addEventListener("mousedown", blocker, opts);
