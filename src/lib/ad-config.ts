@@ -9,10 +9,13 @@ export type SmartlinkKey =
   | "CONTEXT_LINK"
   | "POPUNDER"
   | "POPUNDER_2"
+  | "POPUNDER_3"
   | "BANNER"
   | "BANNER_2"
   | "BANNER_3"
-  | "BANNER_4";
+  | "BANNER_4"
+  | "BANNER_5"
+  | "BANNER_6";
 
 export type MonetagScript = {
   id: string;
