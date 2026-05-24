@@ -67,8 +67,22 @@ export const getArticleBySlug = createServerFn({ method: "POST" })
     // View counting moved to logArticleView (called from the article page)
     // so we can also capture referrer, country and device information.
 
-    let related: any[] = [];
-    if (row.category_id) {
+    // اجمع أخبار مرتبطة باهتمام الزائر: نفس التصنيف ← ثم وسوم متقاطعة ← ثم الأكثر مشاهدة ← ثم الأحدث
+    // الهدف: ما يكون فاضي أبدًا. نطلب 12 عشان نغطي قسم "اقرأ أيضاً" + الشريط الجانبي.
+    const TARGET = 12;
+    const seen = new Set<string>([row.id]);
+    const related: any[] = [];
+    const pushUnique = (rows: any[] | null | undefined) => {
+      for (const r of rows ?? []) {
+        if (seen.has(r.id)) continue;
+        seen.add(r.id);
+        related.push(r);
+        if (related.length >= TARGET) break;
+      }
+    };
+
+    // 1) نفس التصنيف
+    if (row.category_id && related.length < TARGET) {
       const { data: rel } = await supabaseAdmin
         .from("articles")
         .select(ARTICLE_SELECT)
@@ -76,8 +90,46 @@ export const getArticleBySlug = createServerFn({ method: "POST" })
         .eq("category_id", row.category_id)
         .neq("id", row.id)
         .order("published_at", { ascending: false })
-        .limit(4);
-      related = rel ?? [];
+        .limit(TARGET);
+      pushUnique(rel);
+    }
+
+    // 2) وسوم متقاطعة (لو الخبر له tags)
+    const tags: string[] = Array.isArray((row as any).tags) ? (row as any).tags : [];
+    if (tags.length > 0 && related.length < TARGET) {
+      const { data: rel } = await supabaseAdmin
+        .from("articles")
+        .select(ARTICLE_SELECT)
+        .eq("is_published", true)
+        .overlaps("tags", tags)
+        .neq("id", row.id)
+        .order("published_at", { ascending: false })
+        .limit(TARGET);
+      pushUnique(rel);
+    }
+
+    // 3) الأكثر مشاهدة (اهتمام عام)
+    if (related.length < TARGET) {
+      const { data: rel } = await supabaseAdmin
+        .from("articles")
+        .select(ARTICLE_SELECT)
+        .eq("is_published", true)
+        .neq("id", row.id)
+        .order("view_count", { ascending: false })
+        .limit(TARGET);
+      pushUnique(rel);
+    }
+
+    // 4) الأحدث على الإطلاق — ضمان إن القسم مش هيبقى فاضي
+    if (related.length < TARGET) {
+      const { data: rel } = await supabaseAdmin
+        .from("articles")
+        .select(ARTICLE_SELECT)
+        .eq("is_published", true)
+        .neq("id", row.id)
+        .order("published_at", { ascending: false })
+        .limit(TARGET);
+      pushUnique(rel);
     }
 
     return { article: row, related };
