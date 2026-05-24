@@ -180,7 +180,7 @@ export function CoverImage({
             }
           }}
           className={cn(
-            "absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] object-cover transition-opacity duration-300",
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
             FOCUS_CLASS[focus],
             imgClassName,
           )}
