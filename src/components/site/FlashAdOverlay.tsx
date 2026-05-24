@@ -101,7 +101,7 @@ function FlashAdContent({ onBroken }: { onBroken: () => void }) {
     refetchOnWindowFocus: false,
   });
 
-  const placement = (data ?? []).find((p) => p.slot === "flash");
+  const placement = (data ?? []).find((p) => (p.slot as string) === "flash");
 
   // كشف عطل: إن لم يصل impression خلال مهلة قصيرة، أعد التركيب
   const impressionRef = useRef(false);
