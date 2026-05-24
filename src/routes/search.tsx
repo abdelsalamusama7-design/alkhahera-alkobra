@@ -128,6 +128,13 @@ function SearchPage() {
             </Link>
           ))}
         </div>
+
+        {/* إعلان أسفل نتائج البحث — مع استبدال تلقائي */}
+        {(data?.items?.length ?? 0) > 0 && (
+          <div className="mt-8">
+            <AdSlot slot="home-bottom" />
+          </div>
+        )}
       </main>
       <Footer />
     </div>
