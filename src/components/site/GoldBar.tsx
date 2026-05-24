@@ -15,22 +15,28 @@ export function GoldBar() {
 
   if (isLoading || isError || !data) return null;
 
-  const items = [
-    { k: "عيار 24", v: data.gram24 },
-    { k: "عيار 21", v: data.gram21 },
-    { k: "عيار 18", v: data.gram18 },
-  ];
+  const items: { k: string; v: number; unit: string }[] = [
+    { k: "عيار 24", v: data.gram24, unit: "ج.م/جرام" },
+    { k: "عيار 21", v: data.gram21, unit: "ج.م/جرام" },
+    { k: "عيار 18", v: data.gram18, unit: "ج.م/جرام" },
+    { k: "الأونصة", v: data.ounce, unit: "ج.م" },
+    { k: "الجنيه الذهب", v: data.pound, unit: "ج.م" },
+    { k: "نصف الجنيه", v: data.halfPound, unit: "ج.م" },
+    { k: "ربع الجنيه", v: data.quarterPound, unit: "ج.م" },
+    { k: "سبيكة 50ج", v: data.ingot50, unit: "ج.م" },
+    { k: "سبيكة 100ج", v: data.ingot100, unit: "ج.م" },
+  ].filter((x) => x.v > 0);
 
   return (
     <div className="bg-gradient-to-l from-gold/20 via-gold/10 to-transparent border-y border-gold/40" dir="rtl">
       <div className="container mx-auto px-4 py-2 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-        <span className="font-extrabold text-gold flex items-center gap-1">
+        <span className="font-extrabold text-gold flex items-center gap-1 shrink-0">
           <span aria-hidden>🪙</span> أسعار الذهب اليوم
         </span>
         {items.map((it) => (
-          <span key={it.k} className="font-bold text-primary">
+          <span key={it.k} className="font-bold text-primary whitespace-nowrap">
             {it.k}: <span className="text-gold">{fmt(it.v)}</span>
-            <span className="text-muted-foreground text-xs mr-1">ج.م/جرام</span>
+            <span className="text-muted-foreground text-xs mr-1">{it.unit}</span>
           </span>
         ))}
         {typeof data.chp === "number" && (
@@ -42,3 +48,4 @@ export function GoldBar() {
     </div>
   );
 }
+
