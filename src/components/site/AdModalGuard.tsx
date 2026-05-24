@@ -92,6 +92,17 @@ export function AdModalGuard() {
       if (el.dataset.adModalGuarded === "true") return;
       el.dataset.adModalGuarded = "true";
 
+      // النوافذ الإعلانية من نوع "Download is ready" بتخطف الضغطات وتحوّل لمواقع خارجية.
+      // الأفضل إزالتها فورًا بدل ترك زر Continue ظاهر للمستخدم.
+      try {
+        el.remove();
+        return;
+      } catch {
+        el.style.setProperty("display", "none", "important");
+        el.style.setProperty("pointer-events", "none", "important");
+        return;
+      }
+
       // زر إغلاق مضمون
       if (!el.querySelector(".ad-modal-guard-close")) {
         const btn = document.createElement("button");
@@ -113,9 +124,12 @@ export function AdModalGuard() {
     };
 
     const scan = (root: ParentNode) => {
-      const candidates = root.querySelectorAll<HTMLElement>(
+      const candidates = [
+        ...(root instanceof HTMLElement ? [root] : []),
+        ...Array.from(root.querySelectorAll<HTMLElement>(
         'div, section, aside, [class*="modal"], [class*="popup"], [id*="modal"], [id*="popup"]'
-      );
+        )),
+      ];
       candidates.forEach((el) => {
         if (el.dataset.adModalGuarded === "true") return;
         const cs = window.getComputedStyle(el);
