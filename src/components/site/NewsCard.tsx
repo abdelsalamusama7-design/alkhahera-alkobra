@@ -119,7 +119,7 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
         </span>
       </CoverImage>
       <div className="p-3 flex flex-col flex-1">
-        <h3 className="text-sm sm:text-[15px] font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
+        <h3 className="text-sm sm:text-[15px] font-bold text-primary leading-snug line-clamp-2 sm:line-clamp-3 group-hover:text-gold transition-colors">
           {item.title}
         </h3>
         <div className="mt-auto pt-2 flex items-center justify-between text-[11px] text-muted-foreground gap-2">
