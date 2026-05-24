@@ -266,6 +266,7 @@ function InnerRoot() {
       {!isReadMode && <PopunderSmartLink />}
       {!isReadMode && <MonetagScripts />}
       {!isReadMode && <AdModalGuard />}
+      {!isReadMode && <FlashAdOverlay />}
     </>
   );
 }
