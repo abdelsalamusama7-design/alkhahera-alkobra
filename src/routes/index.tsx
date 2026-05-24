@@ -286,7 +286,7 @@ function Index() {
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
       <main className="flex-1">
-        <TopicsCircles items={[...worldTopList, ...trendingList, ...latestList].slice(0, 24)} title="أهم أحداث العالم" />
+        <TopicsCircles items={[...worldTopList, ...trendingList, ...latestList].slice(0, circlesCount)} title="أهم أحداث العالم" />
         
 
 
