@@ -159,6 +159,35 @@ function ArticlePage() {
     }).catch(() => {});
   }, [a.slug]);
 
+  // إزالة التكرار من قوائم "اقرأ أيضاً" و"الأكثر قراءة":
+  // - استبعاد المقال الحالي
+  // - استبعاد التكرارات على مستوى slug/id والعنوان والصورة (مقالات مختلفة بنفس الصورة)
+  const relatedRaw: any[] = Array.isArray(data.related) ? data.related : [];
+  const uniqRelated = (() => {
+    const seen = new Set<string>();
+    seen.add(a.slug);
+    if (a.cover_image) seen.add(`img:${a.cover_image}`);
+    seen.add(`t:${a.title?.trim()}`);
+    const out: any[] = [];
+    for (const r of relatedRaw) {
+      const keys = [
+        r.slug,
+        r.id,
+        r.cover_image ? `img:${r.cover_image}` : null,
+        r.title ? `t:${r.title.trim()}` : null,
+      ].filter(Boolean) as string[];
+      if (keys.some((k) => seen.has(k))) continue;
+      keys.forEach((k) => seen.add(k));
+      out.push(r);
+    }
+    return out;
+  })();
+  const relatedDeduped = uniqRelated.slice(0, 4);
+  // الشريط الجانبي يأخذ من بقية القائمة عشان نتفادى تكرار نفس البطاقات في القسمين
+  const sidebarDeduped = uniqRelated.slice(4, 9).length > 0 ? uniqRelated.slice(4, 9) : uniqRelated.slice(0, 5);
+
+
+
   return (
     <div className="min-h-screen flex flex-col bg-background" dir="rtl">
       <TopBar />
@@ -167,9 +196,9 @@ function ArticlePage() {
       <AdBanner />
 
       <main className="flex-1">
-        {/* HERO: صورة الغلاف بعرض كامل مع التدرّج والعنوان فوقها */}
-        {a.cover_image && (
-          <section className="relative w-full bg-black">
+        {/* HERO: صورة الغلاف بعرض كامل — أو تصميم بديل مُعبِّر لو مفيش صورة */}
+        <section className="relative w-full bg-black">
+          {a.cover_image ? (
             <div className="relative w-full max-h-[70vh] overflow-hidden">
               <CoverImage
                 src={a.cover_image}
@@ -181,28 +210,29 @@ function ArticlePage() {
                 sizeHint={1920}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 container mx-auto px-4 pb-6 md:pb-10">
-                <div className="max-w-4xl">
-                  {a.category && (
-                    <Link
-                      to="/category/$slug"
-                      params={{ slug: a.category.slug }}
-                      className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3"
-                    >
-                      {a.category.name}
-                    </Link>
-                  )}
-                  {a.is_breaking && (
-                    <span className="inline-block bg-breaking text-white px-3 py-1 text-xs font-extrabold rounded mb-3 mr-2 animate-pulse">عاجل</span>
-                  )}
-                  <h1 className="text-2xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
-                    {a.title}
-                  </h1>
-                </div>
-              </div>
+              <HeroOverlay article={a} />
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[60vh] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
+              {/* نقش زخرفي خفيف */}
+              <div
+                className="absolute inset-0 opacity-[0.08] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 20% 20%, white 1px, transparent 1.5px), radial-gradient(circle at 80% 60%, white 1px, transparent 1.5px)",
+                  backgroundSize: "32px 32px, 48px 48px",
+                }}
+                aria-hidden
+              />
+              {/* شارة "خبر" كبيرة كعنصر بصري */}
+              <div className="absolute top-6 left-6 md:top-10 md:left-10 text-[80px] md:text-[160px] font-extrabold text-white/10 leading-none select-none pointer-events-none" aria-hidden>
+                خبر
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+              <HeroOverlay article={a} />
+            </div>
+          )}
+        </section>
 
         <div className="container mx-auto px-4 py-6 md:py-8">
           <nav className="text-xs text-muted-foreground mb-4">
@@ -224,14 +254,7 @@ function ArticlePage() {
             </aside>
 
             <article className="lg:col-span-8">
-              {!a.cover_image && (
-                <>
-                  {a.category && (
-                    <span className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3">{a.category.name}</span>
-                  )}
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-primary leading-tight mb-4">{a.title}</h1>
-                </>
-              )}
+
 
               {a.excerpt && (
                 <p className="text-lg md:text-xl text-foreground/85 leading-relaxed mb-5 font-semibold border-r-4 border-gold pr-4">
@@ -301,12 +324,12 @@ function ArticlePage() {
 
               <AdSlot slot="article-bottom" className="my-6" />
 
-              {/* اقرأ أيضاً */}
-              {data.related && data.related.length > 0 && (
+              {/* اقرأ أيضاً — مُنقّى من التكرار (يستبعد المقال الحالي + أي تطابق في الصورة/العنوان) */}
+              {relatedDeduped.length > 0 && (
                 <section className="mt-10 pt-6 border-t-2 border-gold">
                   <h2 className="text-xl md:text-2xl font-extrabold text-primary mb-5">اقرأ أيضاً</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {(data.related ?? []).slice(0, 4).map((r: any) => (
+                    {relatedDeduped.slice(0, 4).map((r: any) => (
                       <Link key={r.id} to="/article/$slug" params={{ slug: r.slug }} className="block group">
                         <article className="flex gap-3 bg-card p-3 rounded-lg border border-border news-card hover:border-gold transition-colors h-full">
                           {r.cover_image && (
@@ -330,7 +353,7 @@ function ArticlePage() {
               <div>
                 <h2 className="text-base font-extrabold text-primary border-b-2 border-gold pb-2 mb-3">الأكثر قراءة</h2>
                 <div className="space-y-3">
-                  {(data.related ?? []).slice(0, 5).map((r: any, i: number) => (
+                  {sidebarDeduped.slice(0, 5).map((r: any, i: number) => (
                     <Link key={r.id} to="/article/$slug" params={{ slug: r.slug }} className="block group">
                       <article className="flex gap-2 items-start">
                         <span className="text-2xl font-extrabold text-gold/70 leading-none w-6 shrink-0">{i + 1}</span>
@@ -341,7 +364,7 @@ function ArticlePage() {
                       </article>
                     </Link>
                   ))}
-                  {(!data.related || data.related.length === 0) && (
+                  {sidebarDeduped.length === 0 && (
                     <p className="text-sm text-muted-foreground">لا توجد أخبار مرتبطة بعد.</p>
                   )}
                 </div>
@@ -349,22 +372,8 @@ function ArticlePage() {
             </aside>
           </div>
         </div>
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "NewsArticle",
-              headline: a.title,
-              datePublished: a.published_at,
-              image: a.cover_image ? [a.cover_image] : undefined,
-              author: { "@type": "Person", name: a.author_name || a.source },
-              publisher: { "@type": "Organization", name: "القاهرة الكبرى" },
-            }),
-          }}
-        />
       </main>
+
       <Footer />
     </div>
   );
@@ -393,5 +402,30 @@ function VerticalShareButtons({ url, title }: { url: string; title: string }) {
       </button>
       {copied && <span className="text-[10px] text-emerald-600 font-bold mt-1">تم النسخ</span>}
     </>
+  );
+}
+
+/** طبقة عرض موحّدة فوق الهيرو — تستخدم سواء كان فيه صورة غلاف أو تصميم بديل */
+function HeroOverlay({ article: a }: { article: any }) {
+  return (
+    <div className="absolute inset-x-0 bottom-0 container mx-auto px-4 pb-6 md:pb-10">
+      <div className="max-w-4xl">
+        {a.category && (
+          <Link
+            to="/category/$slug"
+            params={{ slug: a.category.slug }}
+            className="inline-block bg-gold text-gold-foreground px-3 py-1 text-xs font-extrabold rounded mb-3"
+          >
+            {a.category.name}
+          </Link>
+        )}
+        {a.is_breaking && (
+          <span className="inline-block bg-breaking text-white px-3 py-1 text-xs font-extrabold rounded mb-3 mr-2 animate-pulse">عاجل</span>
+        )}
+        <h1 className="text-2xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
+          {a.title}
+        </h1>
+      </div>
+    </div>
   );
 }

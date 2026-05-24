@@ -47,6 +47,24 @@ function CategoryPage() {
     initialData: initial.list,
   });
 
+  // إزالة تكرار البطاقات في القسم: نفس slug/id، أو نفس الصورة، أو نفس العنوان
+  const items: any[] = (() => {
+    const seen = new Set<string>();
+    const out: any[] = [];
+    for (const a of (data.items ?? []) as any[]) {
+      const keys = [
+        a.slug,
+        a.id,
+        a.cover_image ? `img:${a.cover_image}` : null,
+        a.title ? `t:${a.title.trim()}` : null,
+      ].filter(Boolean) as string[];
+      if (keys.some((k) => seen.has(k))) continue;
+      keys.forEach((k) => seen.add(k));
+      out.push(a);
+    }
+    return out;
+  })();
+
   return (
     <div className="min-h-screen flex flex-col bg-background" dir="rtl">
       <TopBar />
@@ -55,14 +73,14 @@ function CategoryPage() {
       <AdBanner />
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-3xl font-extrabold text-primary border-b-2 border-gold pb-2 mb-6">{initial.catName}</h1>
-        {data.items.length === 0 ? (
+        {items.length === 0 ? (
           <p className="text-muted-foreground">لا توجد أخبار في هذا القسم بعد.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {data.items.map((a: any) => (
+            {items.map((a: any) => (
               <Link key={a.id} to="/article/$slug" params={{ slug: a.slug }} className="block">
                 <article className="news-card group overflow-hidden rounded-md bg-card border border-border h-full">
-                  {a.cover_image && (
+                  {a.cover_image ? (
                     <CoverImage
                       src={a.cover_image}
                       alt={a.title}
@@ -72,6 +90,10 @@ function CategoryPage() {
                       sizeHint={800}
                       imgClassName="group-hover:scale-105"
                     />
+                  ) : (
+                    <div className="aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-br from-primary/90 to-primary/60 flex items-center justify-center">
+                      <span className="text-3xl font-extrabold text-white/30">خبر</span>
+                    </div>
                   )}
                   <div className="p-3">
                     <h3 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{a.title}</h3>
@@ -87,3 +109,4 @@ function CategoryPage() {
     </div>
   );
 }
+
