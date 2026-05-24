@@ -49,6 +49,8 @@ function AdminList() {
 
       <div className="mb-4">
         <DailyAdCtrPanel compact />
+        <AdCtrAlertsPanel />
+
       </div>
 
 
