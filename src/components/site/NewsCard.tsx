@@ -77,7 +77,8 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
         <CoverImage
           src={item.image}
           alt={item.title}
-          ratio="16/9"
+          ratio="16/10"
+          smRatio="16/9"
           focus="top"
           sizeHint={1200}
           imgClassName="group-hover:scale-105"
