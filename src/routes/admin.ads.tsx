@@ -233,6 +233,8 @@ function AdsManager() {
         </div>
       </div>
 
+      <DailyAdCtrPanel />
+
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>}
 
       {grouped.map(({ slot, items, newOnes }) => (
