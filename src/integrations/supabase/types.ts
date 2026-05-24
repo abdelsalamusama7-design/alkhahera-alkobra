@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_events_daily: {
+        Row: {
+          clicks: number
+          day: string
+          impressions: number
+          placement_id: string
+          updated_at: string
+        }
+        Insert: {
+          clicks?: number
+          day: string
+          impressions?: number
+          placement_id: string
+          updated_at?: string
+        }
+        Update: {
+          clicks?: number
+          day?: string
+          impressions?: number
+          placement_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ad_health_log: {
         Row: {
           checked_at: string

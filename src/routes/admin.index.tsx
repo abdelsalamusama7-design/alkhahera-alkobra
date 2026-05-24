@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, ExternalLink, AlertTriangle } from "lucide-react";
+import { DailyAdCtrPanel } from "@/components/admin/DailyAdCtrPanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminList,
@@ -43,6 +44,11 @@ function AdminList() {
         <h1 className="text-2xl font-extrabold text-primary">إدارة الأخبار</h1>
         {canCreate && <Link to="/admin/new"><Button>+ خبر جديد</Button></Link>}
       </div>
+
+      <div className="mb-4">
+        <DailyAdCtrPanel compact />
+      </div>
+
 
       {duplicates.length > 0 && (
         <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
