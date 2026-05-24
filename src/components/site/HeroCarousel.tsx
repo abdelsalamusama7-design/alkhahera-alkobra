@@ -94,7 +94,8 @@ export function HeroCarousel({ items, intervalMs = 5500 }: { items: NewsItem[]; 
               <CoverImage
                 src={item.image}
                 alt={item.title}
-                ratio="16/9"
+                ratio="16/10"
+                smRatio="16/9"
                 focus="top"
                 priority={i === 0}
                 sizeHint={1400}
