@@ -294,3 +294,118 @@ export const resetAdCountersFn = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * تنبيهات CTR المنخفض — يفحص آخر N يوم لكل إعلان مفعّل.
+ * يرجع الإعلانات التي:
+ *  - عدد ظهورها >= minImpressions
+ *  - وCTR < ctrThreshold (نسبة مئوية)
+ */
+export const getCtrAlertsFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      days: z.number().int().min(1).max(30).default(3),
+      minImpressions: z.number().int().min(1).max(100000).default(100),
+      ctrThreshold: z.number().min(0).max(100).default(0.5),
+    }).parse(input ?? {})
+  )
+  .handler(async ({ data }) => {
+    const end = new Date();
+    const start = new Date();
+    start.setUTCDate(end.getUTCDate() - (data.days - 1));
+    const startStr = start.toISOString().slice(0, 10);
+
+    const { data: rows, error } = await supabaseAdmin
+      .from("ad_events_daily")
+      .select("placement_id, impressions, clicks")
+      .gte("day", startStr);
+    if (error) throw new Error(error.message);
+
+    const totals = new Map<string, { impressions: number; clicks: number }>();
+    for (const r of rows ?? []) {
+      const pid = r.placement_id as string;
+      const cur = totals.get(pid) ?? { impressions: 0, clicks: 0 };
+      cur.impressions += Number((r as any).impressions ?? 0);
+      cur.clicks += Number((r as any).clicks ?? 0);
+      totals.set(pid, cur);
+    }
+
+    const { data: placements } = await supabaseAdmin
+      .from("ad_placements")
+      .select("id,name,slot,enabled,is_fallback");
+
+    // فحص توفّر بديل احتياطي معطّل بنفس slot
+    const fallbacksBySlot = new Map<string, number>();
+    for (const p of placements ?? []) {
+      if ((p as any).is_fallback && !(p as any).enabled) {
+        const s = (p as any).slot as string;
+        fallbacksBySlot.set(s, (fallbacksBySlot.get(s) ?? 0) + 1);
+      }
+    }
+
+    const alerts = (placements ?? [])
+      .filter((p: any) => p.enabled && !p.is_fallback)
+      .map((p: any) => {
+        const t = totals.get(p.id) ?? { impressions: 0, clicks: 0 };
+        const ctr = t.impressions > 0 ? (t.clicks / t.impressions) * 100 : 0;
+        return {
+          id: p.id as string,
+          name: p.name as string,
+          slot: p.slot as string,
+          impressions: t.impressions,
+          clicks: t.clicks,
+          ctr,
+          hasFallback: (fallbacksBySlot.get(p.slot) ?? 0) > 0,
+        };
+      })
+      .filter((a) => a.impressions >= data.minImpressions && a.ctr < data.ctrThreshold)
+      .sort((a, b) => a.ctr - b.ctr);
+
+    return {
+      params: data,
+      alerts,
+    };
+  });
+
+/**
+ * استبدال تلقائي: يعطّل الإعلان الضعيف ويُفعّل أول bediel احتياطي معطّل
+ * بنفس slot. لو ما فيش بديل بيرجع swapped=false.
+ */
+export const autoSwapPlacementFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ id: z.string().uuid() }).parse(input)
+  )
+  .handler(async ({ data }) => {
+    const { data: target, error: tErr } = await supabaseAdmin
+      .from("ad_placements")
+      .select("id,slot,name")
+      .eq("id", data.id)
+      .single();
+    if (tErr || !target) throw new Error(tErr?.message || "إعلان غير موجود");
+
+    const { data: fallback } = await supabaseAdmin
+      .from("ad_placements")
+      .select("id,name")
+      .eq("slot", (target as any).slot)
+      .eq("is_fallback", true)
+      .eq("enabled", false)
+      .order("order_index", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    // عطّل الإعلان الضعيف دائمًا
+    await supabaseAdmin.from("ad_placements").update({ enabled: false }).eq("id", data.id);
+
+    if (!fallback) {
+      return { swapped: false, disabled: (target as any).name, activated: null as string | null };
+    }
+    await supabaseAdmin.from("ad_placements").update({ enabled: true }).eq("id", (fallback as any).id);
+    return {
+      swapped: true,
+      disabled: (target as any).name as string,
+      activated: (fallback as any).name as string,
+    };
+  });
+
+
