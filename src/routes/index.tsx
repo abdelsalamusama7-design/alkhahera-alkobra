@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
 import { useQuery } from "@tanstack/react-query";
@@ -82,11 +82,13 @@ function Index() {
     queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
     staleTime: 5 * 60_000,
   });
-  const circlesCount = (() => {
+  const maxCircles = (() => {
     const v = circlesSetting?.value;
     const n = typeof v === "number" ? v : Number(v);
-    return Number.isFinite(n) && n > 0 ? Math.min(60, Math.max(3, n)) : 24;
+    return Number.isFinite(n) && n > 1 ? Math.min(60, Math.max(3, n)) : 48;
   })();
+  const [displayedCount, setDisplayedCount] = useState(12);
+  const circlesStep = 12;
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
@@ -286,7 +288,12 @@ function Index() {
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
       <main className="flex-1">
-        <TopicsCircles items={[...worldTopList, ...trendingList, ...latestList].slice(0, circlesCount)} title="أهم أحداث العالم" />
+        <TopicsCircles
+          items={[...worldTopList, ...trendingList, ...latestList].slice(0, Math.min(displayedCount, maxCircles))}
+          title="أهم أحداث العالم"
+          hasMore={displayedCount < Math.min(maxCircles, [...worldTopList, ...trendingList, ...latestList].length)}
+          onLoadMore={() => setDisplayedCount((c) => c + circlesStep)}
+        />
         
 
 
