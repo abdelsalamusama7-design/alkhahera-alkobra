@@ -17,6 +17,7 @@ import { PopunderSmartLink } from "@/components/site/PopunderSmartLink";
 import { MonetagScripts } from "@/components/site/MonetagScripts";
 import { ReadModeButton } from "@/components/site/ReadModeButton";
 import { AdModalGuard } from "@/components/site/AdModalGuard";
+import { FlashAdOverlay } from "@/components/site/FlashAdOverlay";
 
 import appCss from "../styles.css?url";
 
@@ -265,6 +266,7 @@ function InnerRoot() {
       {!isReadMode && <PopunderSmartLink />}
       {!isReadMode && <MonetagScripts />}
       {!isReadMode && <AdModalGuard />}
+      {!isReadMode && <FlashAdOverlay />}
     </>
   );
 }
