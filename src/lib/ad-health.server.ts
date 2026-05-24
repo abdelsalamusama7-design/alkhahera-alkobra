@@ -119,7 +119,7 @@ export async function runAdHealthCheck() {
 
       if (shouldDisable) {
         disabled++;
-        // فعّل أي إعلان احتياطي في نفس السلوت لو موجود
+        // 1) فعّل أول إعلان احتياطي مخصّص للسلوت
         const { data: fallbacks } = await supabaseAdmin
           .from("ad_placements")
           .select("id")
@@ -130,9 +130,26 @@ export async function runAdHealthCheck() {
         if (fallbacks && fallbacks.length > 0) {
           await supabaseAdmin
             .from("ad_placements")
-            .update({ enabled: true })
+            .update({ enabled: true, health_status: "unknown", fail_count: 0, last_error: null })
             .eq("id", fallbacks[0].id);
           activatedFallbacks++;
+        } else {
+          // 2) لو مفيش احتياطي — فعّل أي إعلان معطّل سابقًا في نفس السلوت (rotation)
+          const { data: dormant } = await supabaseAdmin
+            .from("ad_placements")
+            .select("id")
+            .eq("slot", p.slot)
+            .eq("enabled", false)
+            .neq("id", p.id)
+            .order("fail_count", { ascending: true })
+            .limit(1);
+          if (dormant && dormant.length > 0) {
+            await supabaseAdmin
+              .from("ad_placements")
+              .update({ enabled: true, health_status: "unknown", fail_count: 0, last_error: null })
+              .eq("id", dormant[0].id);
+            activatedFallbacks++;
+          }
         }
       }
     }

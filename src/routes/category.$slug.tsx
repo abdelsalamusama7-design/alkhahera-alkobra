@@ -6,6 +6,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
+import { AdSlot } from "@/components/site/AdSlot";
 import { CoverImage } from "@/components/site/CoverImage";
 import { Footer } from "@/components/site/Footer";
 
@@ -102,6 +103,13 @@ function CategoryPage() {
                 </article>
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* إعلان أسفل القسم — مُدار من لوحة التحكم مع استبدال تلقائي يومي */}
+        {items.length > 0 && (
+          <div className="mt-8">
+            <AdSlot slot="home-bottom" />
           </div>
         )}
       </main>
