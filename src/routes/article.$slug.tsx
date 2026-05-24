@@ -15,6 +15,8 @@ import { ArticleVoice } from "@/components/site/ArticleVoice";
 import { formatArabicDate } from "@/lib/format";
 import { Facebook, Twitter, Linkedin, Link2, Clock, User } from "lucide-react";
 import { useState, useEffect } from "react";
+import brandWatermark from "@/assets/brand-watermark.png";
+
 
 export const Route = createFileRoute("/article/$slug")({
   loader: async ({ params }) => {
