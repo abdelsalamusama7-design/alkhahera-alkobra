@@ -24,6 +24,7 @@ import {
   Plus, Trash2, Save, ArrowUp, ArrowDown, Eye, EyeOff,
   ShieldCheck, AlertTriangle, HelpCircle, RefreshCw, BarChart3, RotateCcw,
 } from "lucide-react";
+import { DailyAdCtrPanel } from "@/components/admin/DailyAdCtrPanel";
 
 export const Route = createFileRoute("/admin/ads")({
   head: () => ({ meta: [{ title: "إدارة الإعلانات — لوحة التحكم" }] }),
