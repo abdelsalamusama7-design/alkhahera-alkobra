@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import brandWatermark from "@/assets/brand-watermark.png";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&h=750&q=80";
@@ -23,7 +24,12 @@ type Props = {
   sizeHint?: number;
   /** أبعاد إضافية تُغلّف الصورة (مثلًا overlay/badges) */
   children?: React.ReactNode;
+  /** إخفاء العلامة المائية (اللوجو) — افتراضيًا تظهر على كل الصور */
+  hideWatermark?: boolean;
+  /** حجم العلامة المائية */
+  watermarkSize?: "sm" | "md" | "lg";
 };
+
 
 const RATIO_CLASS: Record<Ratio, string> = {
   "16/9": "aspect-[16/9]",
