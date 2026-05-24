@@ -208,10 +208,12 @@ function ArticlePage() {
                 focus="top"
                 priority
                 sizeHint={1920}
+                watermarkSize="lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
               <HeroOverlay article={a} />
             </div>
+
           ) : (
             <div className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[60vh] overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/70">
               {/* نقش زخرفي خفيف */}
