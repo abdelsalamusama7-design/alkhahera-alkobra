@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1200&h=750&q=80";
 
+/** نسب موحدة للأخبار — تضمن عرضًا نظيفًا على موبايل وتابلت ودسكتاب */
 type Ratio = "16/9" | "16/10" | "4/3" | "1/1" | "3/2" | "16/8";
 
 type Props = {
@@ -39,6 +40,14 @@ const SM_RATIO_CLASS: Record<Ratio, string> = {
   "4/3": "sm:aspect-[4/3]",
   "3/2": "sm:aspect-[3/2]",
   "1/1": "sm:aspect-square",
+};
+const MD_RATIO_CLASS: Record<Ratio, string> = {
+  "16/9": "md:aspect-[16/9]",
+  "16/10": "md:aspect-[16/10]",
+  "16/8": "md:aspect-[16/8]",
+  "4/3": "md:aspect-[4/3]",
+  "3/2": "md:aspect-[3/2]",
+  "1/1": "md:aspect-square",
 };
 
 const FOCUS_CLASS: Record<NonNullable<Props["focus"]>, string> = {
@@ -85,33 +94,62 @@ export function CoverImage({
   alt,
   ratio = "16/9",
   smRatio,
+  mdRatio,
   focus = "top",
   priority = false,
   className,
   imgClassName,
   sizeHint = 1200,
   children,
-}: Props) {
+}: Props & { mdRatio?: Ratio }) {
   const initial = src && src.trim() ? src : FALLBACK_IMG;
   const [current, setCurrent] = useState(initial);
   const [loaded, setLoaded] = useState(false);
+  const [inView, setInView] = useState(priority);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // IntersectionObserver للـ Lazy Loading بدقة — الصورة ما بتتحملش غير لما تقترب من viewport
+  useEffect(() => {
+    if (priority) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setInView(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "400px 0px 400px 0px", threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [priority]);
 
   // إن كانت الصورة كاشيد/جاهزة قبل ما React يربط onLoad (شائع بعد SSR)
   useEffect(() => {
     const el = imgRef.current;
     if (el && el.complete && el.naturalWidth > 0) setLoaded(true);
-  }, [current]);
+  }, [current, inView]);
 
-  const optimized = optimizeSrc(current, sizeHint, ratio);
-  const srcSet = buildSrcSet(current, ratio);
+  const optimized = inView ? optimizeSrc(current, sizeHint, ratio) : undefined;
+  const srcSet = inView ? buildSrcSet(current, ratio) : undefined;
 
   return (
     <div
+      ref={wrapperRef}
       className={cn(
         "relative w-full overflow-hidden bg-muted",
         RATIO_CLASS[ratio],
         smRatio ? SM_RATIO_CLASS[smRatio] : null,
+        mdRatio ? MD_RATIO_CLASS[mdRatio] : null,
         className,
       )}
     >
@@ -122,30 +160,32 @@ export function CoverImage({
           aria-hidden
         />
       )}
-      <img
-        ref={imgRef}
-        src={optimized}
-        srcSet={srcSet}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        alt={alt}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        fetchPriority={priority ? "high" : "auto"}
-        onLoad={() => setLoaded(true)}
-        onError={() => {
-          if (current !== FALLBACK_IMG) {
-            setCurrent(FALLBACK_IMG);
-            setLoaded(false);
-          } else {
-            setLoaded(true);
-          }
-        }}
-        className={cn(
-          "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-          FOCUS_CLASS[focus],
-          imgClassName,
-        )}
-      />
+      {inView && (
+        <img
+          ref={imgRef}
+          src={optimized}
+          srcSet={srcSet}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          alt={alt}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
+          onLoad={() => setLoaded(true)}
+          onError={() => {
+            if (current !== FALLBACK_IMG) {
+              setCurrent(FALLBACK_IMG);
+              setLoaded(false);
+            } else {
+              setLoaded(true);
+            }
+          }}
+          className={cn(
+            "absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] object-cover transition-opacity duration-300",
+            FOCUS_CLASS[focus],
+            imgClassName,
+          )}
+        />
+      )}
       {children}
     </div>
   );
