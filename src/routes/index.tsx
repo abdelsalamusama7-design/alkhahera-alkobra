@@ -420,13 +420,21 @@ function Index() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(8, 16).map((n: NewsItem) => (
-              <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
-            ))}
-          </div>
-        </section>
+        {cfgMoreLatest.enabled && (() => {
+          const merged = [...pinsToNews("more_latest"), ...latestList.slice(cfgLatest.display_count)];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgMoreLatest.title || "المزيد من الأخبار"}
+              items={merged}
+              layout={cfgMoreLatest.layout}
+              columns={cfgMoreLatest.columns}
+              displayedCount={moreLatestShown}
+              totalAvailable={Math.min(cfgMoreLatest.max_count, merged.length)}
+              onLoadMore={() => setMoreLatestShown((c) => c + (cfgMoreLatest.load_more_step || 8))}
+            />
+          );
+        })()}
 
         {!isReadMode && (
           /* Native Banner — يندمج مع شكل الموقع */
