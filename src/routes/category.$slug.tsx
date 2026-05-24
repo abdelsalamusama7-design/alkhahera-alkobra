@@ -105,6 +105,13 @@ function CategoryPage() {
             ))}
           </div>
         )}
+
+        {/* إعلان أسفل القسم — مُدار من لوحة التحكم مع استبدال تلقائي يومي */}
+        {items.length > 0 && (
+          <div className="mt-8">
+            <AdSlot slot="home-bottom" />
+          </div>
+        )}
       </main>
       <Footer />
     </div>
