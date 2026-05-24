@@ -1,9 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import type { NewsItem } from "@/data/news";
 
-export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: string }) {
+export function TopicsCircles({
+  items,
+  title,
+  hasMore,
+  onLoadMore,
+}: {
+  items: NewsItem[];
+  title?: string;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+}) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   // Dedupe by slug/id, title, and image to avoid repeated circles
@@ -85,6 +95,19 @@ export function TopicsCircles({ items, title }: { items: NewsItem[]; title?: str
           <ChevronLeft className="h-5 w-5" />
         </button>
       </div>
+
+      {hasMore && onLoadMore && (
+        <div className="container mx-auto px-4 pb-4 flex justify-center" dir="rtl">
+          <button
+            type="button"
+            onClick={onLoadMore}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold/10 border border-gold text-gold text-sm font-bold hover:bg-gold hover:text-gold-foreground transition"
+          >
+            <Loader2 className="h-4 w-4" />
+            المزيد
+          </button>
+        </div>
+      )}
     </section>
   );
 }
