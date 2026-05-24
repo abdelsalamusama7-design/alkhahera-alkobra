@@ -7,6 +7,11 @@ type GoldPrices = {
   gram21: number;
   gram18: number;
   ounce: number;
+  pound: number;       // جنيه ذهب (8g عيار 21)
+  halfPound: number;   // نصف جنيه (4g عيار 21)
+  quarterPound: number;// ربع جنيه (2g عيار 21)
+  ingot50: number;     // سبيكة 50 جرام عيار 24
+  ingot100: number;    // سبيكة 100 جرام عيار 24
   ch?: number;
   chp?: number;
 };
@@ -21,6 +26,11 @@ const FALLBACK: GoldPrices = {
   gram24: 0,
   gram21: 0,
   gram18: 0,
+  pound: 0,
+  halfPound: 0,
+  quarterPound: 0,
+  ingot50: 0,
+  ingot100: 0,
 };
 
 export const getGoldPrices = createServerFn({ method: "GET" }).handler(async (): Promise<GoldPrices> => {
@@ -43,13 +53,20 @@ export const getGoldPrices = createServerFn({ method: "GET" }).handler(async ():
     const j: any = await res.json();
     const ounce = Number(j.price);
     const gram24 = ounce / 31.1035;
+    const gram21 = (gram24 * 21) / 24;
+    const gram18 = (gram24 * 18) / 24;
     const data: GoldPrices = {
       updatedAt: new Date().toISOString(),
       currency: "EGP",
       ounce: Math.round(ounce),
       gram24: Math.round(gram24),
-      gram21: Math.round((gram24 * 21) / 24),
-      gram18: Math.round((gram24 * 18) / 24),
+      gram21: Math.round(gram21),
+      gram18: Math.round(gram18),
+      pound: Math.round(gram21 * 8),
+      halfPound: Math.round(gram21 * 4),
+      quarterPound: Math.round(gram21 * 2),
+      ingot50: Math.round(gram24 * 50),
+      ingot100: Math.round(gram24 * 100),
       ch: typeof j.ch === "number" ? j.ch : undefined,
       chp: typeof j.chp === "number" ? j.chp : undefined,
     };
@@ -60,3 +77,4 @@ export const getGoldPrices = createServerFn({ method: "GET" }).handler(async ():
     return cache?.data ?? FALLBACK;
   }
 });
+
