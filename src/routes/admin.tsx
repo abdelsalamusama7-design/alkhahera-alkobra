@@ -48,6 +48,7 @@ function AdminLayout() {
     { to: "/admin/rss-sources", label: "مصادر RSS", icon: Settings2, show: can("ingest_rss") },
     { to: "/admin/drafts", label: "مراجعة المسودات", icon: FileEdit, show: can("publish_article") || can("ingest_rss") },
     { to: "/admin/site-settings", label: "إعدادات الموقع", icon: Settings2, show: true },
+    { to: "/admin/home-sections", label: "أقسام الرئيسية", icon: LayoutGrid, show: true },
     { to: "/admin/ad-settings", label: "إعدادات الإعلانات", icon: Megaphone, show: true },
     { to: "/admin/ads", label: "إدارة الإعلانات", icon: LayoutGrid, show: true },
     { to: "/admin/sitemap", label: "اختبار Sitemap", icon: Map, show: true },

@@ -300,6 +300,102 @@ export type Database = {
         }
         Relationships: []
       }
+      home_section_items: {
+        Row: {
+          article_id: string | null
+          created_at: string
+          custom_image: string | null
+          custom_source: string | null
+          custom_title: string | null
+          custom_url: string | null
+          id: string
+          kind: string
+          section_key: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string
+          custom_image?: string | null
+          custom_source?: string | null
+          custom_title?: string | null
+          custom_url?: string | null
+          id?: string
+          kind?: string
+          section_key: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string
+          custom_image?: string | null
+          custom_source?: string | null
+          custom_title?: string | null
+          custom_url?: string | null
+          id?: string
+          kind?: string
+          section_key?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_section_items_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_section_items_section_key_fkey"
+            columns: ["section_key"]
+            isOneToOne: false
+            referencedRelation: "home_sections"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      home_sections: {
+        Row: {
+          columns: number
+          display_count: number
+          enabled: boolean
+          key: string
+          layout: string
+          load_more_step: number
+          max_count: number
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          columns?: number
+          display_count?: number
+          enabled?: boolean
+          key: string
+          layout?: string
+          load_more_step?: number
+          max_count?: number
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          columns?: number
+          display_count?: number
+          enabled?: boolean
+          key?: string
+          layout?: string
+          load_more_step?: number
+          max_count?: number
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

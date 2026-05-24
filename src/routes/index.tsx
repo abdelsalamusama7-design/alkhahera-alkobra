@@ -21,9 +21,11 @@ import { GoldBar } from "@/components/site/GoldBar";
 import { GoldWidget } from "@/components/site/GoldWidget";
 import { Footer } from "@/components/site/Footer";
 import { TopicsCircles } from "@/components/site/TopicsCircles";
+import { HomeSection } from "@/components/site/HomeSection";
 import { NewspaperPager } from "@/components/site/NewspaperPager";
 import { getHomeBundle } from "@/lib/articles.functions";
 import { getSiteSetting } from "@/lib/site-settings.functions";
+import { listHomeSections, type HomeSectionConfig, type HomeSectionItem } from "@/lib/home-sections.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
 
@@ -82,13 +84,54 @@ function Index() {
     queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
     staleTime: 5 * 60_000,
   });
+  const { data: sectionsData } = useQuery({
+    queryKey: ["home-sections-public"],
+    queryFn: () => listHomeSections(),
+    staleTime: 5 * 60_000,
+  });
+  const sectionConfigs: HomeSectionConfig[] = sectionsData?.sections ?? [];
+  const pinnedItems: HomeSectionItem[] = sectionsData?.items ?? [];
+  const configFor = (key: string, fallback: Partial<HomeSectionConfig>): HomeSectionConfig =>
+    (sectionConfigs.find((s) => s.key === key) as HomeSectionConfig) ?? ({
+      key, title: key, enabled: true, layout: "grid", columns: 4,
+      display_count: 8, load_more_step: 8, max_count: 48, sort_order: 0,
+      ...fallback,
+    } as HomeSectionConfig);
+  const pinsToNews = (key: string): NewsItem[] =>
+    pinnedItems.filter((p) => p.section_key === key).map((p) => {
+      if (p.kind === "article" && p.article) {
+        return {
+          id: p.article.id, slug: p.article.slug, title: p.article.title,
+          image: p.article.cover_image ?? "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&h=500&q=80",
+          source: p.article.source ?? "القاهرة الكبرى", category: "مثبّت", timeAgo: "",
+        } as NewsItem;
+      }
+      return {
+        id: p.id, title: p.custom_title ?? "",
+        image: p.custom_image ?? "https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&h=500&q=80",
+        source: p.custom_source ?? "", category: "مخصّص", timeAgo: "",
+        externalUrl: p.custom_url ?? undefined,
+      } as NewsItem;
+    });
+
+  const cfgCircles = configFor("circles", { layout: "circles", display_count: 12, max_count: 48 });
+  const cfgTrending = configFor("trending", { columns: 6, display_count: 6, max_count: 48 });
+  const cfgLatest = configFor("latest", { columns: 4, display_count: 8, max_count: 48 });
+  const cfgMoreLatest = configFor("more_latest", { columns: 4, display_count: 8, max_count: 48 });
+  const cfgMostRead = configFor("most_read", { layout: "list", display_count: 5, max_count: 20 });
+
+  // Backward-compat: original site setting can still override circles max
   const maxCircles = (() => {
     const v = circlesSetting?.value;
     const n = typeof v === "number" ? v : Number(v);
-    return Number.isFinite(n) && n > 1 ? Math.min(60, Math.max(3, n)) : 48;
+    if (Number.isFinite(n) && n > 1) return Math.min(60, Math.max(3, n));
+    return cfgCircles.max_count;
   })();
-  const [displayedCount, setDisplayedCount] = useState(12);
-  const circlesStep = 12;
+  const [circlesShown, setCirclesShown] = useState(cfgCircles.display_count);
+  const [trendingShown, setTrendingShown] = useState(cfgTrending.display_count);
+  const [latestShown, setLatestShown] = useState(cfgLatest.display_count);
+  const [moreLatestShown, setMoreLatestShown] = useState(cfgMoreLatest.display_count);
+  const [mostReadShown, setMostReadShown] = useState(cfgMostRead.display_count);
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
@@ -288,14 +331,18 @@ function Index() {
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
       <main className="flex-1">
-        <TopicsCircles
-          items={[...worldTopList, ...trendingList, ...latestList].slice(0, Math.min(displayedCount, maxCircles))}
-          title="أهم أحداث العالم"
-          hasMore={displayedCount < Math.min(maxCircles, [...worldTopList, ...trendingList, ...latestList].length)}
-          onLoadMore={() => setDisplayedCount((c) => c + circlesStep)}
-        />
-        
-
+        {(() => {
+          const circlesAll = [...pinsToNews("circles"), ...worldTopList, ...trendingList, ...latestList];
+          const total = Math.min(maxCircles, circlesAll.length);
+          return (
+            <TopicsCircles
+              items={circlesAll.slice(0, Math.min(circlesShown, maxCircles))}
+              title="أهم أحداث العالم"
+              hasMore={circlesShown < total}
+              onLoadMore={() => setCirclesShown((c) => c + (cfgCircles.load_more_step || 12))}
+            />
+          );
+        })()}
 
         <section className="container mx-auto px-4 py-6">
           <HeroCarousel
@@ -307,36 +354,40 @@ function Index() {
           />
         </section>
 
-        {trendingList.length > 0 && (
-          <section className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-4 border-b-2 border-gold pb-2">
-              <h2 className="text-xl md:text-2xl font-extrabold text-primary flex items-center gap-2">
-                <span className="text-2xl" aria-hidden>🔥</span>
-                ترند الآن
-                <span className="text-[10px] font-bold bg-gold/20 text-gold-foreground border border-gold px-2 py-0.5 rounded-full mr-1">آخر 48 ساعة</span>
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              {trendingList.map((n: NewsItem, i: number) => (
-                <ItemLink key={n.id} item={n}>
-                  <div className="relative news-card h-full">
-                    <span className="absolute top-2 right-2 z-10 bg-gold text-gold-foreground text-[11px] font-extrabold rounded-full h-6 min-w-6 px-1.5 flex items-center justify-center shadow">#{i + 1}</span>
-                    <NewsCard item={n} />
-                  </div>
-                </ItemLink>
-              ))}
-            </div>
-          </section>
-        )}
+        {cfgTrending.enabled && (() => {
+          const merged = [...pinsToNews("trending"), ...trendingList];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgTrending.title || "ترند الآن"}
+              items={merged}
+              layout={cfgTrending.layout}
+              columns={cfgTrending.columns}
+              displayedCount={trendingShown}
+              totalAvailable={Math.min(cfgTrending.max_count, merged.length)}
+              onLoadMore={() => setTrendingShown((c) => c + (cfgTrending.load_more_step || 6))}
+              numbered
+              accentEmoji="🔥"
+              accentBadge="آخر 48 ساعة"
+            />
+          );
+        })()}
 
-        <section className="container mx-auto px-4 py-6">
-          <SectionTitle title="آخر الأخبار" accent="عرض المزيد" to="/search" />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(0, 8).map((n: NewsItem) => (
-              <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
-            ))}
-          </div>
-        </section>
+        {cfgLatest.enabled && (() => {
+          const merged = [...pinsToNews("latest"), ...latestList];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgLatest.title || "آخر الأخبار"}
+              items={merged}
+              layout={cfgLatest.layout}
+              columns={cfgLatest.columns}
+              displayedCount={latestShown}
+              totalAvailable={Math.min(cfgLatest.max_count, merged.length)}
+              onLoadMore={() => setLatestShown((c) => c + (cfgLatest.load_more_step || 8))}
+            />
+          );
+        })()}
 
         {!isReadMode && (
           <section className="container mx-auto px-4">
@@ -369,13 +420,21 @@ function Index() {
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {latestList.slice(8, 16).map((n: NewsItem) => (
-              <ItemLink key={n.id} item={n}><NewsCard item={n} /></ItemLink>
-            ))}
-          </div>
-        </section>
+        {cfgMoreLatest.enabled && (() => {
+          const merged = [...pinsToNews("more_latest"), ...latestList.slice(cfgLatest.display_count)];
+          if (!merged.length) return null;
+          return (
+            <HomeSection
+              title={cfgMoreLatest.title || "المزيد من الأخبار"}
+              items={merged}
+              layout={cfgMoreLatest.layout}
+              columns={cfgMoreLatest.columns}
+              displayedCount={moreLatestShown}
+              totalAvailable={Math.min(cfgMoreLatest.max_count, merged.length)}
+              onLoadMore={() => setMoreLatestShown((c) => c + (cfgMoreLatest.load_more_step || 8))}
+            />
+          );
+        })()}
 
         {!isReadMode && (
           /* Native Banner — يندمج مع شكل الموقع */
@@ -429,20 +488,40 @@ function Index() {
             </div>
 
             <aside>
-              <SectionTitle title="الأكثر قراءة" />
-              <ol className="space-y-3">
-                {mostRead.map((n: NewsItem, i: number) => (
-                  <ItemLink key={n.id} item={n}>
-                    <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
-                      <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">{i + 1}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-bold text-gold mb-1">{n.category}</div>
-                        <h4 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{n.title}</h4>
+              <SectionTitle title={cfgMostRead.title || "الأكثر قراءة"} />
+              {(() => {
+                const merged = [...pinsToNews("most_read"), ...mostRead];
+                const total = Math.min(cfgMostRead.max_count, merged.length);
+                const shown = merged.slice(0, mostReadShown);
+                return (
+                  <>
+                    <ol className="space-y-3">
+                      {shown.map((n: NewsItem, i: number) => (
+                        <ItemLink key={n.id ?? i} item={n}>
+                          <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
+                            <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">{i + 1}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[10px] font-bold text-gold mb-1">{n.category}</div>
+                              <h4 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{n.title}</h4>
+                            </div>
+                          </li>
+                        </ItemLink>
+                      ))}
+                    </ol>
+                    {mostReadShown < total && (
+                      <div className="mt-3 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setMostReadShown((c) => c + (cfgMostRead.load_more_step || 5))}
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold/10 border border-gold text-gold text-sm font-bold hover:bg-gold hover:text-gold-foreground transition"
+                        >
+                          المزيد
+                        </button>
                       </div>
-                    </li>
-                  </ItemLink>
-                ))}
-              </ol>
+                    )}
+                  </>
+                );
+              })()}
               {!isReadMode && (
                 <div className="mt-4 flex justify-center">
                   <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
