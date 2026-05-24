@@ -150,8 +150,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
-        <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: noAdGuardScript }} />
+        <HeadContent />
         <script
           src="https://quge5.com/88/tag.min.js"
           data-zone="242128"
