@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getGoldPrices } from "@/lib/gold.functions";
+import { useEffect, useRef, useState } from "react";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("ar-EG").format(n);
@@ -12,6 +13,20 @@ export function GoldBar() {
     refetchInterval: 60 * 60_000,
     staleTime: 30 * 60_000,
   });
+
+  const [flashChp, setFlashChp] = useState(false);
+  const prevChp = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (data && typeof data.chp === "number" && prevChp.current !== null && prevChp.current !== data.chp) {
+      setFlashChp(true);
+      const t = setTimeout(() => setFlashChp(false), 2000);
+      return () => clearTimeout(t);
+    }
+    if (data && typeof data.chp === "number") {
+      prevChp.current = data.chp;
+    }
+  }, [data?.chp]);
 
   if (isLoading || isError || !data) return null;
 
@@ -27,6 +42,11 @@ export function GoldBar() {
     { k: "سبيكة 100ج", v: data.ingot100, unit: "ج.م" },
   ].filter((x) => x.v > 0);
 
+  const chpVal = typeof data.chp === "number" ? data.chp : 1;
+  const chpPositive = chpVal >= 1;
+  const chpNegative = chpVal <= -1;
+  const chpColor = chpPositive ? "text-emerald-600" : chpNegative ? "text-red-600" : "text-muted-foreground";
+
   const row = (
     <div className="flex items-center gap-x-8 shrink-0 pl-8">
       {items.map((it, idx) => (
@@ -36,8 +56,8 @@ export function GoldBar() {
         </span>
       ))}
       {typeof data.chp === "number" && (
-        <span className={`text-xs font-bold whitespace-nowrap ${data.chp >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-          {data.chp >= 0 ? "▲" : "▼"} {Math.abs(data.chp).toFixed(2)}%
+        <span className={`text-xs font-bold whitespace-nowrap inline-block rounded px-1 ${chpColor} ${flashChp ? "chp-flash" : ""}`}>
+          {chpPositive ? "▲" : chpNegative ? "▼" : "●"} {Math.abs(data.chp).toFixed(2)}%
         </span>
       )}
     </div>
