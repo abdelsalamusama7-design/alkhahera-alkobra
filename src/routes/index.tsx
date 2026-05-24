@@ -488,20 +488,40 @@ function Index() {
             </div>
 
             <aside>
-              <SectionTitle title="الأكثر قراءة" />
-              <ol className="space-y-3">
-                {mostRead.map((n: NewsItem, i: number) => (
-                  <ItemLink key={n.id} item={n}>
-                    <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
-                      <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">{i + 1}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-bold text-gold mb-1">{n.category}</div>
-                        <h4 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{n.title}</h4>
+              <SectionTitle title={cfgMostRead.title || "الأكثر قراءة"} />
+              {(() => {
+                const merged = [...pinsToNews("most_read"), ...mostRead];
+                const total = Math.min(cfgMostRead.max_count, merged.length);
+                const shown = merged.slice(0, mostReadShown);
+                return (
+                  <>
+                    <ol className="space-y-3">
+                      {shown.map((n: NewsItem, i: number) => (
+                        <ItemLink key={n.id ?? i} item={n}>
+                          <li className="flex items-start gap-3 bg-card p-3 rounded-md border border-border news-card group">
+                            <span className="text-3xl font-extrabold text-gold leading-none w-8 shrink-0">{i + 1}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[10px] font-bold text-gold mb-1">{n.category}</div>
+                              <h4 className="text-sm font-bold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">{n.title}</h4>
+                            </div>
+                          </li>
+                        </ItemLink>
+                      ))}
+                    </ol>
+                    {mostReadShown < total && (
+                      <div className="mt-3 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={() => setMostReadShown((c) => c + (cfgMostRead.load_more_step || 5))}
+                          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gold/10 border border-gold text-gold text-sm font-bold hover:bg-gold hover:text-gold-foreground transition"
+                        >
+                          المزيد
+                        </button>
                       </div>
-                    </li>
-                  </ItemLink>
-                ))}
-              </ol>
+                    )}
+                  </>
+                );
+              })()}
               {!isReadMode && (
                 <div className="mt-4 flex justify-center">
                   <AdsterraBanner adKey="91f05df6cbf845d8e04afcfd101061c8" width={300} height={250} />
