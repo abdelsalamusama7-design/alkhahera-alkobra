@@ -330,6 +330,13 @@ function Index() {
 
       {/* البانر العلوي 728x90/320x50 أُزيل — 245 impression بـ $0 ربح. استبدلناه بـ Native Banner داخل المحتوى لأنه أعلى CTR. */}
 
+      {/* إعلان أعلى المحتوى — قابل للإدارة من لوحة التحكم وله fallback تلقائي */}
+      {!isReadMode && (
+        <section className="container mx-auto px-4 pt-3">
+          <AdSlot slot="home-top" />
+        </section>
+      )}
+
       <main className="flex-1">
         {(() => {
           const circlesAll = [...pinsToNews("circles"), ...worldTopList, ...trendingList, ...latestList];
