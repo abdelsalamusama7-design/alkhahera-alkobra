@@ -32,7 +32,7 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
                 {item.category}
               </span>
             </div>
-            <h2 className="text-xl md:text-3xl font-extrabold leading-tight mb-2 group-hover:text-gold transition-colors">
+            <h2 className="text-xl md:text-3xl font-extrabold leading-tight mb-2 group-hover:text-gold transition-colors line-clamp-2">
               {item.title}
             </h2>
             {item.excerpt && (
