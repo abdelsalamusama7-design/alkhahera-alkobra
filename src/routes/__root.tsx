@@ -189,6 +189,29 @@ function RootComponent() {
 function InnerRoot() {
   const { isReadMode } = useReadMode();
 
+  // منع سكربتات الإعلانات (popunder/social-bar) من التقاط النقر
+  // على الأزرار الموسومة بـ data-no-ad="true" (زر وضع القراءة، أزرار "المزيد"...)
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const blocker = (e: Event) => {
+      const t = e.target as HTMLElement | null;
+      if (t && t.closest && t.closest('[data-no-ad="true"]')) {
+        e.stopPropagation();
+      }
+    };
+    const opts = { capture: true } as AddEventListenerOptions;
+    window.addEventListener("click", blocker, opts);
+    window.addEventListener("mousedown", blocker, opts);
+    window.addEventListener("pointerdown", blocker, opts);
+    window.addEventListener("touchstart", blocker, opts);
+    return () => {
+      window.removeEventListener("click", blocker, opts);
+      window.removeEventListener("mousedown", blocker, opts);
+      window.removeEventListener("pointerdown", blocker, opts);
+      window.removeEventListener("touchstart", blocker, opts);
+    };
+  }, []);
+
   return (
     <>
       <Outlet />
