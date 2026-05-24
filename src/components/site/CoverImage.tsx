@@ -107,6 +107,8 @@ export function CoverImage({
   imgClassName,
   sizeHint = 1200,
   children,
+  hideWatermark = false,
+  watermarkSize = "md",
 }: Props & { mdRatio?: Ratio }) {
   const initial = src && src.trim() ? src : FALLBACK_IMG;
   const [current, setCurrent] = useState(initial);
@@ -114,6 +116,7 @@ export function CoverImage({
   const [inView, setInView] = useState(priority);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
 
   // IntersectionObserver للـ Lazy Loading بدقة — الصورة ما بتتحملش غير لما تقترب من viewport
   useEffect(() => {
