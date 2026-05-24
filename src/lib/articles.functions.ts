@@ -116,7 +116,7 @@ export const getHomeBundle = createServerFn({ method: "GET" }).handler(async () 
       .eq("category_id", worldCat.id)
       .not("cover_image", "is", null)
       .order("published_at", { ascending: false })
-      .limit(12);
+      .limit(60);
     worldTop = w ?? [];
   }
 
