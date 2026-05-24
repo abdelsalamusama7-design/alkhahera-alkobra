@@ -65,11 +65,13 @@ export function GoldBar() {
 
   return (
     <div className="bg-gradient-to-l from-gold/20 via-gold/10 to-transparent border-y border-gold/40 overflow-hidden marquee-pause" dir="rtl">
-      <div className="container mx-auto px-4 py-2 flex items-center gap-3">
-        <span className="font-extrabold text-gold flex items-center gap-1 shrink-0 text-sm border-l border-gold/40 pl-3">
-          <span aria-hidden>🪙</span> أسعار الذهب اليوم
+      <div className="container mx-auto px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-3 min-w-0">
+        <span className="font-extrabold text-gold flex items-center gap-1 shrink-0 text-xs sm:text-sm border-l border-gold/40 pl-2 sm:pl-3">
+          <span aria-hidden>🪙</span>
+          <span className="hidden sm:inline">أسعار الذهب اليوم</span>
+          <span className="sm:hidden">الذهب</span>
         </span>
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 min-w-0 overflow-hidden relative">
           <div className="flex animate-marquee-rtl w-max" dir="ltr">
             <div dir="rtl">{row}</div>
             <div dir="rtl" aria-hidden>{row}</div>
