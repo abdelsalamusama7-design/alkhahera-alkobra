@@ -103,6 +103,7 @@ export function ShortsButton() {
           <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-3">
             <button
               type="button"
+              data-no-ad="true"
               onClick={() => setIndex((i) => Math.max(0, i - 1))}
               disabled={index === 0}
               aria-label="السابق"
@@ -112,6 +113,7 @@ export function ShortsButton() {
             </button>
             <button
               type="button"
+              data-no-ad="true"
               onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
               disabled={index >= items.length - 1}
               aria-label="التالي"
@@ -120,6 +122,7 @@ export function ShortsButton() {
               <ChevronDown className="h-6 w-6" />
             </button>
           </div>
+
 
           {/* Card */}
           {current ? (
