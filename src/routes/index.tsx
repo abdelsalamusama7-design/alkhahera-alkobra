@@ -77,6 +77,16 @@ function Index() {
     initialData: initial,
     refetchInterval: 5 * 60_000,
   });
+  const { data: circlesSetting } = useQuery({
+    queryKey: ["site-setting", "topics_circles_count"],
+    queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
+    staleTime: 5 * 60_000,
+  });
+  const circlesCount = (() => {
+    const v = circlesSetting?.value;
+    const n = typeof v === "number" ? v : Number(v);
+    return Number.isFinite(n) && n > 0 ? Math.min(60, Math.max(3, n)) : 24;
+  })();
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
