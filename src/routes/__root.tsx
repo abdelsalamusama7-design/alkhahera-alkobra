@@ -223,6 +223,7 @@ function InnerRoot() {
       {!isReadMode && <SideRailAds />}
       {!isReadMode && <PopunderSmartLink />}
       {!isReadMode && <MonetagScripts />}
+      {!isReadMode && <AdModalGuard />}
     </>
   );
 }
