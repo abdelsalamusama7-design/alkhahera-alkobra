@@ -159,6 +159,35 @@ function ArticlePage() {
     }).catch(() => {});
   }, [a.slug]);
 
+  // إزالة التكرار من قوائم "اقرأ أيضاً" و"الأكثر قراءة":
+  // - استبعاد المقال الحالي
+  // - استبعاد التكرارات على مستوى slug/id والعنوان والصورة (مقالات مختلفة بنفس الصورة)
+  const relatedRaw: any[] = Array.isArray(data.related) ? data.related : [];
+  const uniqRelated = (() => {
+    const seen = new Set<string>();
+    seen.add(a.slug);
+    if (a.cover_image) seen.add(`img:${a.cover_image}`);
+    seen.add(`t:${a.title?.trim()}`);
+    const out: any[] = [];
+    for (const r of relatedRaw) {
+      const keys = [
+        r.slug,
+        r.id,
+        r.cover_image ? `img:${r.cover_image}` : null,
+        r.title ? `t:${r.title.trim()}` : null,
+      ].filter(Boolean) as string[];
+      if (keys.some((k) => seen.has(k))) continue;
+      keys.forEach((k) => seen.add(k));
+      out.push(r);
+    }
+    return out;
+  })();
+  const relatedDeduped = uniqRelated.slice(0, 4);
+  // الشريط الجانبي يأخذ من بقية القائمة عشان نتفادى تكرار نفس البطاقات في القسمين
+  const sidebarDeduped = uniqRelated.slice(4, 9).length > 0 ? uniqRelated.slice(4, 9) : uniqRelated.slice(0, 5);
+
+
+
   return (
     <div className="min-h-screen flex flex-col bg-background" dir="rtl">
       <TopBar />
