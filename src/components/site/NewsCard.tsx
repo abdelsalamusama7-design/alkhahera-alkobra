@@ -87,7 +87,7 @@ export function NewsCard({ item, size = "medium", priority = false }: Props) {
           </span>
         </CoverImage>
         <div className="p-3 sm:p-4 flex flex-col flex-1">
-          <h3 className="text-base sm:text-lg font-extrabold text-primary leading-snug line-clamp-3 group-hover:text-gold transition-colors">
+          <h3 className="text-base sm:text-lg font-extrabold text-primary leading-snug line-clamp-2 sm:line-clamp-3 group-hover:text-gold transition-colors">
             {item.title}
           </h3>
           {item.excerpt && (
