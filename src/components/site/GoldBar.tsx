@@ -42,8 +42,9 @@ export function GoldBar() {
     { k: "سبيكة 100ج", v: data.ingot100, unit: "ج.م" },
   ].filter((x) => x.v > 0);
 
-  const chpPositive = data.chp >= 1;
-  const chpNegative = data.chp <= -1;
+  const chpVal = typeof data.chp === "number" ? data.chp : 1;
+  const chpPositive = chpVal >= 1;
+  const chpNegative = chpVal <= -1;
   const chpColor = chpPositive ? "text-emerald-600" : chpNegative ? "text-red-600" : "text-muted-foreground";
 
   const row = (
