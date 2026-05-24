@@ -6,6 +6,7 @@ import { TopBar } from "@/components/site/TopBar";
 import { Header } from "@/components/site/Header";
 import { NavBar } from "@/components/site/NavBar";
 import { AdBanner } from "@/components/site/AdBanner";
+import { AdSlot } from "@/components/site/AdSlot";
 import { CoverImage } from "@/components/site/CoverImage";
 import { Footer } from "@/components/site/Footer";
 
