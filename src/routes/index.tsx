@@ -82,11 +82,13 @@ function Index() {
     queryFn: () => getSiteSetting({ data: { key: "topics_circles_count" } }),
     staleTime: 5 * 60_000,
   });
-  const circlesCount = (() => {
+  const maxCircles = (() => {
     const v = circlesSetting?.value;
     const n = typeof v === "number" ? v : Number(v);
-    return Number.isFinite(n) && n > 0 ? Math.min(60, Math.max(3, n)) : 24;
+    return Number.isFinite(n) && n > 1 ? Math.min(60, Math.max(3, n)) : 48;
   })();
+  const [displayedCount, setDisplayedCount] = React.useState(12);
+  const circlesStep = 12;
 
   const heroDb = data.hero.map(dbToMock);
   const latestDb = data.latest.map(dbToMock);
