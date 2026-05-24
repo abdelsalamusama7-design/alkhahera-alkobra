@@ -72,6 +72,15 @@ export function AdModalGuard() {
             max-height: 75vh !important;
           }
         }
+        body > iframe:not([id^="ad-"]):not([title]),
+        html > iframe:not([id^="ad-"]):not([title]){
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+          width: 0 !important;
+          height: 0 !important;
+          opacity: 0 !important;
+        }
       `;
       document.head.appendChild(style);
     }
@@ -124,6 +133,10 @@ export function AdModalGuard() {
     };
 
     const scan = (root: ParentNode) => {
+      document.querySelectorAll<HTMLIFrameElement>('body > iframe:not([id^="ad-"]), html > iframe:not([id^="ad-"])').forEach((frame) => {
+        frame.remove();
+      });
+
       const candidates = [
         ...(root instanceof HTMLElement ? [root] : []),
         ...Array.from(root.querySelectorAll<HTMLElement>(
