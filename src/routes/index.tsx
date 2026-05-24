@@ -23,6 +23,7 @@ import { Footer } from "@/components/site/Footer";
 import { TopicsCircles } from "@/components/site/TopicsCircles";
 import { NewspaperPager } from "@/components/site/NewspaperPager";
 import { getHomeBundle } from "@/lib/articles.functions";
+import { getSiteSetting } from "@/lib/site-settings.functions";
 import { heroNews, latestNews, reports, opinions, gallery, type NewsItem } from "@/data/news";
 import { timeAgoAr } from "@/lib/format";
 
